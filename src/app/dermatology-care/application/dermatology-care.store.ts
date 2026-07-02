@@ -28,6 +28,7 @@ export class DermatologyCareStore {
 
   private readonly dermatologistProfilesSignal = signal<DermatologistProfile[]>([]);
   private readonly availabilitiesSignal = signal<DermatologistAvailability[]>([]);
+  private readonly availabilitiesReadySignal = signal<boolean>(false);
   private readonly appointmentsSignal = signal<Appointment[]>([]);
   private readonly consultationsSignal = signal<Consultation[]>([]);
   private readonly selectedDermatologistSignal = signal<DermatologistProfile | null>(null);
@@ -49,6 +50,14 @@ export class DermatologyCareStore {
    * Readonly signal for the list of dermatologist availability slots.
    */
   readonly availabilities = this.availabilitiesSignal.asReadonly();
+
+  /**
+   * Readonly signal indicating whether the current dermatologist's availabilities
+   * have finished their initial load from the backend. Used to prevent the
+   * availability editor from computing a diff against a not-yet-loaded (empty)
+   * collection, which would silently skip deactivating previously active days.
+   */
+  readonly availabilitiesReady = this.availabilitiesReadySignal.asReadonly();
 
   /**
    * Readonly signal for the list of appointments.
@@ -541,6 +550,7 @@ export class DermatologyCareStore {
    */
   private loadAvailabilities(dermatologistId: number): void {
     this.loadingSignal.set(true);
+    this.availabilitiesReadySignal.set(false);
     this.errorSignal.set(null);
     this.dermatologyCareApi
       .getDermatologistAvailabilities(dermatologistId)
@@ -549,11 +559,13 @@ export class DermatologyCareStore {
         next: (availabilities) => {
           this.availabilitiesSignal.set(availabilities);
           this.loadingSignal.set(false);
+          this.availabilitiesReadySignal.set(true);
           this.errorSignal.set(null);
         },
         error: (err) => {
           this.errorSignal.set(this.formatError(err, 'Failed to load availabilities'));
           this.loadingSignal.set(false);
+          this.availabilitiesReadySignal.set(true);
         },
       });
   }
