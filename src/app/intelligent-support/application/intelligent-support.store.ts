@@ -135,7 +135,6 @@ export class IntelligentSupportStore {
   sendMessage(text: string, supportQueryId: number): void {
     if (!text.trim()) return;
 
-    // Agregar el mensaje del usuario optimistamente en la UI
     const userMessage = new ChatMessage({
       id: 0,
       supportQueryId: supportQueryId,

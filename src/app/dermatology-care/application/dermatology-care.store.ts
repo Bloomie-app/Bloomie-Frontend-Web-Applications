@@ -568,7 +568,7 @@ export class DermatologyCareStore {
 
     const request$ = dermatologistId
       ? this.dermatologyCareApi.getAppointmentsByDermatologistId(dermatologistId)
-      : this.dermatologyCareApi.getAppointments(); // fallback por si acaso
+      : this.dermatologyCareApi.getAppointments();
 
     request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (appointments) => {
