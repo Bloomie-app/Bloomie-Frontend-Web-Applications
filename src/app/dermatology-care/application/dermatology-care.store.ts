@@ -172,6 +172,7 @@ export class DermatologyCareStore {
       untracked(() => {
         if (user && user.id !== this.loadedForDermatologistId) {
           this.loadedForDermatologistId = user.id;
+          this.loadDermatologistProfiles();
           this.loadAppointments(user.id);
           this.loadConsultations(user.id);
           this.loadAvailabilities(user.id);
