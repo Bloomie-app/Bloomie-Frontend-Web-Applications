@@ -210,7 +210,19 @@ export class IamStore {
       .registerDermatologist(requestBody as any)
       .pipe(retry(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (user) => this.handleAuthenticationSuccess(user),
+        next: (user) => {
+          this.iamApi.login(email, password)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (authResponse) => {
+                sessionStorage.setItem('authToken', authResponse.token);
+                this.handleAuthenticationSuccess(user);
+              },
+              error: () => {
+                this.handleAuthenticationSuccess(user);
+              }
+            });
+        },
         error: (err) =>
           this.handleAuthenticationError(err, 'Failed to register dermatologist account'),
       });
