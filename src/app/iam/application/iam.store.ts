@@ -69,13 +69,13 @@ export class IamStore {
       .pipe(retry(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (authResponse) => {
-          console.log('✅ Auth response:', authResponse);
+          console.log('Auth response:', authResponse);
           sessionStorage.setItem('authToken', authResponse.token);
-          console.log('🔑 Token guardado, id:', authResponse.id);
+          console.log('Token saved, id:', authResponse.id);
 
           this.iamApi.getUserById(authResponse.id).subscribe({
             next: (user) => {
-              console.log('👤 Usuario obtenido:', user);
+              console.log('User obtained:', user);
               const resource: UserResource = {
                 id: authResponse.id,
                 email: authResponse.email,

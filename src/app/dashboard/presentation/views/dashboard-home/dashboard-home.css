@@ -1010,7 +1010,6 @@
   overflow: hidden;
 }
 
-/* Alternating tinted backgrounds matching prototipo */
 .recommendations-grid .recommendation-card:nth-child(odd) {
   background: #ddeaf5;
 }
