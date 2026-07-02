@@ -77,8 +77,12 @@
       </div>
     }
 
-    <button class="derm-availability__save-btn" (click)="saveAvailability()">
-      {{ 'dermatology.dermAvailability.saveBtn' | translate }}
+    <button
+      class="derm-availability__save-btn"
+      [disabled]="!store.availabilitiesReady()"
+      (click)="saveAvailability()"
+    >
+      {{ (store.availabilitiesReady() ? 'dermatology.dermAvailability.saveBtn' : 'dermatology.dermAvailability.loading') | translate }}
     </button>
 
   </div>

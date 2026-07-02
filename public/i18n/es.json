@@ -340,6 +340,7 @@
       "min": "min",
       "active": "Activo",
       "saveBtn": "Guardar disponibilidad",
+      "loading": "Cargando tu disponibilidad...",
       "savedSuccess": "Disponibilidad guardada exitosamente.",
       "days": {
         "monday": "Lunes",

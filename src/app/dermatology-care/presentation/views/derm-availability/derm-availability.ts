@@ -135,6 +135,7 @@ export class DermAvailability {
    * an active working day.
    */
   saveAvailability(): void {
+    if (!this.store.availabilitiesReady()) return;
     const user = this.iamStore.currentUser();
     if (!user) return;
     const profile = this.store.dermatologistProfiles()
