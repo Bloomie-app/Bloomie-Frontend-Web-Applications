@@ -58,27 +58,6 @@
           <p class="derm-summary__body-text derm-summary__body-text--last">{{ consultation.recommendations }}</p>
         </div>
 
-        <!-- Clinical photos — dedicated section -->
-        @if (consultation.hasClinicalPhotos) {
-          <div class="derm-summary__photos-card">
-            <div class="derm-summary__photos-header">
-              <mat-icon>photo_camera</mat-icon>
-              <span class="derm-summary__section-label">{{ 'dermatology.dermSummary.clinicalPhotos' | translate }}</span>
-              <span class="derm-summary__photos-count">{{ consultation.clinicalPhotoUrls.length }}</span>
-            </div>
-            <div class="derm-summary__photos-grid">
-              @for (url of consultation.clinicalPhotoUrls; track url) {
-                <img class="derm-summary__photo" [src]="url" alt="Clinical photo" />
-              }
-            </div>
-          </div>
-        } @else {
-          <div class="derm-summary__no-photos">
-            <mat-icon>hide_image</mat-icon>
-            <span>{{ 'dermatology.dermSummary.noPhotos' | translate }}</span>
-          </div>
-        }
-
       </div>
 
       <!-- Right column -->
