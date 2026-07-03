@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -12,12 +12,24 @@ import { RoutineManagementStore } from '../../../../routine-management/applicati
   templateUrl: './scan-result.html',
   styleUrl: './scan-result.css',
 })
-export class ScanResult implements OnInit {
+export class ScanResult {
   readonly store = inject(SkinAnalysisStore);
   private readonly routineStore = inject(RoutineManagementStore);
+  private readonly destroyRef = inject(DestroyRef);
   protected router = inject(Router);
 
   readonly displayScore = signal<number>(0);
+  private animationIntervalId: ReturnType<typeof setInterval> | null = null;
+
+  constructor() {
+    effect(() => {
+      const target = this.store.currentScanAnalysis()?.overallScore ?? 0;
+      untracked(() => this.animateScoreTo(target));
+    });
+    this.destroyRef.onDestroy(() => {
+      if (this.animationIntervalId !== null) clearInterval(this.animationIntervalId);
+    });
+  }
 
   readonly scoreMessage = computed((): string => {
     const s = this.store.currentScanAnalysis()?.overallScore ?? 0;
@@ -38,15 +50,24 @@ export class ScanResult implements OnInit {
     ];
   });
 
-  ngOnInit(): void {
-    const target = this.store.currentScanAnalysis()?.overallScore ?? 0;
-    if (target === 0) return;
+  private animateScoreTo(target: number): void {
+    if (this.animationIntervalId !== null) {
+      clearInterval(this.animationIntervalId);
+      this.animationIntervalId = null;
+    }
+    if (target === 0) {
+      this.displayScore.set(0);
+      return;
+    }
     let current = 0;
     const step = Math.max(1, Math.ceil(target / 40));
-    const id = setInterval(() => {
+    this.animationIntervalId = setInterval(() => {
       current = Math.min(current + step, target);
       this.displayScore.set(current);
-      if (current >= target) clearInterval(id);
+      if (current >= target && this.animationIntervalId !== null) {
+        clearInterval(this.animationIntervalId);
+        this.animationIntervalId = null;
+      }
     }, 30);
   }
 

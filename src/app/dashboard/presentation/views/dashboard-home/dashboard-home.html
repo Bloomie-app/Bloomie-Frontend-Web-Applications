@@ -1,5 +1,13 @@
+<!-- Confirming Stripe payment overlay -->
+@if (confirmingPayment()) {
+  <div class="dashboard__loading" role="status" aria-live="polite">
+    <mat-icon class="dashboard__loading-icon">spa</mat-icon>
+    <p class="dashboard__loading-text">{{ 'dashboard.confirmingPayment' | translate }}</p>
+  </div>
+}
+
 <!-- Loading overlay -->
-@if (isLoading()) {
+@if (isLoading() && !confirmingPayment()) {
   <div class="dashboard__loading" role="status" aria-live="polite">
     <mat-icon class="dashboard__loading-icon">spa</mat-icon>
     <p class="dashboard__loading-text">{{ 'dashboard.loading' | translate }}</p>
@@ -15,7 +23,7 @@
 }
 
 <!-- Main dashboard content -->
-@if (!isLoading()) {
+@if (!isLoading() && !confirmingPayment()) {
   <div class="dashboard">
 
     <!-- ── Header ─────────────────────────────────────────────────────────── -->

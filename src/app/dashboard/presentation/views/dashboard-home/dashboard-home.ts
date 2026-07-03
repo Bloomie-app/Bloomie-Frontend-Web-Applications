@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { RoutineManagementStore } from '../../../../routine-management/applicati
 import { DermatologyCareStore } from '../../../../dermatology-care/application/dermatology-care.store';
 import { ProductDiscoveryStore } from '../../../../product-discovery/application/product-discovery.store';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
 import { SkinSensitivity, SkinType, } from '../../../../skin-analysis/domain/model/skin-profile.entity';
 import { FacialScan } from '../../../../skin-analysis/domain/model/facial-scan.entity';
 import { RoutineItem } from '../../../../routine-management/domain/model/routine-item.entity';
@@ -122,8 +123,17 @@ export class DashboardHome implements OnInit {
   /** Provides the authenticated user's profile for personalized display. */
   private readonly iamStore = inject(IamStore);
 
+  /** Used to confirm a just-completed Stripe checkout before leaving the dashboard. */
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
   private readonly route = inject(ActivatedRoute);
   private readonly http = inject(HttpClient);
+
+  /**
+   * True while polling the backend to confirm the Stripe webhook has
+   * activated the subscription after a checkout redirect.
+   */
+  readonly confirmingPayment = signal(false);
 
   // ─── Current user ────────────────────────────────────────────────────────────
 
@@ -789,7 +799,37 @@ export class DashboardHome implements OnInit {
     localStorage.removeItem('pendingPlanAmount');
     window.history.replaceState({}, '', '/dashboard');
 
-    this.router.navigate(['/skin-analysis/onboarding-scan']);
+    this.confirmSubscriptionActivation();
+  }
+
+  /**
+   * Polls the backend for the subscription created by the Stripe webhook.
+   * The webhook runs asynchronously and may not have processed the payment
+   * yet by the time Stripe redirects the user back — navigating onward
+   * before it lands would let the subscription guard bounce the user to
+   * plan selection later, even though they already paid.
+   *
+   * @param attempt - The current retry attempt (used to cap total wait time).
+   */
+  private confirmSubscriptionActivation(attempt = 0): void {
+    const user = this.iamStore.currentUser();
+    const maxAttempts = 8;
+
+    if (!user || attempt >= maxAttempts) {
+      this.confirmingPayment.set(false);
+      this.router.navigate(['/skin-analysis/onboarding-scan']);
+      return;
+    }
+
+    this.confirmingPayment.set(true);
+    this.subscriptionStore.loadForPatient(user.id, true).subscribe(() => {
+      if (this.subscriptionStore.hasActiveAccess()) {
+        this.confirmingPayment.set(false);
+        this.router.navigate(['/skin-analysis/onboarding-scan']);
+      } else {
+        setTimeout(() => this.confirmSubscriptionActivation(attempt + 1), 2000);
+      }
+    });
   }
 }
 

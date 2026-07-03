@@ -107,6 +107,7 @@
       "tipSensitivity": "Your skin is showing high sensitivity. Stick to fragrance-free, gentle products this week."
     },
     "loading": "Loading dashboard...",
+    "confirmingPayment": "Confirming your payment...",
     "error": "Could not load dashboard data.",
     "routineStep": {
       "CLEANSER": "Cleanser",
