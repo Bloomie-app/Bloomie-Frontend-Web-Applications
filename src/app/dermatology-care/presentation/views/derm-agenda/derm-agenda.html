@@ -68,15 +68,10 @@
             <div class="derm-agenda__call-wrap">
               <button
                 class="derm-agenda__start-btn"
-                [class.derm-agenda__start-btn--disabled]="!canStartCall(appointment)"
-                [disabled]="!canStartCall(appointment)"
                 (click)="startCall(appointment)">
                 <mat-icon>video_call</mat-icon>
                 {{ 'dermatology.dermAgenda.startCall' | translate }}
               </button>
-              @if (!canStartCall(appointment)) {
-                <span class="derm-agenda__call-hint">{{ callAvailableHint(appointment) }}</span>
-              }
             </div>
           } @else {
             <mat-icon class="derm-agenda__status-icon derm-agenda__status-icon--{{ statusMod(appointment.status) }}">

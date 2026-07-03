@@ -111,36 +111,14 @@ export class DermAgenda {
     this.router.navigate(['/derm/virtual-call']);
   }
 
-  /** Returns true when the call button should be enabled (1 h before scheduled time). */
+  /** Returns true when the call button should be enabled (any time, as long as the appointment is active). */
   canStartCall(appointment: Appointment): boolean {
-    if (appointment.isCancelled || appointment.status === AppointmentStatus.Completed) return false;
-    const now          = new Date();
-    const apptTime     = new Date(appointment.scheduledAt);
-    const enablesAt    = new Date(apptTime.getTime() - 60 * 60 * 1000);
-    const sameDay      = apptTime.getFullYear() === now.getFullYear() &&
-                         apptTime.getMonth()    === now.getMonth()    &&
-                         apptTime.getDate()     === now.getDate();
-    return sameDay && now >= enablesAt;
+    return this.isActive(appointment);
   }
 
   /** Returns true if the appointment is still active (not cancelled or completed). */
   isActive(appointment: Appointment): boolean {
     return !appointment.isCancelled && appointment.status !== AppointmentStatus.Completed;
-  }
-
-  /** Returns the hint text shown below the disabled call button. */
-  callAvailableHint(appointment: Appointment): string {
-    const apptTime  = new Date(appointment.scheduledAt);
-    const enablesAt = new Date(apptTime.getTime() - 60 * 60 * 1000);
-    const now       = new Date();
-    const hh        = enablesAt.getHours().toString().padStart(2, '0');
-    const mm        = enablesAt.getMinutes().toString().padStart(2, '0');
-    const sameDay   = apptTime.getFullYear() === now.getFullYear() &&
-                      apptTime.getMonth()    === now.getMonth()    &&
-                      apptTime.getDate()     === now.getDate();
-    if (sameDay) return `Enables at ${hh}:${mm}`;
-    const dayAbbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][apptTime.getDay()];
-    return `Enables ${dayAbbr} at ${hh}:${mm}`;
   }
 
   timeOf(scheduledAt: string): string {

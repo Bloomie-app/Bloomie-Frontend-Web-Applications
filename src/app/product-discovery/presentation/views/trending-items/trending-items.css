@@ -265,6 +265,7 @@
 
 /* ── Filter panel ── */
 .ti-filter {
+  box-sizing: border-box;
   width: 280px;
   flex-shrink: 0;
   background: #fff;
@@ -339,23 +340,17 @@
 }
 .ti-filter__clear:hover { border-color: #cebebe; color: #666; }
 
-/* ── Mobile ── */
+/* ── Tablet landscape ── */
 @media (max-width: 1199px) {
   .ti-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-@media (max-width: 1023px) {
-  .ti-banner { padding: 16px 20px; }
-  .ti-banner__title { font-size: 20px; }
-  .ti-banner__icon-wrap { width: 40px; height: 40px; }
-  .ti-banner__icon-wrap mat-icon { font-size: 20px; }
+/* ── Tablet portrait ── */
+@media (max-width: 900px) {
+  .ti-content { flex-direction: column; padding: 20px 24px 32px; gap: 16px; }
+  .ti-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
 
-  .ti-content { flex-direction: column; padding: 16px 16px 28px; gap: 16px; }
-  .ti-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .ti-tabs { width: 100%; }
-  .ti-tab { flex: 1; justify-content: center; font-size: 12px; padding: 8px 10px; }
-
-  /* Filter panel as bottom sheet */
+  /* Filter panel as bottom sheet (no room for a 280px sidebar alongside the grid) */
   .ti-filter {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -368,6 +363,15 @@
   }
 }
 
-@media (max-width: 480px) {
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .ti-banner { padding: 16px 20px; }
+  .ti-banner__title { font-size: 20px; }
+  .ti-banner__icon-wrap { width: 40px; height: 40px; }
+  .ti-banner__icon-wrap mat-icon { font-size: 20px; }
+
+  .ti-content { padding: 16px 16px 28px; }
   .ti-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .ti-tabs { width: 100%; }
+  .ti-tab { flex: 1; justify-content: center; font-size: 12px; padding: 8px 10px; }
 }
