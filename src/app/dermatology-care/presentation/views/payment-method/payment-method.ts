@@ -87,9 +87,10 @@ export class PaymentMethod {
     const time        = this.store.pendingAppointmentTime();
 
     if (currentUser && derm && date && time) {
-      const [startHour]  = time.split(':').map(Number);
-      const pad          = (n: number) => String(n).padStart(2, '0');
-      const scheduledAt  = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(startHour)}:00:00`;
+      const [startHour, startMinute] = time.split(' - ')[0].split(':').map(Number);
+      const scheduledAt = new Date(
+        date.getFullYear(), date.getMonth(), date.getDate(), startHour, startMinute, 0,
+      ).toISOString();
 
       const appointment = new Appointment({
         id:                 0,
