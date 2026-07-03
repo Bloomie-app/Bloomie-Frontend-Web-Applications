@@ -263,6 +263,12 @@
   margin: 0;
 }
 
+.rpl-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .rpl-replace-btn {
   display: flex;
   align-items: center;
@@ -281,6 +287,25 @@
 
 .rpl-replace-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
 .rpl-replace-btn:hover { background: #7d4648; }
+
+.rpl-remove-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: transparent;
+  color: #c62828;
+  border: 1.5px solid #f0c4c4;
+  border-radius: 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.rpl-remove-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
+.rpl-remove-btn:hover { background: #fdecea; border-color: #c62828; }
 
 /* ── Stats panel ── */
 .rpl-panel {

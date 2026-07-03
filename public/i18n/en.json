@@ -389,6 +389,8 @@
       "productLabel": "Product",
       "orderLabel": "Step order",
       "replaceBtn": "Replace Product",
+      "removeBtn": "Remove Step",
+      "removeConfirm": "Are you sure you want to remove this step from your routine?",
       "streakLabel": "Routine Streak",
       "streakSubtitle": "days this week",
       "completionLabel": "30-day Completion",

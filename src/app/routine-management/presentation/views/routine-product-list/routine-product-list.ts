@@ -1,9 +1,15 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { RoutineManagementStore } from '../../../application/routine-management.store';
-import { RoutineItem } from '../../../domain/model/routine-item.entity';
+import { RoutineItem, RoutineStep } from '../../../domain/model/routine-item.entity';
+
+/** Steps that are essential to a skincare routine and cannot be removed. Mirrors Routine.MANDATORY_STEPS on the backend. */
+const MANDATORY_STEPS: RoutineStep[] = [RoutineStep.Cleanser, RoutineStep.Moisturizer, RoutineStep.Sunscreen];
+
+/** Minimum number of items a routine must retain after a removal. Mirrors the backend rule in Routine.removeItem(). */
+const MINIMUM_ROUTINE_ITEMS = 2;
 
 interface WeekDay {
   date:        Date;
@@ -23,6 +29,7 @@ interface WeekDay {
 export class RoutineProductList {
   readonly store    = inject(RoutineManagementStore);
   protected router  = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   expandedProductId = signal<number | null>(null);
   selectedDate      = signal<Date>(new Date());
@@ -90,5 +97,23 @@ export class RoutineProductList {
     this.router.navigate(['/routine/product-replacement'], {
       queryParams: { routineItemId: routineItem.id },
     });
+  }
+
+  /**
+   * Whether this routine item can be removed: it must not be a mandatory step
+   * (CLEANSER, MOISTURIZER, SUNSCREEN) and the routine must retain at least
+   * MINIMUM_ROUTINE_ITEMS items afterwards. Mirrors Routine.removeItem() on the backend.
+   */
+  canRemove(routineItem: RoutineItem): boolean {
+    return !MANDATORY_STEPS.includes(routineItem.step)
+      && this.activeRoutineItems().length > MINIMUM_ROUTINE_ITEMS;
+  }
+
+  removeItem(routineItem: RoutineItem): void {
+    const confirmed = window.confirm(this.translate.instant('routine.productList.removeConfirm'));
+    if (!confirmed) return;
+
+    this.expandedProductId.set(null);
+    this.store.removeRoutineItem(routineItem.id);
   }
 }

@@ -77,10 +77,18 @@
             @if (expandedProductId() === item.id) {
               <div class="rpl-item__expanded">
                 <p class="rpl-item__order">{{ 'routine.productList.orderLabel' | translate }}: {{ item.order }}</p>
-                <button class="rpl-replace-btn" (click)="navigateToReplaceProduct(item)">
-                  <mat-icon>swap_horiz</mat-icon>
-                  {{ 'routine.productList.replaceBtn' | translate }}
-                </button>
+                <div class="rpl-item__actions">
+                  @if (canRemove(item)) {
+                    <button class="rpl-remove-btn" (click)="removeItem(item)">
+                      <mat-icon>delete_outline</mat-icon>
+                      {{ 'routine.productList.removeBtn' | translate }}
+                    </button>
+                  }
+                  <button class="rpl-replace-btn" (click)="navigateToReplaceProduct(item)">
+                    <mat-icon>swap_horiz</mat-icon>
+                    {{ 'routine.productList.replaceBtn' | translate }}
+                  </button>
+                </div>
               </div>
             }
           </div>
