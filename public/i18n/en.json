@@ -289,13 +289,11 @@
       "title": "Consultation Summary",
       "date": "Date:",
       "doctor": "Doctor's name:",
-      "uploadedImages": "Upload consultation's images:",
       "diagnosis": "Diagnosis",
       "recommendations": "Doctor's recommendations",
       "duration": "Duration",
       "returnBtn": "Return to Consultations",
       "noData": "No consultation selected.",
-      "noPhotos": "No images were uploaded for this consultation.",
       "doctorLabel": "Dermatologist"
     },
     "dermAgenda": {
@@ -324,8 +322,6 @@
       "date": "Start:",
       "endDate": "End:",
       "duration": "Duration:",
-      "clinicalPhotos": "Clinical photos",
-      "noPhotos": "No photos uploaded",
       "diagnosis": "Diagnosis",
       "recommendations": "Recommendations",
       "returnBtn": "Return",

@@ -77,31 +77,6 @@
       <!-- ── Right column ────────────────────────────────────────────────────── -->
       <div class="cs-right">
 
-        <!-- Clinical photos — own section -->
-        <div class="cs-section-card cs-photos-card">
-          <p class="cs-section-label">
-            <mat-icon>photo_library</mat-icon>
-            {{ 'dermatology.consultationSummary.uploadedImages' | translate }}
-          </p>
-
-          @if (consultation.hasClinicalPhotos) {
-            <div class="cs-photos">
-              @for (url of consultation.clinicalPhotoUrls; track url) {
-                <img class="cs-photo" [src]="url" alt="Clinical photo" />
-              }
-            </div>
-          } @else {
-            <div class="cs-photos-empty">
-              <div class="cs-photos-empty__icon-wrap">
-                <mat-icon>image_not_supported</mat-icon>
-              </div>
-              <span class="cs-photos-empty__text">
-                {{ 'dermatology.consultationSummary.noPhotos' | translate }}
-              </span>
-            </div>
-          }
-        </div>
-
         <!-- Return button -->
         <button class="cs-return-btn" (click)="navigateBack()">
           <mat-icon>arrow_back</mat-icon>

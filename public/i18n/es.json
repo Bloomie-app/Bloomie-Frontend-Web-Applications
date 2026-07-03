@@ -289,13 +289,11 @@
       "title": "Resumen de Consulta",
       "date": "Fecha:",
       "doctor": "Nombre del doctor:",
-      "uploadedImages": "Imágenes de la consulta:",
       "diagnosis": "Diagnóstico",
       "recommendations": "Recomendaciones del doctor",
       "duration": "Duración",
       "returnBtn": "Volver a Consultas",
       "noData": "No hay consulta seleccionada.",
-      "noPhotos": "No se subieron imágenes para esta consulta.",
       "doctorLabel": "Dermatólogo"
     },
     "dermAgenda": {
@@ -324,8 +322,6 @@
       "date": "Inicio:",
       "endDate": "Fin:",
       "duration": "Duración:",
-      "clinicalPhotos": "Fotos clínicas",
-      "noPhotos": "Sin fotos cargadas",
       "diagnosis": "Diagnóstico",
       "recommendations": "Recomendaciones",
       "returnBtn": "Volver",

@@ -255,63 +255,6 @@
   margin: 0;
 }
 
-/* ── Clinical photos ─────────────────────────────────────────────────────────── */
-
-.cs-photos-card { }
-
-.cs-photos {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.cs-photo {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: zoom-in;
-}
-
-.cs-photo:hover {
-  transform: scale(1.03);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-.cs-photos-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 28px 16px;
-}
-
-.cs-photos-empty__icon-wrap {
-  width: 56px;
-  height: 56px;
-  background: #f5eaea;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cs-photos-empty__icon-wrap mat-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
-  color: #cebebe;
-}
-
-.cs-photos-empty__text {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  color: #bbb;
-  text-align: center;
-}
-
 /* ── Return button ───────────────────────────────────────────────────────────── */
 
 .cs-return-btn {
@@ -413,8 +356,6 @@
   .cs-doctor__info { align-items: center; }
   .cs-doctor__pills { justify-content: center; }
   .cs-doctor__name { font-size: 18px; white-space: normal; }
-
-  .cs-photos { grid-template-columns: repeat(3, 1fr); }
 
   .cs-section-card { padding: 20px; }
 }

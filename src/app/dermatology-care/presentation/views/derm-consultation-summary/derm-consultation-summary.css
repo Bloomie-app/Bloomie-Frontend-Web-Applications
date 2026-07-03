@@ -73,37 +73,6 @@
 }
 .derm-summary__body-text--last { margin-bottom: 0; }
 
-/* Photos card — dedicated section */
-.derm-summary__photos-card {
-  background: #fff; border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 24px;
-}
-.derm-summary__photos-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-}
-.derm-summary__photos-header mat-icon { color: #a26769; font-size: 22px; }
-.derm-summary__photos-header .derm-summary__section-label { margin: 0; }
-.derm-summary__photos-count {
-  margin-left: auto; background: #fdf0f0; color: #a26769;
-  font-family: 'Montserrat', sans-serif; font-size: 12px;
-  font-weight: 600; border-radius: 20px; padding: 2px 12px;
-}
-.derm-summary__photos-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;
-}
-.derm-summary__photo {
-  width: 100%; aspect-ratio: 3/4; border-radius: 14px;
-  object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  transition: transform 0.2s;
-}
-.derm-summary__photo:hover { transform: scale(1.03); }
-
-/* No photos */
-.derm-summary__no-photos {
-  display: flex; align-items: center; gap: 8px;
-  font-family: 'Montserrat', sans-serif; font-size: 13px; color: #ccc;
-}
-
 /* Return button */
 .derm-summary__return-btn {
   width: 100%; background: #a26769; color: #fff;
@@ -129,13 +98,10 @@
   .derm-summary__layout { flex-direction: column; gap: 16px; }
   .derm-summary__right { width: 100%; }
   .derm-summary__info-card,
-  .derm-summary__body-card,
-  .derm-summary__photos-card { padding: 18px; }
+  .derm-summary__body-card { padding: 18px; }
   .derm-summary__row { font-size: 13px; }
   .derm-summary__chip { font-size: 12px; padding: 3px 10px; }
   .derm-summary__section-label { font-size: 14px; }
   .derm-summary__body-text { font-size: 13px; }
-  .derm-summary__photos-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
-  .derm-summary__photo { border-radius: 10px; }
   .derm-summary__return-btn { font-size: 13px; }
 }

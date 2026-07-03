@@ -95,14 +95,13 @@ export class TrendingItems {
   }
 
   /**
-   * Toggles a category in the draft selection list.
-   * @param category - The category to toggle.
+   * Selects a single category in the draft filter, replacing any previous selection.
+   * Clicking the already-selected category deselects it (radio-button behavior).
+   * @param category - The category to select or deselect.
    */
   toggleDraftCategory(category: ProductCategory): void {
     this.draftCategories.update((current) =>
-      current.includes(category)
-        ? current.filter((selected) => selected !== category)
-        : [...current, category],
+      current.includes(category) ? [] : [category],
     );
   }
 
