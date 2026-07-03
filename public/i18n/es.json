@@ -107,6 +107,7 @@
       "tipSensitivity": "Tu piel muestra alta sensibilidad. Usa productos suaves y sin fragancia esta semana."
     },
     "loading": "Cargando dashboard...",
+    "confirmingPayment": "Confirmando tu pago...",
     "error": "No se pudieron cargar los datos del dashboard."
   },
   "routineStep": {

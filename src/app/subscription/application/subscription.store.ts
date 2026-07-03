@@ -29,9 +29,13 @@ export class SubscriptionStore {
   /**
    * Fetches the subscription for a patient, reusing the cached value when
    * already loaded for the same patient.
+   * @param patientId - The patient identifier to load the subscription for.
+   * @param force - When true, bypasses the cache and re-queries the backend
+   *                (e.g. right after a Stripe checkout, when a prior check may
+   *                have cached a stale "no subscription yet" result).
    */
-  loadForPatient(patientId: number): Observable<Subscription | null> {
-    if (this.loadedForPatientIdSignal() === patientId && !this.errorSignal()) {
+  loadForPatient(patientId: number, force = false): Observable<Subscription | null> {
+    if (!force && this.loadedForPatientIdSignal() === patientId && !this.errorSignal()) {
       return of(this.currentSubscriptionSignal());
     }
 
