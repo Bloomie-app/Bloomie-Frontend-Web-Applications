@@ -389,6 +389,8 @@
       "productLabel": "Producto",
       "orderLabel": "Orden del paso",
       "replaceBtn": "Reemplazar Producto",
+      "removeBtn": "Quitar Paso",
+      "removeConfirm": "¿Seguro que quieres quitar este paso de tu rutina?",
       "streakLabel": "Racha de Rutina",
       "streakSubtitle": "días esta semana",
       "completionLabel": "Cumplimiento (30 días)",
