@@ -17,6 +17,7 @@ import {Appointment, AppointmentStatus} from '../domain/model/appointment.entity
 import {Consultation} from '../domain/model/consultation.entity';
 import {DermatologyCareApi} from '../infrastructure/dermatology-care-api';
 import { IamStore } from '../../iam/application/iam.store';
+import { UserRole } from '../../iam/domain/model/user.entity';
 
 /**
  * Holds dermatology care application state and coordinates
@@ -185,9 +186,14 @@ export class DermatologyCareStore {
         if (user && user.id !== this.loadedForDermatologistId) {
           this.loadedForDermatologistId = user.id;
           this.loadDermatologistProfiles();
-          this.loadAppointments(user.id);
-          this.loadConsultations(user.id);
-          this.loadAvailabilities(user.id);
+          if (user.role === UserRole.Dermatologist) {
+            this.loadAppointments(user.id);
+            this.loadConsultations(user.id);
+            this.loadAvailabilities(user.id);
+          } else {
+            this.loadAppointmentsByPatientId(user.id);
+            this.loadConsultationsByPatientId(user.id);
+          }
         }
       });
     });
