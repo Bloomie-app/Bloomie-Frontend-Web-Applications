@@ -199,6 +199,7 @@
       "payNow": "Pay now",
       "errorMessage": "Payment failed. Please verify your card details and try again.",
       "slotTakenError": "This time slot was just booked by someone else. Please choose another time.",
+      "pastTimeError": "That time has already passed. Please choose a later time.",
       "bookingFailedError": "We couldn't book your appointment. Please try again.",
       "chooseAnotherTime": "Choose another time",
       "confirmationTitle": "Payment Confirmed!",
