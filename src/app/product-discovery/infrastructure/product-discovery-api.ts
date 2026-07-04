@@ -56,11 +56,12 @@ export class ProductDiscoveryApi extends BaseApi {
   }
 
   /**
-   * Retrieves all favorite product records.
-   * @returns Stream with the favorite product collection.
+   * Retrieves all favorite product records belonging to a specific user.
+   * @param userId - The user ID to filter by.
+   * @returns Stream with the filtered favorite product collection.
    */
-  getFavoriteProducts(): Observable<FavoriteProduct[]> {
-    return this.favoriteProductsEndpoint.getAll();
+  getFavoriteProductsByUserId(userId: number): Observable<FavoriteProduct[]> {
+    return this.favoriteProductsEndpoint.getAllByUserId(userId);
   }
 
   /**
