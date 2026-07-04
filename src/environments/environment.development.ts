@@ -48,7 +48,7 @@ export const environment = {
   backendSupportQueriesEndpointPath: '/support-queries',
   backendChatMessagesEndpointPath: '/chat-messages',
 
-  // Routine Management
+  // Routine Managementt
   backendRoutinesEndpointPath: '/routines',
   backendDailyTrackingsEndpointPath: '/daily-trackings',
 
