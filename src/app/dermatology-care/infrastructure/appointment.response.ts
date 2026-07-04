@@ -7,7 +7,6 @@ export interface AppointmentResource extends BaseResource {
   id:                 number;
   patientId:          number;
   dermatologistId:    number;
-  paymentId:          number;
   scheduledAt:        string;
   status:             string;
   cancellationReason: string;
