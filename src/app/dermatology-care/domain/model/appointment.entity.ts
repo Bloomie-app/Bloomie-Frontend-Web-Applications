@@ -24,7 +24,6 @@ export class Appointment implements BaseEntity {
     id:                  number;
     patientId:           number;
     dermatologistId:     number;
-    paymentId:           number;
     scheduledAt:         string;
     status:              AppointmentStatus;
     cancellationReason:  string;
@@ -32,7 +31,6 @@ export class Appointment implements BaseEntity {
     this._id                 = props.id;
     this._patientId          = props.patientId;
     this._dermatologistId    = props.dermatologistId;
-    this._paymentId          = props.paymentId;
     this._scheduledAt        = props.scheduledAt;
     this._status             = props.status;
     this._cancellationReason = props.cancellationReason;
@@ -53,11 +51,6 @@ export class Appointment implements BaseEntity {
   private _dermatologistId: number;
 
   get dermatologistId(): number { return this._dermatologistId; }
-
-  /** Identifier of the payment associated with this appointment. */
-  private _paymentId: number;
-
-  get paymentId(): number { return this._paymentId; }
 
   /** ISO 8601 date-time string for when the appointment is scheduled. */
   private _scheduledAt: string;
