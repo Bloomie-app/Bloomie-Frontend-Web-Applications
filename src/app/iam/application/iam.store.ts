@@ -79,7 +79,7 @@ export class IamStore {
               const resource: UserResource = {
                 id: authResponse.id,
                 email: authResponse.email,
-                name: user.name,
+                firstName: user.name,
                 lastName: user.lastName,
                 role: user.role,
                 photoUrl: user.photoUrl ?? null,
@@ -91,7 +91,7 @@ export class IamStore {
               const resource: UserResource = {
                 id: authResponse.id,
                 email: authResponse.email,
-                name: authResponse.email.split('@')[0],
+                firstName: authResponse.email.split('@')[0],
                 lastName: '',
                 role: 'ROLE_YOUNG_ADULT',
                 photoUrl: null,
