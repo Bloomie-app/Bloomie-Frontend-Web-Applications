@@ -44,6 +44,7 @@
 .payment-method__error-banner { background: #fdecea; border: 1px solid #f5c6c3; border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
 .payment-method__error-icon { color: #c0392b; flex-shrink: 0; }
 .payment-method__error-text { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: #8b1a1a; margin: 0; line-height: 1.5; }
+.payment-method__error-action { margin-top: 8px; background: none; border: none; padding: 0; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; color: #8b1a1a; text-decoration: underline; cursor: pointer; }
 
 /* ── Card preview ── */
 .payment-method__card-preview { background: linear-gradient(135deg, #a26769 0%, #7baab3 100%); border-radius: 20px; padding: 22px 24px; margin-bottom: 28px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; box-shadow: 0 8px 28px rgba(162,103,105,0.28); }
