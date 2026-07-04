@@ -25,5 +25,10 @@ export const skinAnalysisRoutes: Routes = [
   { path: 'result', loadComponent: scanResult },
   { path: 'error', loadComponent: scanError },
   { path: 'past-analyses', loadComponent: pastAnalyses },
-  { path: 'skin-progress', loadComponent: skinProgress }
+  { path: 'skin-progress', loadComponent: skinProgress },
+  {
+    path: 'onboarding-scan',
+    loadComponent: () =>
+      import('./views/onboarding-scan/onboarding-scan').then((m) => m.OnboardingScan),
+  },
 ];

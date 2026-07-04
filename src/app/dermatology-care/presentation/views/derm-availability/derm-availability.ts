@@ -1,4 +1,4 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, effect, inject, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
@@ -41,6 +41,29 @@ export class DermAvailability {
     mon: 'MONDAY', tue: 'TUESDAY', wed: 'WEDNESDAY',
     thu: 'THURSDAY', fri: 'FRIDAY', sat: 'SATURDAY', sun: 'SUNDAY',
   };
+
+  /** Reverse of {@link DAY_MAP} — full uppercase day name back to the short id. */
+  private readonly DAY_MAP_REVERSE: Record<string, string> = Object.fromEntries(
+    Object.entries(this.DAY_MAP).map(([short, full]) => [full, short]),
+  );
+
+  constructor() {
+    // Reactively reflects whatever is actually saved for this dermatologist —
+    // re-runs after every save too, since the store replaces the availability
+    // in its signal with the backend response.
+    effect(() => {
+      const user = this.iamStore.currentUser();
+      if (!user) return;
+      const mine = this.store.availabilities().filter((a) => a.dermatologistId === user.id);
+      if (mine.length === 0) return;
+
+      const activeOnes = mine.filter((a) => a.active);
+      this.activeDays.set(new Set(activeOnes.map((a) => this.DAY_MAP_REVERSE[a.dayOfWeek]).filter(Boolean)));
+      const reference = activeOnes[0] ?? mine[0];
+      this.startTime.set(this.to12h(reference.startTime));
+      this.endTime.set(this.to12h(reference.endTime));
+    });
+  }
 
   /** Available weekday options. */
   readonly days: DayOption[] = [
@@ -93,26 +116,72 @@ export class DermAvailability {
   }
 
   /**
-   * Saves the availability configuration by creating availability entries
-   * for each active day in the store.
+   * Converts a 24-hour HH:mm time string (e.g. "09:00") back to the 12-hour
+   * "hh:mm AM/PM" format used by {@link timeOptions}.
+   */
+  private to12h(time24: string): string {
+    const [hours, minutes] = time24.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const h12 = hours % 12 === 0 ? 12 : hours % 12;
+    return `${String(h12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+  }
+
+  /**
+   * Saves the availability configuration: creates a new slot for days that
+   * don't have one yet, updates the existing slot for days that already do
+   * (the backend rejects a second create for the same day with a 409), and
+   * deactivates any previously-saved day that got unchecked — a day that's
+   * merely left out of the request is otherwise never told it's no longer
+   * an active working day.
    */
   saveAvailability(): void {
+    if (!this.store.availabilitiesReady()) return;
     const user = this.iamStore.currentUser();
     if (!user) return;
     const profile = this.store.dermatologistProfiles()
       .find(p => p.userId === user.id);
     if (!profile) return;
+
+    const existingByDay = new Map(
+      this.store.availabilities()
+        .filter(a => a.dermatologistId === profile.userId)
+        .map(a => [a.dayOfWeek, a] as const),
+    );
+    const selectedDays = new Set(Array.from(this.activeDays()).map(dayId => this.DAY_MAP[dayId]));
+
     this.activeDays().forEach(dayId => {
+      const dayOfWeek = this.DAY_MAP[dayId];
+      const existing = existingByDay.get(dayOfWeek);
       const availability = new DermatologistAvailability({
-        id:              0,
+        id:              existing?.id ?? 0,
         dermatologistId: profile.userId,
-        dayOfWeek:       this.DAY_MAP[dayId],
+        dayOfWeek,
         startTime:       this.to24h(this.startTime()),
         endTime:         this.to24h(this.endTime()),
         slotDuration:    Number(this.slotDuration()),
+        active:          true,
       });
-      this.store.addAvailability(availability);
+      if (existing) {
+        this.store.updateAvailability(availability);
+      } else {
+        this.store.addAvailability(availability);
+      }
     });
+
+    // Any day that already had a slot but is no longer checked gets deactivated.
+    existingByDay.forEach((existing, dayOfWeek) => {
+      if (selectedDays.has(dayOfWeek) || !existing.active) return;
+      this.store.updateAvailability(new DermatologistAvailability({
+        id:              existing.id,
+        dermatologistId: profile.userId,
+        dayOfWeek,
+        startTime:       existing.startTime,
+        endTime:         existing.endTime,
+        slotDuration:    existing.slotDuration,
+        active:          false,
+      }));
+    });
+
     this.saveSuccess.set(true);
     setTimeout(() => this.saveSuccess.set(false), 2000);
   }

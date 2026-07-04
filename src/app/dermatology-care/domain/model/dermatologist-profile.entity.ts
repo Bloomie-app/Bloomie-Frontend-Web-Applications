@@ -121,4 +121,5 @@ export class DermatologistProfile implements BaseEntity {
   get formattedFee(): string {
     return `$${this._consultationFee.toFixed(2)}`;
   }
+
 }

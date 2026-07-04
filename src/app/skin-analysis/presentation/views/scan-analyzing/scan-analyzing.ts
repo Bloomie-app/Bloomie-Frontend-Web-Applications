@@ -1,12 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 
-/**
- * Simulates the AI skin analysis progress while the scan is being processed.
- * Automatically navigates to the result screen upon completion.
- */
 @Component({
   selector: 'app-scan-analyzing',
   imports: [MatIconModule, TranslatePipe],
@@ -16,13 +12,23 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class ScanAnalyzing implements OnInit {
   protected router = inject(Router);
 
-  /** Current analysis progress percentage from 0 to 100. */
   readonly progress = signal<number>(0);
 
-  /**
-   * Starts the progress simulation on component initialization.
-   * Increments by 2% every 80ms until reaching 100%, then navigates to results.
-   */
+  readonly steps = [
+    'Detecting skin zones…',
+    'Analyzing hydration levels…',
+    'Measuring texture & tone…',
+    'Calculating your score…',
+  ];
+
+  readonly currentStep = computed((): string => {
+    const p = this.progress();
+    if (p < 25) return this.steps[0];
+    if (p < 50) return this.steps[1];
+    if (p < 75) return this.steps[2];
+    return this.steps[3];
+  });
+
   ngOnInit(): void {
     const intervalId = setInterval(() => {
       const current = this.progress();
@@ -35,7 +41,6 @@ export class ScanAnalyzing implements OnInit {
     }, 80);
   }
 
-  /** Cancels the analysis and navigates back to the home screen. */
   navigateBack(): void {
     this.router.navigate(['/skin-analysis']);
   }

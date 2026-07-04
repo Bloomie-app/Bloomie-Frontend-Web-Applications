@@ -1,86 +1,132 @@
-import {Component, inject, signal} from '@angular/core';
-import {Router} from '@angular/router';
-import {MatIconModule} from '@angular/material/icon';
-import {FormsModule} from '@angular/forms';
-import {TranslatePipe} from '@ngx-translate/core';
-import {DermatologyCareStore} from '../../../application/dermatology-care.store';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { DermatologyCareStore } from '../../../application/dermatology-care.store';
 
-/** Represents a single chat message in the virtual call. */
 interface CallMessage {
-  id:     number;
-  from:   'doctor' | 'patient';
-  text?:  string;
-  time:   string;
+  id: number;
+  from: 'doctor' | 'patient';
+  text: string;
+  time: string;
 }
 
-/**
- * Provides the patient-side virtual consultation interface
- * with video controls and real-time chat.
- */
 @Component({
-  selector:    'app-virtual-call',
-  imports:     [MatIconModule, FormsModule, TranslatePipe],
+  selector: 'app-virtual-call',
+  imports: [MatIconModule, FormsModule, TranslatePipe],
   templateUrl: './virtual-call.html',
-  styleUrl:    './virtual-call.css',
+  styleUrl: './virtual-call.css',
 })
-export class VirtualCall {
-  readonly store    = inject(DermatologyCareStore);
-  protected router  = inject(Router);
+export class VirtualCall implements OnInit, OnDestroy {
+  readonly store = inject(DermatologyCareStore);
+  protected router = inject(Router);
+  private readonly sanitizer = inject(DomSanitizer);
 
-  micOn        = signal<boolean>(true);
-  camOn        = signal<boolean>(true);
-  callEnded    = signal<boolean>(false);
   showEndModal = signal<boolean>(false);
-  inputText    = '';
+  showChat = signal<boolean>(true);
+  callDuration = signal<string>('00:00');
 
-  messages = signal<CallMessage[]>([
-    { id: 1, from: 'doctor', text: 'Hello! Let\'s start with your skin concerns today. How have you been feeling?', time: '10:31 AM' },
-    { id: 2, from: 'patient', text: 'Hi Dr.! I\'ve been noticing some redness on my cheeks, especially in the mornings.', time: '10:32 AM' },
-    { id: 3, from: 'doctor', text: 'I see. Could you position your face closer to the camera? That will help me assess it.', time: '10:33 AM' },
-  ]);
+  inputText = '';
+  messages = signal<CallMessage[]>([]);
 
-  private nextId = 4;
+  readonly wherebyUrl: SafeResourceUrl;
 
-  /** Toggles the microphone state. */
-  toggleMic(): void {
-    this.micOn.update(value => !value);
+  private nextId = 1;
+  private timerSeconds = 0;
+  private timerInterval?: ReturnType<typeof setInterval>;
+
+  readonly doctorProfile = computed(() => {
+    const appt = this.store.selectedAppointment();
+    if (!appt) return undefined;
+    return this.store
+      .dermatologistProfiles()
+      .find((p) => p.id === appt.dermatologistId || p.userId === appt.dermatologistId);
+  });
+
+  readonly doctorDisplayName = computed((): string => {
+    const p = this.doctorProfile();
+    if (!p) return 'Dermatologist';
+    return p.fullName ? `Dr. ${p.fullName}` : p.specialty;
+  });
+
+  readonly doctorInitials = computed((): string => {
+    const p = this.doctorProfile();
+    if (!p) return 'Dr';
+    const source = p.fullName || p.specialty;
+    return source
+      .split(' ')
+      .map((w: string) => w[0] ?? '')
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  });
+
+  constructor() {
+    this.wherebyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      'https://bloomie-derma.daily.co/bloomie-consultation',
+    );
   }
 
-  /** Toggles the camera state. */
-  toggleCam(): void {
-    this.camOn.update(value => !value);
+  ngOnInit(): void {
+    this.startTimer();
+    const appt = this.store.selectedAppointment();
+    if (appt) this.store.startConsultationSession(appt);
   }
 
-  /** Sends a chat message and simulates a doctor reply. */
-  sendMessage(): void {
-    if (!this.inputText.trim()) return;
-    this.messages.update(msgs => [
-      ...msgs,
-      { id: this.nextId++, from: 'patient', text: this.inputText.trim(), time: 'now' }
-    ]);
-    this.inputText = '';
-    setTimeout(() => {
-      this.messages.update(msgs => [
-        ...msgs,
-        { id: this.nextId++, from: 'doctor', text: 'Understood, thank you for sharing that.', time: 'now' }
-      ]);
-    }, 1500);
+  ngOnDestroy(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
-  /** Shows the end call confirmation modal. */
+  private startTimer(): void {
+    this.timerInterval = setInterval(() => {
+      this.timerSeconds++;
+      const m = Math.floor(this.timerSeconds / 60)
+        .toString()
+        .padStart(2, '0');
+      const s = (this.timerSeconds % 60).toString().padStart(2, '0');
+      this.callDuration.set(`${m}:${s}`);
+    }, 1000);
+  }
+
+  toggleChatPanel(): void {
+    this.showChat.update((v) => !v);
+  }
   requestEndCall(): void {
     this.showEndModal.set(true);
   }
-
-  /** Confirms ending the call and navigates to scheduled appointments. */
-  confirmEndCall(): void {
-    this.callEnded.set(true);
-    this.showEndModal.set(false);
-    this.router.navigate(['/dermatology/scheduled-appointments']);
-  }
-
-  /** Dismisses the end call modal. */
   cancelEndCall(): void {
     this.showEndModal.set(false);
+  }
+
+  confirmEndCall(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.showEndModal.set(false);
+
+    const appt = this.store.selectedAppointment();
+    if (!appt) {
+      this.router.navigate(['/dermatology/scheduled-appointments']);
+      return;
+    }
+    this.store.endConsultationSession(appt).subscribe({
+      complete: () => this.router.navigate(['/dermatology/scheduled-appointments']),
+      error: () => this.router.navigate(['/dermatology/scheduled-appointments']),
+    });
+  }
+
+  sendMessage(): void {
+    const text = this.inputText.trim();
+    if (!text) return;
+    this.messages.update((msgs) => [
+      ...msgs,
+      { id: this.nextId++, from: 'patient', text, time: this.now() },
+    ]);
+    this.inputText = '';
+  }
+
+  private now(): string {
+    const d = new Date();
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
   }
 }

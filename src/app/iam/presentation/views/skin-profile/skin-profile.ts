@@ -6,11 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { SkinAnalysisStore } from '../../../../skin-analysis/application/skin-analysis.store';
 import { SkinProfile, SkinType } from '../../../../skin-analysis/domain/model/skin-profile.entity';
 
-/**
- * Allows the user to view and update their skin profile preferences,
- * including skin type, water intake, sun exposure, and sleep habits.
- * Persists changes via SkinAnalysisStore to the backend API.
- */
 @Component({
   selector: 'app-skin-profile',
   standalone: true,
@@ -76,6 +71,13 @@ export class SkinProfileView implements OnInit {
     '30 - 60 minutes': 'iam.skinProfile.sunOptions.30to60',
     'More than 1 hour': 'iam.skinProfile.sunOptions.moreThan1h',
   };
+  readonly skinTypeIcons: Record<string, string> = {
+    'Normal skin': 'spa',
+    'Oily skin': 'water_drop',
+    'Dry skin': 'thermostat',
+    'Combination skin': 'tune',
+    'Sensitive skin': 'favorite',
+  };
   readonly sleepLabelKeys: Record<string, string> = {
     'Less than 5 hours': 'iam.skinProfile.sleepOptions.lessThan5',
     '5 - 6 hours': 'iam.skinProfile.sleepOptions.5to6',
@@ -85,39 +87,34 @@ export class SkinProfileView implements OnInit {
     'More than 8 hours': 'iam.skinProfile.sleepOptions.moreThan8',
   };
 
-  /**
-   * Loads the existing skin profile from the store when the component initializes.
-   * Maps stored enum values to display labels for the dropdowns.
-   */
   ngOnInit(): void {
     const profile = this.store.skinProfile();
     if (profile) {
       this.skinType.set(this.mapSkinTypeToLabel(profile.skinType));
+      if (profile.waterIntake) this.waterIntake.set(profile.waterIntake);
+      if (profile.sunExposure) this.sunExposure.set(profile.sunExposure);
+      if (profile.sleepHours) this.sleepHabits.set(profile.sleepHours);
     }
   }
 
-  /**
-   * Saves the updated skin profile preferences to the backend API.
-   * Shows a success indicator and resets it after 2 seconds.
-   */
   onSave(): void {
     this.saving.set(true);
     const profile = this.store.skinProfile();
 
     if (profile) {
-      // Update existing profile
       const updatedProfile = new SkinProfile({
         id: profile.id,
         userId: profile.userId,
         skinType: this.mapLabelToSkinType(this.skinType()),
         sensitivity: profile.sensitivity,
+        waterIntake: this.waterIntake(),
+        sunExposure: this.sunExposure(),
+        sleepHours: this.sleepHabits(),
         status: profile.status,
       });
-
       this.store.updateSkinProfile(updatedProfile);
     }
 
-    // Show success feedback regardless (mock API may not persist all fields)
     setTimeout(() => {
       this.saving.set(false);
       this.saveSuccess.set(true);
@@ -125,16 +122,10 @@ export class SkinProfileView implements OnInit {
     }, 600);
   }
 
-  /** Navigates back to the user profile screen. */
   onBack(): void {
     this.router.navigate(['/profile']).then();
   }
 
-  /**
-   * Maps a stored SkinType enum value to a human-readable display label.
-   * @param skinType - The SkinType enum value from the API.
-   * @returns Display label for the dropdown.
-   */
   private mapSkinTypeToLabel(skinType: SkinType): string {
     const map: Record<SkinType, string> = {
       [SkinType.Normal]: 'Normal skin',
@@ -146,11 +137,6 @@ export class SkinProfileView implements OnInit {
     return map[skinType] ?? 'Normal skin';
   }
 
-  /**
-   * Maps a human-readable dropdown label back to the SkinType enum value.
-   * @param label - The display label selected by the user.
-   * @returns The matching SkinType enum value.
-   */
   private mapLabelToSkinType(label: string): SkinType {
     const map: Record<string, SkinType> = {
       'Normal skin': SkinType.Normal,

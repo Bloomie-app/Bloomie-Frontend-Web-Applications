@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ProductDiscoveryStore } from '../../../application/product-discovery.store';
 import { ProductCategory } from '../../../domain/model/product.entity';
 import { FavoriteProduct } from '../../../domain/model/favorite-product.entity';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /**
  * Displays the full skincare product catalog with search,
@@ -20,6 +21,7 @@ import { FavoriteProduct } from '../../../domain/model/favorite-product.entity';
 export class TrendingItems {
   readonly store = inject(ProductDiscoveryStore);
   protected router = inject(Router);
+  private readonly iamStore = inject(IamStore);
 
   /** Exposes the ProductCategory enum to the template. */
   readonly ProductCategory = ProductCategory;
@@ -93,14 +95,13 @@ export class TrendingItems {
   }
 
   /**
-   * Toggles a category in the draft selection list.
-   * @param category - The category to toggle.
+   * Selects a single category in the draft filter, replacing any previous selection.
+   * Clicking the already-selected category deselects it (radio-button behavior).
+   * @param category - The category to select or deselect.
    */
   toggleDraftCategory(category: ProductCategory): void {
     this.draftCategories.update((current) =>
-      current.includes(category)
-        ? current.filter((selected) => selected !== category)
-        : [...current, category],
+      current.includes(category) ? [] : [category],
     );
   }
 
@@ -150,7 +151,7 @@ export class TrendingItems {
     } else {
       const newFavorite = new FavoriteProduct({
         id: 0,
-        userId: 1,
+        userId: this.iamStore.currentUser()?.id ?? 0,
         productId: productId,
         savedAt: new Date().toISOString(),
       });
@@ -183,5 +184,14 @@ export class TrendingItems {
    */
   navigateBack(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    if (parent) {
+      parent.innerHTML = '<span class="material-icons">inventory_2</span>';
+    }
   }
 }

@@ -1,14 +1,10 @@
-import {Component, inject} from '@angular/core';
-import {Router} from '@angular/router';
-import {MatIconModule} from '@angular/material/icon';
-import {TranslatePipe} from '@ngx-translate/core';
-import {DermatologyCareStore} from '../../../application/dermatology-care.store';
+import { Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
+import { DermatologyCareStore } from '../../../application/dermatology-care.store';
+import { AppointmentStatus } from '../../../domain/model/appointment.entity';
 
-/**
- * Entry point for the dermatology care section.
- * Presents options to book a new appointment, view past consultations,
- * or manage scheduled appointments.
- */
 @Component({
   selector:    'app-consult-home',
   imports:     [MatIconModule, TranslatePipe],
@@ -16,36 +12,32 @@ import {DermatologyCareStore} from '../../../application/dermatology-care.store'
   styleUrl:    './consult-home.css',
 })
 export class ConsultHome {
-  readonly store    = inject(DermatologyCareStore);
-  protected router  = inject(Router);
+  readonly store   = inject(DermatologyCareStore);
+  private  router  = inject(Router);
 
-  /** Cards displayed in the consult home section. */
-  readonly cards = [
-    {
-      titleKey: 'dermatology.consultHome.bookTitle',
-      descKey:  'dermatology.consultHome.bookDesc',
-      btnKey:   'dermatology.consultHome.bookBtn',
-      icon:     'calendar_month',
-      action:   () => this.router.navigate(['/dermatology/select-doctor']),
-    },
-    {
-      titleKey: 'dermatology.consultHome.pastTitle',
-      descKey:  'dermatology.consultHome.pastDesc',
-      btnKey:   'dermatology.consultHome.pastBtn',
-      icon:     'folder_open',
-      action:   () => this.router.navigate(['/dermatology/select-consultation']),
-    },
-    {
-      titleKey: 'dermatology.consultHome.scheduledTitle',
-      descKey:  'dermatology.consultHome.scheduledDesc',
-      btnKey:   'dermatology.consultHome.scheduledBtn',
-      icon:     'event_available',
-      action:   () => this.router.navigate(['/dermatology/scheduled-appointments']),
-    },
-  ];
+  readonly specialistsCount = computed((): number =>
+    this.store.dermatologistProfiles().length,
+  );
 
-  /** Navigates back to the dashboard. */
-  navigateBack(): void {
-    this.router.navigate(['/dashboard']);
-  }
+  readonly upcomingCount = computed((): number => {
+    const now = new Date();
+    return this.store.appointments().filter(a => {
+      const active =
+        a.status === AppointmentStatus.Scheduled ||
+        a.status === AppointmentStatus.Confirmed;
+      return active && new Date(a.scheduledAt) > now;
+    }).length;
+  });
+
+  readonly pastCount = computed((): number =>
+    this.store.appointments().filter(a =>
+      a.status === AppointmentStatus.Completed ||
+      new Date(a.scheduledAt) < new Date(),
+    ).length,
+  );
+
+  navigateBack():      void { this.router.navigate(['/dashboard']); }
+  navigateBook():      void { this.router.navigate(['/dermatology/select-doctor']); }
+  navigatePast():      void { this.router.navigate(['/dermatology/select-consultation']); }
+  navigateScheduled(): void { this.router.navigate(['/dermatology/scheduled-appointments']); }
 }

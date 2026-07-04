@@ -13,7 +13,7 @@ export class SkinProfileAssembler implements BaseAssembler<
   SkinProfilesResponse
 > {
   toEntitiesFromResponse(response: SkinProfilesResponse): SkinProfile[] {
-    return response.skinProfiles.map(resource => this.toEntityFromResource(resource));
+    return response.skinProfiles.map((resource) => this.toEntityFromResource(resource));
   }
 
   toEntityFromResource(resource: SkinProfileResource): SkinProfile {
@@ -23,6 +23,9 @@ export class SkinProfileAssembler implements BaseAssembler<
       skinType: resource.skinType as SkinType,
       sensitivity: resource.sensitivity as SkinSensitivity,
       status: resource.status as SkinProfileStatus,
+      waterIntake: resource.waterIntake?.toString() ?? '',
+      sunExposure: resource.sunExposure?.toString() ?? '',
+      sleepHours: resource.sleepHours?.toString() ?? '',
     });
   }
 
@@ -32,9 +35,9 @@ export class SkinProfileAssembler implements BaseAssembler<
       patientId: entity.userId,
       skinType: entity.skinType,
       sensitivity: entity.sensitivity,
-      waterIntake: 0,
-      sunExposure: 0,
-      sleepHours: 0,
+      waterIntake: entity.waterIntake as any,
+      sunExposure: entity.sunExposure as any,
+      sleepHours: entity.sleepHours as any,
       status: entity.status,
     } as SkinProfileResource;
   }

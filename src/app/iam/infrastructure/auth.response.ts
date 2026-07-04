@@ -11,8 +11,7 @@ import { UserResource } from './user.response';
  * attached to subsequent protected requests through the IAM interceptor.
  */
 export interface AuthResponse extends BaseResponse {
-  /** Access token issued by the server for the authenticated session. */
+  id:    number;
+  email: string;
   token: string;
-  /** User resource representing the authenticated account. */
-  user:  UserResource;
 }

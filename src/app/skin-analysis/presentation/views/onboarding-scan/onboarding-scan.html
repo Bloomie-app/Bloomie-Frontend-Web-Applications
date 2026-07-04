@@ -1,0 +1,63 @@
+<div class="obs">
+
+  <!-- Background decoration -->
+  <div class="obs__bg-circle obs__bg-circle--1"></div>
+  <div class="obs__bg-circle obs__bg-circle--2"></div>
+
+  <!-- Content -->
+  <div class="obs__content">
+
+    <!-- Icon -->
+    <div class="obs__icon-wrap">
+      <mat-icon class="obs__icon">face_retouching_natural</mat-icon>
+    </div>
+
+    <!-- Welcome text -->
+    <h1 class="obs__title">
+      Welcome{{ userName ? ', ' + userName : '' }}!
+    </h1>
+    <p class="obs__subtitle">
+      Let's start by analyzing your skin so we can create a personalized routine just for you.
+    </p>
+
+    <!-- Steps -->
+    <div class="obs__steps">
+      <div class="obs__step">
+        <div class="obs__step-number">1</div>
+        <div class="obs__step-text">
+          <p class="obs__step-title">Find good lighting</p>
+          <p class="obs__step-desc">Natural light works best for accurate results</p>
+        </div>
+      </div>
+      <div class="obs__step">
+        <div class="obs__step-number">2</div>
+        <div class="obs__step-text">
+          <p class="obs__step-title">Clean face, no makeup</p>
+          <p class="obs__step-desc">Remove any makeup or skincare products first</p>
+        </div>
+      </div>
+      <div class="obs__step">
+        <div class="obs__step-number">3</div>
+        <div class="obs__step-text">
+          <p class="obs__step-title">Look straight at the camera</p>
+          <p class="obs__step-desc">Keep your face centered and still</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="obs__actions">
+      <button class="obs__start-btn" (click)="startScan()">
+        <mat-icon>camera_alt</mat-icon>
+        Start My Skin Scan
+      </button>
+    </div>
+
+    <!-- Badge -->
+    <div class="obs__badge">
+      <mat-icon>lock</mat-icon>
+      <span>Your scan is private and secure</span>
+    </div>
+
+  </div>
+</div>

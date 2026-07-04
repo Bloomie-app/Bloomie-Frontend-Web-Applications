@@ -1,68 +1,52 @@
 <div class="routine-product-list">
 
-  <!-- Header -->
-  <div class="routine-product-list__header">
-    <h1 class="routine-product-list__title">{{ 'routine.productList.title' | translate }}</h1>
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="rpl-banner">
+    <div class="rpl-banner__icon-wrap">
+      <mat-icon>spa</mat-icon>
+    </div>
+    <div>
+      <h1 class="rpl-banner__title">{{ 'routine.productList.title' | translate }}</h1>
+      <p class="rpl-banner__subtitle">
+        {{ activeRoutineItems().length }} {{ 'routine.productList.stepsLabel' | translate }}
+      </p>
+    </div>
   </div>
 
-  <div class="routine-product-list__divider"></div>
+  <div class="rpl-content">
 
-  <div class="routine-product-list__content">
+    <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+    <div class="rpl-main">
 
-    <!-- Left: Calendar + Products -->
-    <div class="routine-product-list__main">
-
-      <!-- Month Calendar -->
-      <div class="routine-product-list__calendar-card">
-        <div class="routine-product-list__calendar-header">
-          <button class="routine-product-list__calendar-nav-btn" (click)="previousMonth()" [attr.aria-label]="'routine.productList.previousMonth' | translate">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <p class="routine-product-list__calendar-month-label">{{ calendarMonthLabel() }}</p>
-          <button class="routine-product-list__calendar-nav-btn" (click)="nextMonth()" [attr.aria-label]="'routine.productList.nextMonth' | translate">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </div>
-
-        <div class="routine-product-list__calendar-day-names">
-          @for (key of calendarDayKeys; track key) {
-            <span class="routine-product-list__calendar-day-name-label">{{ key | translate }}</span>
-          }
-        </div>
-
-        @for (week of calendarWeeks(); track $index) {
-          <div class="routine-product-list__calendar-week">
-            @for (day of week; track $index) {
-              <button
-                class="routine-product-list__calendar-day"
-                [class.routine-product-list__calendar-day--selected]="day === selectedDate().getDate()"
-                [class.routine-product-list__calendar-day--completed]="isDayCompletedInCalendar(day)"
-                [disabled]="!day"
-                (click)="selectCalendarDay(day)"
-              >
-                @if (day) {
-                  <span>{{ day }}</span>
-                  @if (isDayCompletedInCalendar(day)) {
-                    <span class="routine-product-list__calendar-dot"></span>
-                  }
-                }
-              </button>
+      <!-- Week strip -->
+      <div class="rpl-week">
+        @for (day of weekDays(); track day.dayNum) {
+          <button
+            class="rpl-week__day"
+            [class.rpl-week__day--selected]="day.isSelected"
+            [class.rpl-week__day--today]="day.isToday && !day.isSelected"
+            (click)="selectDay(day.date)"
+          >
+            <span class="rpl-week__name">{{ day.dayName }}</span>
+            <span class="rpl-week__num">{{ day.dayNum }}</span>
+            @if (day.isCompleted) {
+              <span class="rpl-week__dot"></span>
+            } @else {
+              <span class="rpl-week__dot rpl-week__dot--empty"></span>
             }
-          </div>
+          </button>
         }
       </div>
 
-      <!-- Selected Day Header + Mark Complete -->
-      <div class="routine-product-list__day-actions">
+      <!-- Day bar -->
+      <div class="rpl-day-bar">
         <div>
-          <p class="routine-product-list__day-label">{{ selectedDayLabel() }}</p>
-          <p class="routine-product-list__steps-count">
-            {{ activeRoutineItems().length }} {{ 'routine.productList.stepsLabel' | translate }}
-          </p>
+          <p class="rpl-day-bar__label">{{ selectedDayLabel() }}</p>
+          <p class="rpl-day-bar__count">{{ activeRoutineItems().length }} {{ 'routine.productList.stepsLabel' | translate }}</p>
         </div>
         <button
-          class="routine-product-list__mark-btn"
-          [class.routine-product-list__mark-btn--completed]="isSelectedDayCompleted()"
+          class="rpl-mark-btn"
+          [class.rpl-mark-btn--done]="isSelectedDayCompleted()"
           (click)="toggleDayCompletion()"
         >
           <mat-icon>{{ isSelectedDayCompleted() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
@@ -70,37 +54,38 @@
         </button>
       </div>
 
-      <!-- Routine Items -->
-      <div class="routine-product-list__items">
+      <!-- Routine items -->
+      <div class="rpl-items">
         @if (store.loading()) {
-          <p class="routine-product-list__loading">{{ 'routine.productList.loading' | translate }}</p>
+          <p class="rpl-empty">{{ 'routine.productList.loading' | translate }}</p>
         }
         @if (!store.loading() && activeRoutineItems().length === 0) {
-          <p class="routine-product-list__empty">{{ 'routine.productList.empty' | translate }}</p>
+          <p class="rpl-empty">{{ 'routine.productList.empty' | translate }}</p>
         }
         @for (item of activeRoutineItems(); track item.id) {
-          <div class="routine-product-list__item-card">
-            <div class="routine-product-list__item-row" (click)="toggleProductExpand(item.id)">
-              <div class="routine-product-list__item-time">
-                <span>{{ item.scheduledTime }}</span>
+          <div class="rpl-item" [class.rpl-item--open]="expandedProductId() === item.id">
+            <div class="rpl-item__row" (click)="toggleProductExpand(item.id)">
+              <div class="rpl-item__time">{{ item.scheduledTime }}</div>
+              <div class="rpl-item__info">
+                <p class="rpl-item__step">{{ item.stepLabel }}</p>
+                <p class="rpl-item__product">{{ item.productRecommendation }}</p>
               </div>
-              <div class="routine-product-list__item-info">
-                <p class="routine-product-list__item-step">{{ item.stepLabel }}</p>
-                <p class="routine-product-list__item-product-id">{{ item.productRecommendation }}</p>
-              </div>
-              <mat-icon class="routine-product-list__item-chevron">
+              <mat-icon class="rpl-item__chevron">
                 {{ expandedProductId() === item.id ? 'expand_less' : 'expand_more' }}
               </mat-icon>
             </div>
-
             @if (expandedProductId() === item.id) {
-              <div class="routine-product-list__item-expanded">
-                <p class="routine-product-list__item-order">{{ 'routine.productList.orderLabel' | translate }}: {{ item.order }}</p>
-                <div class="routine-product-list__item-actions">
-                  <button
-                    class="routine-product-list__replace-btn"
-                    (click)="navigateToReplaceProduct(item)"
-                  >
+              <div class="rpl-item__expanded">
+                <p class="rpl-item__order">{{ 'routine.productList.orderLabel' | translate }}: {{ item.order }}</p>
+                <div class="rpl-item__actions">
+                  @if (canRemove(item)) {
+                    <button class="rpl-remove-btn" (click)="removeItem(item)">
+                      <mat-icon>delete_outline</mat-icon>
+                      {{ 'routine.productList.removeBtn' | translate }}
+                    </button>
+                  }
+                  <button class="rpl-replace-btn" (click)="navigateToReplaceProduct(item)">
+                    <mat-icon>swap_horiz</mat-icon>
                     {{ 'routine.productList.replaceBtn' | translate }}
                   </button>
                 </div>
@@ -112,44 +97,40 @@
 
     </div>
 
-    <!-- Right: Stats Panel -->
-    <div class="routine-product-list__panel">
+    <!-- ── Stats panel ───────────────────────────────────────────────────────── -->
+    <div class="rpl-panel">
 
-      <!-- Streak -->
-      <div class="routine-product-list__streak-card">
-        <p class="routine-product-list__streak-label">{{ 'routine.productList.streakLabel' | translate }}</p>
-        <p class="routine-product-list__streak-count">{{ store.completedDaysThisWeek() }}</p>
-        <p class="routine-product-list__streak-subtitle">{{ 'routine.productList.streakSubtitle' | translate }}</p>
-        <div class="routine-product-list__streak-bar">
-          @for (day of [1,2,3,4,5,6,7]; track day) {
-            <div class="routine-product-list__streak-segment"
-                 [class.routine-product-list__streak-segment--filled]="day <= store.completedDaysThisWeek()">
-            </div>
+      <div class="rpl-streak">
+        <p class="rpl-streak__label">{{ 'routine.productList.streakLabel' | translate }}</p>
+        <p class="rpl-streak__count">{{ store.completedDaysThisWeek() }}</p>
+        <p class="rpl-streak__sub">{{ 'routine.productList.streakSubtitle' | translate }}</p>
+        <div class="rpl-streak__bar">
+          @for (d of [1,2,3,4,5,6,7]; track d) {
+            <div class="rpl-streak__seg" [class.rpl-streak__seg--filled]="d <= store.completedDaysThisWeek()"></div>
           }
         </div>
       </div>
 
-      <!-- Completion -->
-      <div class="routine-product-list__completion-card">
-        <p class="routine-product-list__completion-label">{{ 'routine.productList.completionLabel' | translate }}</p>
-        <p class="routine-product-list__completion-value">{{ store.completionPercentage() }}%</p>
-        <div class="routine-product-list__completion-bar">
-          <div
-            class="routine-product-list__completion-fill"
-            [style.width.%]="store.completionPercentage()"
-          ></div>
+      <div class="rpl-completion">
+        <div class="rpl-completion__header">
+          <mat-icon>pie_chart</mat-icon>
+          <p class="rpl-completion__label">{{ 'routine.productList.completionLabel' | translate }}</p>
         </div>
-        <p class="routine-product-list__completion-subtitle">{{ 'routine.productList.completionSubtitle' | translate }}</p>
+        <p class="rpl-completion__value">{{ store.completionPercentage() }}%</p>
+        <div class="rpl-completion__bar">
+          <div class="rpl-completion__fill" [style.width.%]="store.completionPercentage()"></div>
+        </div>
+        <p class="rpl-completion__sub">{{ 'routine.productList.completionSubtitle' | translate }}</p>
       </div>
 
-      <!-- Error -->
       @if (store.error()) {
-        <div class="routine-product-list__error">
+        <div class="rpl-error">
           <mat-icon>error_outline</mat-icon>
           <p>{{ store.error() }}</p>
         </div>
       }
 
     </div>
+
   </div>
 </div>

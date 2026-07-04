@@ -90,6 +90,15 @@
   line-height: 1.5;
 }
 
+/* ===== FORM HEADER ===== */
+
+.derm-sign-up__form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
 /* ===== RIGHT FORM PANEL ===== */
 
 .derm-sign-up__form-wrapper {
@@ -113,7 +122,7 @@
   font-weight: 700;
   font-size: 28px;
   color: #1e1e1e;
-  margin: 0 0 0.1rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .derm-sign-up__form-subtitle {

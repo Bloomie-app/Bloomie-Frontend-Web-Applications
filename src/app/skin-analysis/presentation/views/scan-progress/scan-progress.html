@@ -1,29 +1,32 @@
-<div class="scan-progress">
+<div class="spr">
 
-  <div class="scan-progress__header">
-    <button class="scan-progress__back-btn" (click)="navigateBack()" aria-label="Go back">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-  </div>
-
-  <div class="scan-progress__content">
-
-    @if (!hasFailed()) {
-      <mat-icon class="scan-progress__icon scan-progress__icon--success">check_circle</mat-icon>
-      <h2 class="scan-progress__title">{{ 'skinAnalysis.scanProgress.title' | translate }}</h2>
-      <p class="scan-progress__subtitle">{{ 'skinAnalysis.scanProgress.subtitle' | translate }}</p>
-      <button class="scan-progress__primary-btn" (click)="onContinue()">
+  @if (!hasFailed()) {
+    <div class="spr-card spr-card--success">
+      <div class="spr-card__deco spr-card__deco--1"></div>
+      <div class="spr-card__deco spr-card__deco--2"></div>
+      <div class="spr-card__icon-wrap spr-card__icon-wrap--success">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h2 class="spr-card__title">{{ 'skinAnalysis.scanProgress.title' | translate }}</h2>
+      <p class="spr-card__subtitle">{{ 'skinAnalysis.scanProgress.subtitle' | translate }}</p>
+      <button class="spr-card__btn" (click)="onContinue()">
         {{ 'skinAnalysis.scanProgress.continueBtn' | translate }}
+        <mat-icon>arrow_forward</mat-icon>
       </button>
-    } @else {
-      <mat-icon class="scan-progress__icon scan-progress__icon--failed">error</mat-icon>
-      <h2 class="scan-progress__title">{{ 'skinAnalysis.scanProgress.failedTitle' | translate }}</h2>
-      <p class="scan-progress__subtitle">{{ 'skinAnalysis.scanProgress.failedSubtitle' | translate }}</p>
-      <button class="scan-progress__primary-btn" (click)="onRetry()">
+    </div>
+  } @else {
+    <div class="spr-card spr-card--fail">
+      <div class="spr-card__icon-wrap spr-card__icon-wrap--fail">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <h2 class="spr-card__title">{{ 'skinAnalysis.scanProgress.failedTitle' | translate }}</h2>
+      <p class="spr-card__subtitle">{{ 'skinAnalysis.scanProgress.failedSubtitle' | translate }}</p>
+      <button class="spr-card__btn spr-card__btn--retry" (click)="onRetry()">
+        <mat-icon>refresh</mat-icon>
         {{ 'skinAnalysis.scanProgress.retryBtn' | translate }}
       </button>
-    }
-
-  </div>
+      <button class="spr-card__link" (click)="navigateBack()">Go back</button>
+    </div>
+  }
 
 </div>

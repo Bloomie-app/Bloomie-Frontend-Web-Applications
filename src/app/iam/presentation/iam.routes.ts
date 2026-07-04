@@ -37,6 +37,7 @@ const skinProfile = () =>
 
 const myPlan = () => import('./views/my-plan/my-plan').then((module) => module.MyPlan);
 
+
 export const profileRoutes: Routes = [
   { path: '', loadComponent: userProfile },
   { path: 'settings', loadComponent: profileSettings },
@@ -52,5 +53,10 @@ export const iamRoutes: Routes = [
   { path: 'dermatologist-sign-in', loadComponent: dermatologistSignIn },
   { path: 'dermatologist-sign-up', loadComponent: dermatologistSignUp },
   { path: '', redirectTo: 'sign-in-home', pathMatch: 'full' },
+  {
+    path: 'select-plan',
+    loadComponent: () =>
+      import('../presentation/views/select-plan/select-plan').then((m) => m.SelectPlan),
+  },
 ];
 

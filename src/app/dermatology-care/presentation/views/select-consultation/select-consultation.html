@@ -1,65 +1,93 @@
-<div class="select-consultation">
-  <div class="select-consultation__header">
-    <button class="select-consultation__back-btn" (click)="navigateBack()" aria-label="Go back">
+<div class="sc-page">
+
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="sc-banner">
+    <button class="sc-banner__back" (click)="navigateBack()" aria-label="Go back">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <div>
-      <h1 class="select-consultation__title">{{ 'dermatology.selectConsultation.title' | translate }}</h1>
-      <p class="select-consultation__count">{{ store.consultations().length }} {{ 'dermatology.selectConsultation.found' | translate }}</p>
+    <div class="sc-banner__text">
+      <h1 class="sc-banner__title">{{ 'dermatology.selectConsultation.title' | translate }}</h1>
+      <p class="sc-banner__count">
+        {{ store.consultations().length }} {{ 'dermatology.selectConsultation.found' | translate }}
+      </p>
+    </div>
+    <div class="sc-banner__deco" aria-hidden="true">
+      <mat-icon class="sc-banner__deco-icon">history</mat-icon>
     </div>
   </div>
-  <div class="select-consultation__divider"></div>
 
-  <div class="select-consultation__grid">
-    @if (store.consultations().length === 0) {
-      <div class="select-consultation__empty">
+  <!-- ── Empty state ─────────────────────────────────────────────────────────── -->
+  @if (store.consultations().length === 0) {
+    <div class="sc-empty">
+      <div class="sc-empty__icon-wrap">
         <mat-icon>history</mat-icon>
-        <p>{{ 'dermatology.selectConsultation.noConsultations' | translate }}</p>
       </div>
-    } @else {
-      @for (consultation of store.consultations(); track consultation.id) {
-        <div class="select-consultation__card">
+      <h3 class="sc-empty__title">{{ 'dermatology.selectConsultation.noConsultations' | translate }}</h3>
+      <p class="sc-empty__desc">{{ 'dermatology.selectConsultation.noConsultationsDesc' | translate }}</p>
+    </div>
 
-          <!-- Dermatologist avatar -->
-          <div class="select-consultation__derm-avatar">
-            @if (dermPhotoForConsultation(consultation)) {
-              <img class="select-consultation__derm-avatar-img" [src]="dermPhotoForConsultation(consultation)!" alt="Dermatologist photo" />
-            } @else {
-              <mat-icon class="select-consultation__derm-avatar-icon">person</mat-icon>
+  } @else {
+    <!-- ── Cards grid ───────────────────────────────────────────────────────── -->
+    <div class="sc-grid">
+      @for (c of store.consultations(); track c.id) {
+
+        <div class="sc-card"
+             [class.sc-card--completed]="c.status === ConsultationStatus.Completed"
+             [class.sc-card--cancelled]="c.status === ConsultationStatus.Cancelled">
+
+          <!-- Status + duration row -->
+          <div class="sc-card__top">
+            <span class="sc-card__status"
+                  [class.sc-card__status--completed]="c.status === ConsultationStatus.Completed"
+                  [class.sc-card__status--cancelled]="c.status === ConsultationStatus.Cancelled"
+                  [class.sc-card__status--pending]="c.status !== ConsultationStatus.Completed && c.status !== ConsultationStatus.Cancelled">
+              <mat-icon class="sc-card__status-icon">
+                {{ c.status === ConsultationStatus.Completed ? 'check_circle' : c.status === ConsultationStatus.Cancelled ? 'cancel' : 'schedule' }}
+              </mat-icon>
+              {{ 'dermatology.selectConsultation.statusValue.' + c.status | translate }}
+            </span>
+            @if (c.durationInMinutes > 0) {
+              <span class="sc-card__duration">
+                <mat-icon>timer</mat-icon>
+                {{ c.durationInMinutes }} min
+              </span>
             }
           </div>
 
-          <!-- Date row -->
-          <div class="select-consultation__row">
-            <mat-icon class="select-consultation__row-icon">calendar_today</mat-icon>
-            <span class="select-consultation__row-label">{{ 'dermatology.selectConsultation.date' | translate }}</span>
-            <div class="select-consultation__chips">
-              <span class="select-consultation__chip">{{ consultation.startedAt }}</span>
+          <!-- Date headline -->
+          <div class="sc-card__date-block">
+            <p class="sc-card__date-main">{{ formattedDate(c) }}</p>
+            <p class="sc-card__time">{{ formattedTime(c) }}</p>
+          </div>
+
+          <!-- Doctor row -->
+          <div class="sc-card__doctor">
+            <div class="sc-card__avatar">
+              @if (dermPhotoForConsultation(c)) {
+                <img class="sc-card__avatar-img" [src]="dermPhotoForConsultation(c)!" alt="Doctor photo" />
+              } @else if (profileForConsultation(c); as profile) {
+                <span class="sc-card__initials">{{ initialsForProfile(profile) }}</span>
+              } @else {
+                <mat-icon class="sc-card__avatar-icon">person</mat-icon>
+              }
+            </div>
+            <div class="sc-card__doctor-info">
+              <span class="sc-card__doctor-name">{{ doctorDisplayName(c) }}</span>
+              @if (profileForConsultation(c); as profile) {
+                <span class="sc-card__doctor-specialty">{{ profile.specialty }}</span>
+              }
             </div>
           </div>
 
-          <!-- Status row -->
-          <div class="select-consultation__row">
-            <div
-              class="select-consultation__status-dot"
-              [style.background]="
-                consultation.status === ConsultationStatus.Completed ? '#0fe517' :
-                consultation.status === ConsultationStatus.Cancelled  ? '#f50d0d' : '#f5f50d'
-              "
-            ></div>
-            <span class="select-consultation__row-label">{{ 'dermatology.selectConsultation.status' | translate }}</span>
-            <span class="select-consultation__status-text">{{ consultation.status }}</span>
-          </div>
-
-          <!-- Action -->
-          <div class="select-consultation__card-footer">
-            <button class="select-consultation__action-btn" (click)="selectConsultation(consultation)">
-              {{ getActionKey(consultation) | translate }}
-            </button>
-          </div>
+          <!-- Action button -->
+          <button class="sc-btn" (click)="selectConsultation(c)">
+            {{ getActionKey(c) | translate }}
+            <mat-icon class="sc-btn__arrow">arrow_forward</mat-icon>
+          </button>
 
         </div>
       }
-    }
-  </div>
+    </div>
+  }
+
 </div>

@@ -1,87 +1,766 @@
-.derm-call { width: 100%; height: 100vh; background: #1a1a2e; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-.derm-call__modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.derm-call__modal { background: #fff; border-radius: 20px; padding: 32px; max-width: 380px; width: 90%; text-align: center; }
-.derm-call__modal-icon { font-size: 48px; width: 48px; height: 48px; color: #a26769; margin-bottom: 16px; }
-.derm-call__modal-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #333; margin: 0 0 8px; }
-.derm-call__modal-desc { font-family: 'Montserrat', sans-serif; font-size: 14px; color: #666; margin: 0 0 24px; line-height: 1.5; }
+.derm-call {
+  width: 100%;
+  height: 100vh;
+  background: #0d0e13;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ── End call modal ── */
+
+.derm-call__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.derm-call__modal {
+  background: #1a1b24;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 24px;
+  padding: 36px 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.65);
+}
+
+.derm-call__modal-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(229,57,53,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.derm-call__modal-icon-wrap mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #e53935;
+}
+
+.derm-call__modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.derm-call__modal-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: rgba(255,255,255,0.50);
+  margin: 0 0 28px;
+  line-height: 1.55;
+}
+
 .derm-call__modal-actions { display: flex; gap: 12px; }
-.derm-call__modal-cancel { flex: 1; background: #d9d9d9; color: #333; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; border: none; border-radius: 20px; padding: 10px; cursor: pointer; }
-.derm-call__modal-confirm { flex: 1; background: #a26769; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; border: none; border-radius: 20px; padding: 10px; cursor: pointer; }
-.derm-call__layout { display: flex; flex: 1; height: 100%; }
-.derm-call__video-section { flex: 1; position: relative; display: flex; flex-direction: column; }
-.derm-call__patient-video { flex: 1; background: #16213e; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.derm-call__video-avatar { width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-.derm-call__video-avatar mat-icon { font-size: 60px; color: rgba(255,255,255,0.6); }
-.derm-call__patient-label { font-family: 'Montserrat', sans-serif; font-size: 14px; color: rgba(255,255,255,0.7); }
-.derm-call__doctor-mini { position: absolute; bottom: 90px; right: 16px; width: 120px; height: 90px; background: #0f3460; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.derm-call__doctor-mini mat-icon { color: rgba(255,255,255,0.6); font-size: 32px; }
-.derm-call__you-label { font-family: 'Montserrat', sans-serif; font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
-.derm-call__controls { height: 80px; background: #16213e; display: flex; align-items: center; justify-content: center; gap: 20px; }
-.derm-call__ctrl-btn { width: 48px; height: 48px; border-radius: 50%; border: none; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
-.derm-call__ctrl-btn mat-icon { color: #fff; font-size: 22px; }
-.derm-call__ctrl-btn--off { background: rgba(255,255,255,0.08); }
-.derm-call__ctrl-btn--off mat-icon { color: rgba(255,255,255,0.4); }
-.derm-call__ctrl-btn--end { background: #c0392b; width: 56px; height: 56px; }
-.derm-call__panel { width: 360px; flex-shrink: 0; background: #fff; display: flex; flex-direction: column; border-left: 1px solid #e8dede; }
-.derm-call__tabs { display: flex; border-bottom: 1px solid #e8dede; }
-.derm-call__tab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 14px; border: none; background: transparent; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.15s; }
-.derm-call__tab--active { color: #a26769; border-bottom-color: #a26769; }
-.derm-call__messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.derm-call__message { display: flex; align-items: flex-end; gap: 8px; }
-.derm-call__message--doctor { flex-direction: row-reverse; }
-.derm-call__msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: #7baab3; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.derm-call__msg-avatar mat-icon { color: #fff; font-size: 16px; }
-.derm-call__bubble { max-width: 240px; background: #f0e8e8; border-radius: 16px 16px 16px 4px; padding: 10px 14px; }
-.derm-call__bubble--doctor { background: #a26769; border-radius: 16px 16px 4px 16px; }
-.derm-call__bubble-text { font-family: 'Montserrat', sans-serif; font-size: 13px; color: #333; margin: 0 0 4px; line-height: 1.4; }
-.derm-call__bubble--doctor .derm-call__bubble-text { color: #fff; }
-.derm-call__bubble-time { font-family: 'Montserrat', sans-serif; font-size: 10px; color: rgba(0,0,0,0.4); }
-.derm-call__bubble--doctor .derm-call__bubble-time { color: rgba(255,255,255,0.6); }
-.derm-call__chat-input { padding: 12px 16px; border-top: 1px solid #e8dede; display: flex; gap: 8px; align-items: center; }
-.derm-call__input { flex: 1; border: 1px solid #e0d6d6; border-radius: 20px; padding: 8px 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; }
-.derm-call__input:focus { border-color: #a26769; }
-.derm-call__send-btn { width: 36px; height: 36px; border-radius: 50%; background: #a26769; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-.derm-call__send-btn mat-icon { color: #fff; font-size: 18px; }
-.derm-call__notes-section { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.derm-call__notes-label { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #49454f; margin: 0; }
-.derm-call__notes-area { flex: 1; border: 1px solid #e0d6d6; border-radius: 12px; padding: 12px; font-family: 'Montserrat', sans-serif; font-size: 13px; color: #333; outline: none; resize: none; line-height: 1.6; }
-.derm-call__notes-area:focus { border-color: #a26769; }
+
+.derm-call__modal-stay {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.80);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.derm-call__modal-stay:hover { background: rgba(255,255,255,0.14); }
+
+.derm-call__modal-end {
+  flex: 1;
+  background: #e53935;
+  border: none;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.40);
+  transition: background 0.18s;
+}
+
+.derm-call__modal-end:hover { background: #c62828; }
+
+/* ── Topbar ── */
+
+.derm-call__topbar {
+  height: 56px;
+  background: rgba(13,14,19,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.derm-call__topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.derm-call__live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e53935;
+  flex-shrink: 0;
+  animation: dc-live-blink 1.4s ease-in-out infinite;
+}
+
+@keyframes dc-live-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.20; }
+}
+
+.derm-call__topbar-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(255,255,255,0.88);
+}
+
+.derm-call__topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+
+.derm-call__topbar-timer-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: rgba(255,255,255,0.35);
+}
+
+.derm-call__topbar-timer {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.derm-call__topbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.derm-call__topbar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.derm-call__topbar-btn mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: rgba(255,255,255,0.55);
+}
+
+.derm-call__topbar-btn:hover { background: rgba(255,255,255,0.10); }
+
+.derm-call__topbar-btn--active {
+  background: rgba(162,103,105,0.20);
+  border-color: rgba(162,103,105,0.40);
+}
+
+.derm-call__topbar-btn--active mat-icon { color: #e8a0a2; }
+
+/* ── Body ── */
+
+.derm-call__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Video area ── */
+
+.derm-call__video-area {
+  flex: 1;
+  position: relative;
+  background: radial-gradient(ellipse at 50% 40%, #181922aa 0%, #0d0e13 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── Patient main view ── */
+
+.derm-call__patient-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.derm-call__patient-avatar {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.derm-call__patient-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(123,170,179,0.18);
+  animation: dc-pulse-ring 3.5s ease-in-out infinite;
+}
+
+.derm-call__patient-ring--1 {
+  width: 100%;
+  height: 100%;
+  animation-delay: 0s;
+}
+
+.derm-call__patient-ring--2 {
+  width: 138%;
+  height: 138%;
+  animation-delay: 0.9s;
+}
+
+@keyframes dc-pulse-ring {
+  0%, 100% { opacity: 0.18; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(1.05); }
+}
+
+.derm-call__patient-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #181f2a 0%, #1a1c26 100%);
+  border: 2px solid rgba(123,170,179,0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 50px rgba(123,170,179,0.14),
+    0 10px 40px rgba(0,0,0,0.55);
+}
+
+.derm-call__patient-icon {
+  font-size: 56px !important;
+  width: 56px !important;
+  height: 56px !important;
+  color: rgba(123,170,179,0.70);
+}
+
+.derm-call__patient-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.derm-call__patient-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: rgba(255,255,255,0.90);
+}
+
+.derm-call__patient-role {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+/* ── Self PiP ── */
+
+.derm-call__pip {
+  position: absolute;
+  bottom: 108px;
+  right: 20px;
+  width: 168px;
+  height: 126px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.14);
+  background: #14151c;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+}
+
+.derm-call__pip-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+}
+
+.derm-call__pip-camoff {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #14151c;
+}
+
+.derm-call__pip-camoff mat-icon {
+  font-size: 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+  color: rgba(255,255,255,0.22);
+}
+
+.derm-call__pip-label {
+  position: absolute;
+  bottom: 7px;
+  left: 9px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  background: rgba(0,0,0,0.55);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.derm-call__pip-micoff {
+  position: absolute;
+  bottom: 7px;
+  right: 9px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(229,57,53,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.derm-call__pip-micoff mat-icon {
+  font-size: 13px !important;
+  width: 13px !important;
+  height: 13px !important;
+  color: #ffffff;
+}
+
+/* ── Controls bar ── */
+
+.derm-call__controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 92px;
+  background: rgba(10,11,16,0.96);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 32px;
+}
+
+.derm-call__ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: 68px;
+}
+
+.derm-call__ctrl-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, transform 0.18s;
+}
+
+.derm-call__ctrl-icon mat-icon {
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: #ffffff;
+}
+
+.derm-call__ctrl:hover .derm-call__ctrl-icon {
+  background: rgba(255,255,255,0.18);
+  transform: scale(1.06);
+}
+
+.derm-call__ctrl-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+}
+
+.derm-call__ctrl--off .derm-call__ctrl-icon { background: rgba(255,255,255,0.06); }
+.derm-call__ctrl--off .derm-call__ctrl-icon mat-icon { color: rgba(255,255,255,0.32); }
+
+.derm-call__ctrl--active .derm-call__ctrl-icon { background: rgba(162,103,105,0.22); }
+.derm-call__ctrl--active .derm-call__ctrl-icon mat-icon { color: #e8a0a2; }
+
+.derm-call__ctrl--disabled { opacity: 0.30; cursor: not-allowed; pointer-events: none; }
+
+.derm-call__ctrl--end .derm-call__ctrl-icon {
+  width: 58px;
+  height: 58px;
+  background: #e53935;
+  box-shadow: 0 4px 20px rgba(229,57,53,0.45);
+}
+
+.derm-call__ctrl--end .derm-call__ctrl-icon mat-icon {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.derm-call__ctrl--end:hover .derm-call__ctrl-icon {
+  background: #c62828;
+  box-shadow: 0 6px 28px rgba(229,57,53,0.65);
+  transform: scale(1.08);
+}
+
+.derm-call__ctrl--end .derm-call__ctrl-label { color: rgba(229,57,53,0.75); }
+
+/* ── Right panel ── */
+
+.derm-call__panel {
+  width: 360px;
+  flex-shrink: 0;
+  background: #13141b;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.derm-call__panel-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.derm-call__panel-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px;
+  border: none;
+  background: transparent;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: 0.15s;
+}
+
+.derm-call__panel-tab mat-icon {
+  font-size: 17px !important;
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.derm-call__panel-tab:hover { color: rgba(255,255,255,0.65); }
+
+.derm-call__panel-tab--active {
+  color: #e8a0a2;
+  border-bottom-color: #a26769;
+}
+
+/* ── Notes tab ── */
+
+.derm-call__notes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  min-height: 0;
+}
+
+.derm-call__notes-area {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  outline: none;
+  resize: none;
+  line-height: 1.65;
+  transition: border-color 0.18s;
+}
+
+.derm-call__notes-area::placeholder { color: rgba(255,255,255,0.22); }
+.derm-call__notes-area:focus { border-color: rgba(162,103,105,0.50); }
+
+.derm-call__notes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.derm-call__notes-saved {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6dbf6d;
+}
+
+.derm-call__notes-saved mat-icon {
+  font-size: 15px !important;
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.derm-call__notes-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #a26769, #8e5759);
+  border: none;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 20px;
+  padding: 10px 18px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(162,103,105,0.35);
+  transition: box-shadow 0.18s, transform 0.18s;
+  flex-shrink: 0;
+}
+
+.derm-call__notes-save-btn mat-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.derm-call__notes-save-btn:hover {
+  box-shadow: 0 5px 16px rgba(162,103,105,0.55);
+  transform: scale(1.04);
+}
+
+/* ── Chat tab ── */
+
+.derm-call__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.09) transparent;
+}
+
+.derm-call__msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.derm-call__msg--patient { flex-direction: row-reverse; }
+
+.derm-call__msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(123,170,179,0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.derm-call__msg-avatar mat-icon {
+  font-size: 17px !important;
+  width: 17px !important;
+  height: 17px !important;
+  color: #7baab3;
+}
+
+.derm-call__bubble {
+  max-width: 240px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px 18px 18px 4px;
+  padding: 10px 14px;
+}
+
+.derm-call__bubble--doctor {
+  background: linear-gradient(135deg, #a26769, #8e5759);
+  border-color: transparent;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.derm-call__bubble-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.86);
+  margin: 0 0 4px;
+  line-height: 1.45;
+}
+
+.derm-call__bubble--doctor .derm-call__bubble-text { color: #ffffff; }
+
+.derm-call__bubble-time {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  color: rgba(255,255,255,0.28);
+}
+
+.derm-call__bubble--doctor .derm-call__bubble-time { color: rgba(255,255,255,0.50); }
+
+.derm-call__chat-input {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.derm-call__input {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.90);
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.derm-call__input::placeholder { color: rgba(255,255,255,0.22); }
+.derm-call__input:focus { border-color: rgba(162,103,105,0.50); }
+
+.derm-call__send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a26769, #8e5759);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(162,103,105,0.35);
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.derm-call__send-btn mat-icon {
+  font-size: 17px !important;
+  width: 17px !important;
+  height: 17px !important;
+  color: #ffffff;
+}
+
+.derm-call__send-btn:hover {
+  box-shadow: 0 5px 16px rgba(162,103,105,0.55);
+  transform: scale(1.06);
+}
+
+/* ── Responsive ── */
 
 @media (max-width: 1023px) {
-  .derm-call__layout { flex-direction: column; }
+  .derm-call__body { flex-direction: column; }
 
-  .derm-call__video-section {
-    flex: 0 0 55vh;
-    height: 55vh;
-  }
+  .derm-call__video-area { flex: 0 0 50vh; }
 
   .derm-call__panel {
     width: 100%;
     flex: 1;
     border-left: none;
-    border-top: 1px solid #333;
+    border-top: 1px solid rgba(255,255,255,0.07);
     min-height: 0;
   }
 
-  .derm-call__doctor-mini {
-    width: 80px;
-    height: 60px;
-    bottom: 84px;
-    right: 10px;
+  .derm-call__pip {
+    width: 104px;
+    height: 78px;
+    bottom: 100px;
+    right: 12px;
+    border-radius: 12px;
   }
 
-  .derm-call__doctor-mini mat-icon { font-size: 22px; }
+  .derm-call__controls { height: 76px; gap: 4px; padding: 0 12px; }
+  .derm-call__ctrl { min-width: 54px; }
+  .derm-call__ctrl-icon { width: 42px; height: 42px; }
+  .derm-call__ctrl-icon mat-icon { font-size: 19px !important; width: 19px !important; height: 19px !important; }
+  .derm-call__ctrl-label { font-size: 10px; }
+  .derm-call__ctrl--end .derm-call__ctrl-icon { width: 48px; height: 48px; }
 
-  .derm-call__controls { height: 64px; gap: 16px; }
-  .derm-call__ctrl-btn { width: 40px; height: 40px; }
-  .derm-call__ctrl-btn--end { width: 48px; height: 48px; }
-  .derm-call__ctrl-btn mat-icon { font-size: 18px; }
-
-  .derm-call__video-avatar { width: 80px; height: 80px; }
-  .derm-call__video-avatar mat-icon { font-size: 40px; }
-  .derm-call__patient-label { font-size: 12px; }
-
-  .derm-call__messages { padding: 10px; gap: 8px; }
-  .derm-call__bubble { max-width: 75%; }
-  .derm-call__chat-input { padding: 8px 12px; }
+  .derm-call__patient-avatar { width: 130px; height: 130px; }
+  .derm-call__patient-circle { width: 104px; height: 104px; }
+  .derm-call__patient-icon { font-size: 42px !important; width: 42px !important; height: 42px !important; }
+  .derm-call__patient-name { font-size: 16px; }
 }

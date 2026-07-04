@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { subscriptionGuard } from './subscription/presentation/guards/subscription.guard';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,7 @@ export const routes: Routes = [
     path: 'dashboard',
     loadChildren: () =>
       import('./dashboard/presentation/dashboard.routes').then((module) => module.dashboardRoutes),
+    canActivate: [subscriptionGuard],
   },
   {
     path: 'iam',
@@ -21,6 +23,7 @@ export const routes: Routes = [
       import('./dermatology-care/presentation/dermatology-care.routes').then(
         (module) => module.dermatologyCareRoutes,
       ),
+    canActivate: [subscriptionGuard],
   },
   {
     path: 'routine',
@@ -28,6 +31,7 @@ export const routes: Routes = [
       import('./routine-management/presentation/routine-management.routes').then(
         (module) => module.routineManagementRoutes,
       ),
+    canActivate: [subscriptionGuard],
   },
   {
     path: 'derm',
@@ -42,6 +46,7 @@ export const routes: Routes = [
       import('./intelligent-support/presentation/intelligent-support.routes').then(
         (module) => module.intelligentSupportRoutes,
       ),
+    canActivate: [subscriptionGuard],
   },
   {
     path: 'trending',
@@ -49,6 +54,7 @@ export const routes: Routes = [
       import('./product-discovery/presentation/product-discovery.routes').then(
         (module) => module.productDiscoveryRoutes,
       ),
+    canActivate: [subscriptionGuard],
   },
   {
     path: 'skin-analysis',

@@ -1,88 +1,96 @@
 <div class="product-replacement">
 
-  <!-- Header -->
-  <div class="product-replacement__header">
-    <button class="product-replacement__back-btn" (click)="navigateBack()" [attr.aria-label]="'routine.productReplacement.back' | translate">
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="pr-banner">
+    <button class="pr-banner__back" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
+    <div class="pr-banner__icon-wrap">
+      <mat-icon>swap_horiz</mat-icon>
+    </div>
     <div>
-      <h1 class="product-replacement__title">{{ 'routine.productReplacement.title' | translate }}</h1>
-      <p class="product-replacement__subtitle">{{ 'routine.productReplacement.subtitle' | translate }}</p>
+      <h1 class="pr-banner__title">{{ 'routine.productReplacement.title' | translate }}</h1>
+      <p class="pr-banner__subtitle">{{ 'routine.productReplacement.subtitle' | translate }}</p>
     </div>
   </div>
 
-  <div class="product-replacement__divider"></div>
+  <div class="pr-content">
 
-  <div class="product-replacement__content">
+    <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+    <div class="pr-main">
 
-    <!-- Left -->
-    <div class="product-replacement__main">
-
-      <!-- Current Item -->
+      <!-- Current item -->
       @if (routineItem()) {
-        <div class="product-replacement__current-card">
-          <p class="product-replacement__current-label">{{ 'routine.productReplacement.currentLabel' | translate }}</p>
-          <div class="product-replacement__current-info">
-            <div class="product-replacement__current-icon">
+        <div class="pr-current">
+          <p class="pr-current__label">{{ 'routine.productReplacement.currentLabel' | translate }}</p>
+          <div class="pr-current__row">
+            <div class="pr-current__icon-wrap">
               <mat-icon>inventory_2</mat-icon>
             </div>
-            <div>
-              <p class="product-replacement__current-step">{{ routineItem()!.stepLabel }}</p>
-              <p class="product-replacement__current-product">{{ routineItem()!.productRecommendation }}</p>
+            <div class="pr-current__text">
+              <p class="pr-current__step">{{ routineItem()!.stepLabel }}</p>
+              <p class="pr-current__product">{{ routineItem()!.productRecommendation }}</p>
             </div>
+            <mat-icon class="pr-current__arrow">arrow_forward</mat-icon>
           </div>
         </div>
       }
 
       <!-- Alternatives header -->
-      <div class="product-replacement__alternatives-header">
-        <p class="product-replacement__alternatives-title">{{ 'routine.productReplacement.alternativesTitle' | translate }}</p>
-        <p class="product-replacement__alternatives-subtitle">{{ 'routine.productReplacement.alternativesSubtitle' | translate }}</p>
+      <div class="pr-alts-header">
+        <p class="pr-alts-header__title">{{ 'routine.productReplacement.alternativesTitle' | translate }}</p>
+        <p class="pr-alts-header__sub">{{ 'routine.productReplacement.alternativesSubtitle' | translate }}</p>
       </div>
 
-      <!-- Replacement options from backend -->
-      <div class="product-replacement__alternatives-grid">
+      <!-- Alternatives grid -->
+      <div class="pr-grid">
         @for (option of store.replacementOptions(); track option; let i = $index) {
           <button
-            class="product-replacement__alternative-card"
-            [class.product-replacement__alternative-card--selected]="selectedProductName() === option"
+            class="pr-card"
+            [class.pr-card--selected]="selectedProductName() === option"
             (click)="selectProduct(option)"
           >
-            @if (i === 0) {
-              <span class="product-replacement__best-match-tag">{{ 'routine.productReplacement.bestMatch' | translate }}</span>
+            @if (i === 0 && selectedProductName() !== option) {
+              <span class="pr-card__best-tag">{{ 'routine.productReplacement.bestMatch' | translate }}</span>
             }
             @if (selectedProductName() === option) {
-              <div class="product-replacement__selected-check">
+              <div class="pr-card__check">
                 <mat-icon>check</mat-icon>
               </div>
             }
-            <div class="product-replacement__alternative-image-placeholder">
+            <div class="pr-card__img">
               <mat-icon>inventory_2</mat-icon>
             </div>
-            <p class="product-replacement__alternative-name">{{ option }}</p>
-            <div class="product-replacement__compatibility-bar-row">
-              <div class="product-replacement__compatibility-bar">
+            <p class="pr-card__name">{{ option }}</p>
+            <div class="pr-card__bar-row">
+              <div class="pr-card__bar">
                 <div
-                  class="product-replacement__compatibility-fill"
+                  class="pr-card__bar-fill"
                   [style.width.%]="getScoreForIndex(i)"
                   [style.backgroundColor]="getCompatibilityColor(getScoreForIndex(i))"
                 ></div>
               </div>
               <span
-                class="product-replacement__compatibility-score"
+                class="pr-card__score"
                 [style.color]="getCompatibilityColor(getScoreForIndex(i))"
               >
-                {{ getScoreForIndex(i) }}% · {{ 'routine.productReplacement.compatibility.' + getCompatibilityLabel(getScoreForIndex(i)) | translate }}
+                {{ getScoreForIndex(i) }}%
               </span>
             </div>
+            <p
+              class="pr-card__compat-label"
+              [style.color]="getCompatibilityColor(getScoreForIndex(i))"
+            >
+              {{ 'routine.productReplacement.compatibility.' + getCompatibilityLabel(getScoreForIndex(i)) | translate }}
+            </p>
           </button>
         }
       </div>
 
       <button
-        class="product-replacement__continue-btn"
+        class="pr-continue"
         [disabled]="!selectedProductName()"
-        [class.product-replacement__continue-btn--disabled]="!selectedProductName()"
+        [class.pr-continue--disabled]="!selectedProductName()"
         (click)="continueWithSelection()"
       >
         {{ 'routine.productReplacement.continueBtn' | translate }}
@@ -90,41 +98,48 @@
 
     </div>
 
-    <!-- Right: Info Panel -->
-    <div class="product-replacement__panel">
+    <!-- ── Info panel ─────────────────────────────────────────────────────────── -->
+    <div class="pr-panel">
 
-      <div class="product-replacement__how-we-rank">
-        <p class="product-replacement__panel-title">{{ 'routine.productReplacement.howWeRankTitle' | translate }}</p>
-        <p class="product-replacement__panel-text">{{ 'routine.productReplacement.howWeRankText' | translate }}</p>
+      <div class="pr-info-card">
+        <div class="pr-card-header">
+          <mat-icon>info_outline</mat-icon>
+          <p class="pr-card-header__title">{{ 'routine.productReplacement.howWeRankTitle' | translate }}</p>
+        </div>
+        <p class="pr-info-card__text">{{ 'routine.productReplacement.howWeRankText' | translate }}</p>
       </div>
 
-      <div class="product-replacement__compatibility-legend">
-        <p class="product-replacement__panel-title">{{ 'routine.productReplacement.compatibilityGuide' | translate }}</p>
-        <div class="product-replacement__legend-items">
-          <div class="product-replacement__legend-item">
-            <span class="product-replacement__legend-dot" style="background-color: #4caf50"></span>
+      <div class="pr-legend-card">
+        <div class="pr-card-header">
+          <mat-icon>legend_toggle</mat-icon>
+          <p class="pr-card-header__title">{{ 'routine.productReplacement.compatibilityGuide' | translate }}</p>
+        </div>
+        <div class="pr-legend-list">
+          <div class="pr-legend-item">
+            <span class="pr-legend-dot" style="background:#4caf50"></span>
             <div>
-              <p class="product-replacement__legend-range">90–100%</p>
-              <p class="product-replacement__legend-label">{{ 'routine.productReplacement.compatibility.excellent' | translate }}</p>
+              <p class="pr-legend-range">90–100%</p>
+              <p class="pr-legend-label">{{ 'routine.productReplacement.compatibility.excellent' | translate }}</p>
             </div>
           </div>
-          <div class="product-replacement__legend-item">
-            <span class="product-replacement__legend-dot" style="background-color: #e8a43a"></span>
+          <div class="pr-legend-item">
+            <span class="pr-legend-dot" style="background:#e8a43a"></span>
             <div>
-              <p class="product-replacement__legend-range">80–89%</p>
-              <p class="product-replacement__legend-label">{{ 'routine.productReplacement.compatibility.good' | translate }}</p>
+              <p class="pr-legend-range">80–89%</p>
+              <p class="pr-legend-label">{{ 'routine.productReplacement.compatibility.good' | translate }}</p>
             </div>
           </div>
-          <div class="product-replacement__legend-item">
-            <span class="product-replacement__legend-dot" style="background-color: #ef5350"></span>
+          <div class="pr-legend-item">
+            <span class="pr-legend-dot" style="background:#ef5350"></span>
             <div>
-              <p class="product-replacement__legend-range">&lt;80%</p>
-              <p class="product-replacement__legend-label">{{ 'routine.productReplacement.compatibility.fair' | translate }}</p>
+              <p class="pr-legend-range">&lt;80%</p>
+              <p class="pr-legend-label">{{ 'routine.productReplacement.compatibility.fair' | translate }}</p>
             </div>
           </div>
         </div>
       </div>
 
     </div>
+
   </div>
 </div>

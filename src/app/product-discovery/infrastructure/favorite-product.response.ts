@@ -5,13 +5,13 @@ import {BaseResource, BaseResponse} from '../../shared/infrastructure/base-respo
  */
 export interface FavoriteProductResource extends BaseResource {
   /** Unique identifier for the favorite product record. */
-  id:         number;
+  id:        number;
   /** Identifier of the user who saved the product. */
-  user_id:    number;
+  userId:    number;
   /** Identifier of the product that was saved. */
-  product_id: number;
+  productId: number;
   /** ISO 8601 date-time string for when the product was saved as a favorite. */
-  saved_at:   string;
+  savedAt:   string;
 }
 
 /**
@@ -19,5 +19,5 @@ export interface FavoriteProductResource extends BaseResource {
  */
 export interface FavoriteProductsResponse extends BaseResponse {
   /** The list of favorite product records returned by the API. */
-  favorite_products: FavoriteProductResource[];
+  favoriteProducts: FavoriteProductResource[];
 }

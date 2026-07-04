@@ -5,6 +5,10 @@
   </div>
 
   <div class="sign-in-home__actions">
+    <div class="sign-in-home__actions-lang">
+      <app-language-switcher></app-language-switcher>
+    </div>
+
     <button type="button" class="sign-in-home__primary-button" (click)="onLogin()">
       {{ 'iam.signInHome.loginButton' | translate }}
     </button>
@@ -18,7 +22,9 @@
       </button>
     </div>
 
-    <button type="button" class="sign-in-home__primary-button" (click)="onSignUp()">
+    <div class="sign-in-home__separator"></div>
+
+    <button type="button" class="sign-in-home__secondary-button" (click)="onSignUp()">
       {{ 'iam.signInHome.signUpButton' | translate }}
     </button>
 

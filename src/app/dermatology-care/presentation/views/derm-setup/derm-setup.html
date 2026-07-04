@@ -1,0 +1,256 @@
+<div class="setup">
+
+  <!-- Progress bar -->
+  <div class="setup__progress-track">
+    <div class="setup__progress-fill" [style.width.%]="progress()"></div>
+  </div>
+
+  <!-- Skip -->
+  <button class="setup__skip-btn" (click)="skipSetup()">
+    Skip setup
+    <mat-icon>arrow_forward</mat-icon>
+  </button>
+
+  <div class="setup__layout">
+
+    <!-- ── Left decorative panel (desktop only) ── -->
+    <div class="setup__panel">
+      <div class="setup__panel-logo">
+        <mat-icon class="setup__panel-logo-icon">spa</mat-icon>
+        <span class="setup__panel-brand">bloomie</span>
+      </div>
+
+      @if (step() === 1) {
+        <div class="setup__panel-content">
+          <div class="setup__panel-icon-wrap">
+            <mat-icon>badge</mat-icon>
+          </div>
+          <h2 class="setup__panel-heading">Your professional identity</h2>
+          <p class="setup__panel-desc">Tell patients who you are and what you specialize in — this is the first thing they see when looking for a doctor.</p>
+        </div>
+      }
+      @if (step() === 2) {
+        <div class="setup__panel-content">
+          <div class="setup__panel-icon-wrap">
+            <mat-icon>edit_note</mat-icon>
+          </div>
+          <h2 class="setup__panel-heading">About you</h2>
+          <p class="setup__panel-desc">A great biography builds trust before patients even meet you. Share your experience and approach to care.</p>
+        </div>
+      }
+      @if (step() === 3) {
+        <div class="setup__panel-content">
+          <div class="setup__panel-icon-wrap">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+          <h2 class="setup__panel-heading">Your schedule</h2>
+          <p class="setup__panel-desc">Set the days and hours patients can book with you. You can always update this later in your profile.</p>
+        </div>
+      }
+
+      <div class="setup__panel-steps">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="setup__panel-dot" [class.setup__panel-dot--active]="i === step()" [class.setup__panel-dot--done]="i < step()">
+            @if (i < step()) {
+              <mat-icon class="setup__panel-dot-check">check</mat-icon>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ── Right: form area ── -->
+    <div class="setup__form-area">
+      <div class="setup__form-card">
+
+        <!-- Mobile step indicator -->
+        <div class="setup__mobile-header">
+          <div class="setup__step-badge">Step {{ step() }} of {{ totalSteps }}</div>
+          <div class="setup__step-dots">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="setup__step-dot" [class.setup__step-dot--active]="i === step()" [class.setup__step-dot--done]="i < step()"></div>
+            }
+          </div>
+        </div>
+
+        <!-- ──────── STEP 1 ──────── -->
+        @if (step() === 1) {
+          <div class="setup__step">
+            <div class="setup__step-header">
+              <div class="setup__step-icon-wrap">
+                <mat-icon>medical_services</mat-icon>
+              </div>
+              <div>
+                <h1 class="setup__step-title">Welcome, {{ userName() }}!</h1>
+                <p class="setup__step-subtitle">Let's get your profile ready in just a few steps.</p>
+              </div>
+            </div>
+
+            <div class="setup__field">
+              <label class="setup__label">Specialty</label>
+              <select class="setup__input setup__select" [ngModel]="specialty()" (ngModelChange)="specialty.set($event)">
+                @for (s of specialties; track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="setup__field">
+              <label class="setup__label">Medical license number</label>
+              <input
+                class="setup__input"
+                type="text"
+                [placeholder]="'e.g. ' + licenseNumberPlaceholder"
+                [maxlength]="licenseNumberMaxLength"
+                autocomplete="off"
+                spellcheck="false"
+                [ngModel]="licenseNumber()"
+                (ngModelChange)="onLicenseNumberChange($event)"
+              />
+              <p class="setup__field-hint">Format: {{ licenseNumberPlaceholder }} — visible to patients to verify your credentials.</p>
+            </div>
+          </div>
+        }
+
+        <!-- ──────── STEP 2 ──────── -->
+        @if (step() === 2) {
+          <div class="setup__step">
+            <div class="setup__step-header">
+              <div class="setup__step-icon-wrap">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div>
+                <h1 class="setup__step-title">About you</h1>
+                <p class="setup__step-subtitle">Help patients get to know you before their first appointment.</p>
+              </div>
+            </div>
+
+            <div class="setup__field">
+              <label class="setup__label">Biography</label>
+              <textarea
+                class="setup__input setup__textarea"
+                rows="4"
+                placeholder="Share your background, approach to care, and what patients can expect..."
+                [ngModel]="biography()"
+                (ngModelChange)="biography.set($event)"
+              ></textarea>
+            </div>
+
+            <div class="setup__field-row">
+              <div class="setup__field setup__field--half">
+                <label class="setup__label">Contact phone</label>
+                <input
+                  class="setup__input"
+                  type="tel"
+                  placeholder="+1 (555) 000-0000"
+                  [ngModel]="contactPhone()"
+                  (ngModelChange)="contactPhone.set($event)"
+                />
+              </div>
+              <div class="setup__field setup__field--half">
+                <label class="setup__label">Consultation fee (USD)</label>
+                <div class="setup__prefix-wrap">
+                  <span class="setup__prefix">$</span>
+                  <input
+                    class="setup__input setup__input--prefixed"
+                    type="number"
+                    placeholder="80"
+                    [ngModel]="fee()"
+                    (ngModelChange)="fee.set($event)"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ──────── STEP 3 ──────── -->
+        @if (step() === 3) {
+          <div class="setup__step">
+            <div class="setup__step-header">
+              <div class="setup__step-icon-wrap">
+                <mat-icon>event_available</mat-icon>
+              </div>
+              <div>
+                <h1 class="setup__step-title">Your availability</h1>
+                <p class="setup__step-subtitle">Choose the days and hours you're open for appointments.</p>
+              </div>
+            </div>
+
+            <div class="setup__field">
+              <label class="setup__label">Working days</label>
+              <div class="setup__day-pills">
+                @for (day of days; track day.id) {
+                  <button
+                    class="setup__day-pill"
+                    [class.setup__day-pill--active]="isDayActive(day.id)"
+                    type="button"
+                    (click)="toggleDay(day.id)"
+                    [attr.aria-label]="day.label"
+                  >
+                    {{ day.short }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="setup__field-row">
+              <div class="setup__field setup__field--half">
+                <label class="setup__label">Start time</label>
+                <select class="setup__input setup__select" [ngModel]="startTime()" (ngModelChange)="startTime.set($event)">
+                  @for (t of timeOptions; track t) {
+                    <option [value]="t">{{ t }}</option>
+                  }
+                </select>
+              </div>
+              <div class="setup__field setup__field--half">
+                <label class="setup__label">End time</label>
+                <select class="setup__input setup__select" [ngModel]="endTime()" (ngModelChange)="endTime.set($event)">
+                  @for (t of timeOptions; track t) {
+                    <option [value]="t">{{ t }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="setup__summary-chip">
+              <mat-icon class="setup__summary-chip-icon">schedule</mat-icon>
+              <span>Appointment slots every 30 minutes</span>
+            </div>
+          </div>
+        }
+
+        <!-- Navigation buttons -->
+        <div class="setup__nav">
+          @if (step() > 1) {
+            <button class="setup__back-btn" (click)="prevStep()">
+              <mat-icon>arrow_back</mat-icon>
+              Back
+            </button>
+          } @else {
+            <div></div>
+          }
+
+          <button
+            class="setup__next-btn"
+            (click)="nextStep()"
+            [disabled]="saving()"
+          >
+            @if (saving()) {
+              <mat-icon class="setup__spinner">autorenew</mat-icon>
+              Saving…
+            } @else if (step() === totalSteps) {
+              <mat-icon>check_circle</mat-icon>
+              Finish setup
+            } @else {
+              Continue
+              <mat-icon>arrow_forward</mat-icon>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

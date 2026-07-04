@@ -12,27 +12,25 @@ import { IamStore } from '../../iam/application/iam.store';
  */
 @Injectable({ providedIn: 'root' })
 export class RoutineManagementStore {
-  private readonly routinesSignal        = signal<Routine[]>([]);
-  private readonly dailyTrackingsSignal  = signal<DailyTracking[]>([]);
+  private readonly routinesSignal = signal<Routine[]>([]);
+  private readonly dailyTrackingsSignal = signal<DailyTracking[]>([]);
   private readonly selectedRoutineSignal = signal<Routine | null>(null);
-  private readonly loadingSignal         = signal<boolean>(false);
-  private readonly errorSignal           = signal<string | null>(null);
+  private readonly loadingSignal = signal<boolean>(false);
+  private readonly errorSignal = signal<string | null>(null);
   private readonly replacementOptionsSignal = signal<string[]>([]);
 
-  readonly routines           = this.routinesSignal.asReadonly();
-  readonly dailyTrackings     = this.dailyTrackingsSignal.asReadonly();
-  readonly selectedRoutine    = this.selectedRoutineSignal.asReadonly();
-  readonly loading            = this.loadingSignal.asReadonly();
-  readonly error              = this.errorSignal.asReadonly();
+  readonly routines = this.routinesSignal.asReadonly();
+  readonly dailyTrackings = this.dailyTrackingsSignal.asReadonly();
+  readonly selectedRoutine = this.selectedRoutineSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
   readonly replacementOptions = this.replacementOptionsSignal.asReadonly();
 
   /**
    * Computed signal for the active routine.
    * A patient has at most one active routine at a time.
    */
-  readonly activeRoutine = computed(
-    () => this.routinesSignal().find(r => r.isActive) ?? null,
-  );
+  readonly activeRoutine = computed(() => this.routinesSignal().find((r) => r.isActive) ?? null);
 
   /**
    * Computed signal for the items belonging to the active routine,
@@ -50,13 +48,10 @@ export class RoutineManagementStore {
    * for the active routine (last 7 days including today).
    */
   readonly completedDaysThisWeek = computed(() => {
-    const active = this.activeRoutine();
-    if (!active) return 0;
     const today = new Date();
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - 6);
-    return this.dailyTrackingsSignal().filter(tracking => {
-      if (tracking.routineId !== active.id) return false;
+    return this.dailyTrackingsSignal().filter((tracking) => {
       if (!tracking.isCompleted) return false;
       const trackingDate = new Date(tracking.date);
       return trackingDate >= weekStart && trackingDate <= today;
@@ -73,13 +68,13 @@ export class RoutineManagementStore {
     const today = new Date();
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(today.getDate() - 29);
-    const trackingsInRange = this.dailyTrackingsSignal().filter(tracking => {
+    const trackingsInRange = this.dailyTrackingsSignal().filter((tracking) => {
       if (tracking.routineId !== active.id) return false;
       const trackingDate = new Date(tracking.date);
       return trackingDate >= thirtyDaysAgo && trackingDate <= today;
     });
     if (trackingsInRange.length === 0) return 0;
-    const completedCount = trackingsInRange.filter(t => t.isCompleted).length;
+    const completedCount = trackingsInRange.filter((t) => t.isCompleted).length;
     return Math.round((completedCount / trackingsInRange.length) * 100);
   });
 
@@ -89,15 +84,12 @@ export class RoutineManagementStore {
    */
   readonly completedDays = computed((): string[] =>
     this.dailyTrackingsSignal()
-      .filter(tracking => {
-        const active = this.activeRoutine();
-        return active !== null && tracking.routineId === active.id && tracking.isCompleted;
-      })
-      .map(tracking => tracking.date),
+      .filter((tracking) => tracking.isCompleted)
+      .map((tracking) => tracking.date),
   );
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly iamStore   = inject(IamStore);
+  private readonly iamStore = inject(IamStore);
   private loadedForPatientId: number | null = null;
 
   constructor(private routineManagementApi: RoutineManagementApi) {
@@ -136,18 +128,18 @@ export class RoutineManagementStore {
    * Returns a reactive selection for a routine by identifier.
    */
   getRoutineById(id: number): Signal<Routine | undefined> {
-    return computed(() =>
-      id ? this.routinesSignal().find(r => r.id === id) : undefined,
-    );
+    return computed(() => (id ? this.routinesSignal().find((r) => r.id === id) : undefined));
   }
 
   /**
    * Returns a reactive selection for a routine item by identifier.
    * Searches within the active routine's embedded items.
    */
-  getRoutineItemById(id: number): Signal<import('../domain/model/routine-item.entity').RoutineItem | undefined> {
+  getRoutineItemById(
+    id: number,
+  ): Signal<import('../domain/model/routine-item.entity').RoutineItem | undefined> {
     return computed(() =>
-      id ? this.activeRoutine()?.items.find(item => item.id === id) : undefined,
+      id ? this.activeRoutine()?.items.find((item) => item.id === id) : undefined,
     );
   }
 
@@ -159,7 +151,7 @@ export class RoutineManagementStore {
       const today = new Date();
       const weekStart = new Date(today);
       weekStart.setDate(today.getDate() - 6);
-      return this.dailyTrackingsSignal().filter(tracking => {
+      return this.dailyTrackingsSignal().filter((tracking) => {
         if (tracking.routineId !== routineId) return false;
         const trackingDate = new Date(tracking.date);
         return trackingDate >= weekStart && trackingDate <= today;
@@ -180,11 +172,11 @@ export class RoutineManagementStore {
       .getReplacementOptions(active.id, routineItemId)
       .pipe(retry(2))
       .subscribe({
-        next: options => {
+        next: (options) => {
           this.replacementOptionsSignal.set(options);
           this.loadingSignal.set(false);
         },
-        error: err => {
+        error: (err) => {
           this.errorSignal.set(this.formatError(err, 'Failed to load replacement options'));
           this.loadingSignal.set(false);
         },
@@ -204,13 +196,13 @@ export class RoutineManagementStore {
       .replaceProduct(active.id, routineItemId, newProductRecommendation)
       .pipe(retry(2))
       .subscribe({
-        next: updatedRoutine => {
-          this.routinesSignal.update(routines =>
-            routines.map(r => r.id === updatedRoutine.id ? updatedRoutine : r),
+        next: (updatedRoutine) => {
+          this.routinesSignal.update((routines) =>
+            routines.map((r) => (r.id === updatedRoutine.id ? updatedRoutine : r)),
           );
           this.loadingSignal.set(false);
         },
-        error: err => {
+        error: (err) => {
           this.errorSignal.set(this.formatError(err, 'Failed to replace product'));
           this.loadingSignal.set(false);
         },
@@ -230,13 +222,13 @@ export class RoutineManagementStore {
       .removeRoutineItem(active.id, routineItemId)
       .pipe(retry(2))
       .subscribe({
-        next: updatedRoutine => {
-          this.routinesSignal.update(routines =>
-            routines.map(r => r.id === updatedRoutine.id ? updatedRoutine : r),
+        next: (updatedRoutine) => {
+          this.routinesSignal.update((routines) =>
+            routines.map((r) => (r.id === updatedRoutine.id ? updatedRoutine : r)),
           );
           this.loadingSignal.set(false);
         },
-        error: err => {
+        error: (err) => {
           this.errorSignal.set(this.formatError(err, 'Failed to remove routine item'));
           this.loadingSignal.set(false);
         },
@@ -257,20 +249,31 @@ export class RoutineManagementStore {
       .markRoutineAsCompleted(patientId, active.id, date)
       .pipe(retry(2))
       .subscribe({
-        next: createdId => {
+        next: (createdId) => {
+          if (createdId === -1) {
+            const userId = this.iamStore.currentUser()?.id;
+            if (userId) this.loadDailyTrackingsByPatientId(userId);
+            this.loadingSignal.set(false);
+            return;
+          }
           const newTracking = new DailyTracking({
-            id:          createdId,
+            id: createdId,
             patientId,
-            routineId:   active.id,
+            routineId: active.id,
             date,
             isCompleted: true,
             completedAt: new Date().toISOString(),
           });
-          this.dailyTrackingsSignal.update(trackings => [...trackings, newTracking]);
+          this.dailyTrackingsSignal.update((trackings) => [...trackings, newTracking]);
           this.loadingSignal.set(false);
         },
-        error: err => {
-          this.errorSignal.set(this.formatError(err, 'Failed to mark day as completed'));
+        error: (err) => {
+          if (err instanceof Error && err.message.includes('Conflict')) {
+            const patientId = this.iamStore.currentUser()?.id;
+            if (patientId) this.loadDailyTrackingsByPatientId(patientId);
+          } else {
+            this.errorSignal.set(this.formatError(err, 'Failed to mark day as completed'));
+          }
           this.loadingSignal.set(false);
         },
       });
@@ -291,12 +294,12 @@ export class RoutineManagementStore {
       .getRoutineByPatientId(patientId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: routine => {
+        next: (routine) => {
           this.routinesSignal.set([routine]);
           this.loadingSignal.set(false);
           this.errorSignal.set(null);
         },
-        error: err => {
+        error: (err) => {
           this.loadingSignal.set(false);
           if (err instanceof Error && err.message.includes('Resource not found')) {
             this.routinesSignal.set([]);
@@ -317,12 +320,12 @@ export class RoutineManagementStore {
       .getDailyTrackingsByPatientId(patientId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: dailyTrackings => {
+        next: (dailyTrackings) => {
           this.dailyTrackingsSignal.set(dailyTrackings);
           this.loadingSignal.set(false);
           this.errorSignal.set(null);
         },
-        error: err => {
+        error: (err) => {
           this.errorSignal.set(this.formatError(err, 'Failed to load daily trackings'));
           this.loadingSignal.set(false);
         },

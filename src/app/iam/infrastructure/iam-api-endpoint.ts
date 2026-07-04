@@ -119,4 +119,32 @@ export class IamApiEndpoint extends BaseApiEndpoint<User, UserResource, AuthResp
       catchError(this.handleError('Failed to get user'))
     );
   }
+
+  /**
+   * Updates the profile of a user (name and email).
+   * @param userId    - Identifier of the user to update.
+   * @param firstName - New first name.
+   * @param lastName  - New last name.
+   * @param email     - New email address.
+   * @returns Stream with the updated User entity.
+   */
+  updateUserProfile(userId: number, firstName: string, lastName: string, email: string): Observable<User> {
+    return this.http.put<UserResource>(`${this.backendUsersUrl}/${userId}`, { firstName, lastName, email }).pipe(
+      map(resource => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to update user profile'))
+    );
+  }
+
+  /**
+   * Changes the password of a user, verifying the current password first.
+   * @param userId - Identifier of the user whose password is being changed.
+   * @param currentPassword - Current plain-text password, verified by the backend.
+   * @param newPassword - New plain-text password to set.
+   * @returns Completion stream for the update operation.
+   */
+  changePassword(userId: number, currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.put<void>(`${this.backendUsersUrl}/${userId}/password`, { currentPassword, newPassword }).pipe(
+      catchError(this.handleError('Failed to change password'))
+    );
+  }
 }

@@ -37,12 +37,18 @@
   margin-bottom: 2rem;
 }
 
+.sign-in-home__actions-lang {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+}
+
 .sign-in-home__primary-button {
   width: 100%;
   background-color: #a26769;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
+  font-weight: 600;
   font-size: 14px;
   padding: 0.875rem 1rem;
   border: none;
@@ -56,6 +62,31 @@
   background-color: #8e5759;
 }
 
+.sign-in-home__secondary-button {
+  width: 100%;
+  background-color: transparent;
+  color: #a26769;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0.875rem 1rem;
+  border: 2px solid #a26769;
+  border-radius: 26.5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sign-in-home__secondary-button:hover {
+  background-color: #a26769;
+  color: #ffffff;
+}
+
+.sign-in-home__separator {
+  height: 1px;
+  background-color: rgba(162, 103, 105, 0.2);
+  margin: 0.25rem 0;
+}
+
 .sign-in-home__specialist-link {
   text-align: center;
 }
@@ -64,23 +95,24 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   font-size: 12px;
-  color: #000000;
+  color: #555555;
   margin: 0 0 0.25rem 0;
 }
 
 .sign-in-home__link-button {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
+  font-weight: 600;
   font-size: 12px;
   color: #a26769;
   background: none;
   border: none;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
   padding: 0;
 }
 
 .sign-in-home__link-button:hover {
+  text-decoration: underline;
   color: #8e5759;
 }
 
@@ -119,10 +151,16 @@
     max-width: 28rem;
     margin: auto;
     padding: 4rem 6rem;
+    justify-content: center;
   }
 
-  .sign-in-home__primary-button {
-    font-size: 18px;
+  .sign-in-home__actions-lang {
+    margin-bottom: 0.5rem;
+  }
+
+  .sign-in-home__primary-button,
+  .sign-in-home__secondary-button {
+    font-size: 16px;
     padding: 1rem 1.5rem;
   }
 

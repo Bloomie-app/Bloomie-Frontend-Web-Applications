@@ -8,8 +8,12 @@ import {environment} from '../../../environments/environment';
 /**
  * Endpoint client for consultation CRUD operations.
  */
-export class ConsultationsApiEndpoint extends BaseApiEndpoint<Consultation, ConsultationResource, ConsultationsResponse, ConsultationAssembler> {
-
+export class ConsultationsApiEndpoint extends BaseApiEndpoint<
+  Consultation,
+  ConsultationResource,
+  ConsultationsResponse,
+  ConsultationAssembler
+> {
   /**
    * Creates an instance of ConsultationsApiEndpoint.
    * @param http - The HttpClient to be used for making API requests.
@@ -17,8 +21,8 @@ export class ConsultationsApiEndpoint extends BaseApiEndpoint<Consultation, Cons
   constructor(http: HttpClient) {
     super(
       http,
-      `${environment.serverBasePath}${environment.consultationsEndpointPath}`,
-      new ConsultationAssembler()
+      `${environment.backendBasePath}${environment.backendConsultationsEndpointPath}`,
+      new ConsultationAssembler(),
     );
   }
 }

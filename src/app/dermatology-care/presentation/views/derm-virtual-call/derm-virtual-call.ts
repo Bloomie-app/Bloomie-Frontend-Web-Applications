@@ -1,76 +1,123 @@
-import {Component, inject, signal} from '@angular/core';
-import {Router} from '@angular/router';
-import {MatIconModule} from '@angular/material/icon';
-import {FormsModule} from '@angular/forms';
-import {TranslatePipe, TranslateService} from '@ngx-translate/core';
-import {DermatologyCareStore} from '../../../application/dermatology-care.store';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DermatologyCareStore } from '../../../application/dermatology-care.store';
 
-/** Panel tabs available in the dermatologist virtual call. */
 export type DermCallTab = 'chat' | 'notes';
 
-/** Represents a single chat message. */
 interface CallMessage {
-  id:    number;
-  from:  'doctor' | 'patient';
-  text?: string;
-  time:  string;
+  id: number;
+  from: 'doctor' | 'patient';
+  text: string;
+  time: string;
 }
 
-/**
- * Provides the dermatologist-side virtual consultation interface
- * with video controls, real-time chat, and clinical notes tab.
- */
 @Component({
-  selector:    'app-derm-virtual-call',
-  imports:     [MatIconModule, FormsModule, TranslatePipe],
+  selector: 'app-derm-virtual-call',
+  imports: [MatIconModule, FormsModule, TranslatePipe],
   templateUrl: './derm-virtual-call.html',
-  styleUrl:    './derm-virtual-call.css',
+  styleUrl: './derm-virtual-call.css',
 })
-export class DermVirtualCall {
-  readonly store             = inject(DermatologyCareStore);
-  protected router           = inject(Router);
+export class DermVirtualCall implements OnInit, OnDestroy {
+  readonly store = inject(DermatologyCareStore);
+  protected router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly sanitizer = inject(DomSanitizer);
 
-  micOn        = signal<boolean>(true);
-  camOn        = signal<boolean>(true);
   showEndModal = signal<boolean>(false);
-  activeTab    = signal<DermCallTab>('chat');
-  inputText    = '';
-  notes        = this.translate.instant('dermatology.dermCall.notesTemplate');
+  activeTab = signal<DermCallTab>('notes');
+  callDuration = signal<string>('00:00');
+  saveSuccess = signal<boolean>(false);
 
-  messages = signal<CallMessage[]>([
-    { id: 1, from: 'patient', text: this.translate.instant('dermatology.dermCall.mockMessage1'), time: '10:31 AM' },
-    { id: 2, from: 'doctor',  text: this.translate.instant('dermatology.dermCall.mockMessage2'), time: '10:32 AM' },
-    { id: 3, from: 'patient', text: this.translate.instant('dermatology.dermCall.mockMessage3'), time: '10:33 AM' },
-  ]);
+  inputText = '';
+  notes = this.translate.instant('dermatology.dermCall.notesTemplate');
+  messages = signal<CallMessage[]>([]);
 
-  private nextId = 4;
+  readonly wherebyUrl: SafeResourceUrl;
 
-  toggleMic(): void { this.micOn.update(value => !value); }
-  toggleCam(): void { this.camOn.update(value => !value); }
-  setTab(tab: DermCallTab): void { this.activeTab.set(tab); }
-  requestEndCall(): void { this.showEndModal.set(true); }
-  cancelEndCall(): void { this.showEndModal.set(false); }
+  private nextId = 1;
+  private timerSeconds = 0;
+  private timerInterval?: ReturnType<typeof setInterval>;
 
-  /** Ends the call and navigates to derm agenda. */
-  confirmEndCall(): void {
-    this.showEndModal.set(false);
-    this.router.navigate(['/derm/agenda']);
+  constructor() {
+    this.wherebyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      'https://bloomie-derma.daily.co/bloomie-consultation',
+    );
   }
 
-  /** Sends a doctor message and simulates patient reply. */
+  ngOnInit(): void {
+    this.startTimer();
+    const appt = this.store.selectedAppointment();
+    if (appt) this.store.startConsultationSession(appt);
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+  }
+
+  private startTimer(): void {
+    this.timerInterval = setInterval(() => {
+      this.timerSeconds++;
+      const m = Math.floor(this.timerSeconds / 60)
+        .toString()
+        .padStart(2, '0');
+      const s = (this.timerSeconds % 60).toString().padStart(2, '0');
+      this.callDuration.set(`${m}:${s}`);
+    }, 1000);
+  }
+
+  setTab(tab: DermCallTab): void {
+    this.activeTab.set(tab);
+  }
+  requestEndCall(): void {
+    this.showEndModal.set(true);
+  }
+  cancelEndCall(): void {
+    this.showEndModal.set(false);
+  }
+
+  saveNotes(): void {
+    const appt = this.store.selectedAppointment();
+    if (appt) {
+      const consultation = this.store.myConsultations().find((c) => c.appointmentId === appt.id);
+      if (consultation) {
+        this.store.saveConsultationNotes(consultation, this.notes);
+      }
+    }
+    this.saveSuccess.set(true);
+    setTimeout(() => this.saveSuccess.set(false), 2500);
+  }
+
+  confirmEndCall(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.showEndModal.set(false);
+
+    const appt = this.store.selectedAppointment();
+    if (!appt) {
+      this.router.navigate(['/derm/agenda']);
+      return;
+    }
+    this.store.endConsultationSession(appt, this.notes).subscribe({
+      complete: () => this.router.navigate(['/derm/agenda']),
+      error: () => this.router.navigate(['/derm/agenda']),
+    });
+  }
+
   sendMessage(): void {
-    if (!this.inputText.trim()) return;
-    this.messages.update(msgs => [
+    const text = this.inputText.trim();
+    if (!text) return;
+    this.messages.update((msgs) => [
       ...msgs,
-      { id: this.nextId++, from: 'doctor', text: this.inputText.trim(), time: 'now' }
+      { id: this.nextId++, from: 'doctor', text, time: this.now() },
     ]);
     this.inputText = '';
-    setTimeout(() => {
-      this.messages.update(msgs => [
-        ...msgs,
-        { id: this.nextId++, from: 'patient', text: this.translate.instant('dermatology.dermCall.mockAutoReply'), time: 'now' }
-      ]);
-    }, 1500);
+  }
+
+  private now(): string {
+    const d = new Date();
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
   }
 }

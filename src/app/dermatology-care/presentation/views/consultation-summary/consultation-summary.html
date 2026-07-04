@@ -1,75 +1,98 @@
-<div class="consultation-summary">
+<div class="cs-page">
 
-  <div class="consultation-summary__header">
-    <button class="consultation-summary__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="cs-banner">
+    <button class="cs-banner__back" (click)="navigateBack()" aria-label="Go back">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="consultation-summary__title">{{ 'dermatology.consultationSummary.title' | translate }}</h1>
+    <h1 class="cs-banner__title">{{ 'dermatology.consultationSummary.title' | translate }}</h1>
+    <div class="cs-banner__deco" aria-hidden="true">
+      <mat-icon class="cs-banner__deco-icon">medical_services</mat-icon>
+    </div>
   </div>
-  <div class="consultation-summary__divider"></div>
 
   @if (store.selectedConsultation(); as consultation) {
-    <div class="consultation-summary__layout">
+    <div class="cs-layout">
 
-      <!-- Left column -->
-      <div class="consultation-summary__left">
+      <!-- ── Left column ─────────────────────────────────────────────────────── -->
+      <div class="cs-left">
 
-        <!-- Green header info card -->
-        <div class="consultation-summary__info-card">
-          <div class="consultation-summary__row">
-            <mat-icon class="consultation-summary__row-icon">calendar_today</mat-icon>
-            <span class="consultation-summary__row-label">{{ 'dermatology.consultationSummary.date' | translate }}</span>
-            <span class="consultation-summary__chip">{{ consultation.startedAt }}</span>
-            <span class="consultation-summary__chip">{{ consultation.finishedAt }}</span>
+        <!-- Doctor hero card -->
+        <div class="cs-doctor">
+          <div class="cs-doctor__ring cs-doctor__ring--1" aria-hidden="true"></div>
+          <div class="cs-doctor__ring cs-doctor__ring--2" aria-hidden="true"></div>
+
+          <div class="cs-doctor__avatar">
+            @if (doctorPhotoUrl()) {
+              <img class="cs-doctor__avatar-img" [src]="doctorPhotoUrl()!" alt="Doctor photo" />
+            } @else {
+              <span class="cs-doctor__initials">{{ doctorInitials() }}</span>
+            }
           </div>
-          <div class="consultation-summary__row">
-            <mat-icon class="consultation-summary__row-icon">person</mat-icon>
-            <p class="consultation-summary__row-text">
-              <span class="consultation-summary__row-label">{{ 'dermatology.consultationSummary.doctor' | translate }}</span>
-              {{ doctorLabel() }}
-            </p>
-          </div>
-          <div class="consultation-summary__row">
-            <mat-icon class="consultation-summary__row-icon">upload</mat-icon>
-            <span class="consultation-summary__row-label">{{ 'dermatology.consultationSummary.uploadedImages' | translate }}</span>
-          </div>
-          @if (consultation.hasClinicalPhotos) {
-            <div class="consultation-summary__photos">
-              @for (url of consultation.clinicalPhotoUrls; track url) {
-                <img class="consultation-summary__photo" [src]="url" alt="Clinical photo" />
+
+          <div class="cs-doctor__info">
+            <h2 class="cs-doctor__name">{{ doctorLabel() }}</h2>
+            @if (doctorProfile(); as profile) {
+              <span class="cs-doctor__specialty">{{ profile.specialty }}</span>
+            }
+            <div class="cs-doctor__pills">
+              <span class="cs-doctor__pill">
+                <mat-icon>calendar_today</mat-icon>
+                {{ formattedDate() }}
+              </span>
+              <span class="cs-doctor__pill">
+                <mat-icon>schedule</mat-icon>
+                {{ formattedTime() }}
+              </span>
+              @if (consultation.durationInMinutes > 0) {
+                <span class="cs-doctor__pill cs-doctor__pill--duration">
+                  <mat-icon>timer</mat-icon>
+                  {{ consultation.durationInMinutes }} min
+                </span>
               }
             </div>
-          }
+          </div>
         </div>
 
-        <!-- Diagnosis card -->
-        <div class="consultation-summary__body-card">
-          <p class="consultation-summary__section-label">{{ 'dermatology.consultationSummary.diagnosis' | translate }}</p>
-          <p class="consultation-summary__body-text">{{ consultation.notes }}</p>
+        <!-- Notes card -->
+        <div class="cs-section-card">
+          <p class="cs-section-label">
+            <mat-icon>description</mat-icon>
+            {{ 'dermatology.consultationSummary.diagnosis' | translate }}
+          </p>
+          <p class="cs-body-text">{{ consultation.notes || '—' }}</p>
+        </div>
 
-          <p class="consultation-summary__section-label">{{ 'dermatology.consultationSummary.recommendations' | translate }}</p>
-          <p class="consultation-summary__body-text">{{ consultation.recommendations }}</p>
+        <!-- Recommendations card -->
+        <div class="cs-section-card">
+          <p class="cs-section-label">
+            <mat-icon>recommend</mat-icon>
+            {{ 'dermatology.consultationSummary.recommendations' | translate }}
+          </p>
+          <p class="cs-body-text">{{ consultation.recommendations || '—' }}</p>
         </div>
 
       </div>
 
-      <!-- Right column -->
-      <div class="consultation-summary__right">
-        <div class="consultation-summary__right-card">
-          <p class="consultation-summary__section-label">{{ 'dermatology.consultationSummary.duration' | translate }}</p>
-          <p class="consultation-summary__duration-value">{{ consultation.durationInMinutes }} min</p>
+      <!-- ── Right column ────────────────────────────────────────────────────── -->
+      <div class="cs-right">
 
-          <button class="consultation-summary__return-btn" (click)="navigateBack()">
-            {{ 'dermatology.consultationSummary.returnBtn' | translate }}
-          </button>
-        </div>
+        <!-- Return button -->
+        <button class="cs-return-btn" (click)="navigateBack()">
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'dermatology.consultationSummary.returnBtn' | translate }}
+        </button>
+
       </div>
 
     </div>
+
   } @else {
-    <div class="consultation-summary__empty">
-      <mat-icon>info</mat-icon>
-      <p>{{ 'dermatology.consultationSummary.noData' | translate }}</p>
+    <div class="cs-empty">
+      <div class="cs-empty__icon-wrap">
+        <mat-icon>info</mat-icon>
+      </div>
+      <p class="cs-empty__text">{{ 'dermatology.consultationSummary.noData' | translate }}</p>
     </div>
   }
 

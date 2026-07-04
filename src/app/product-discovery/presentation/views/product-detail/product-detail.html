@@ -1,130 +1,124 @@
-<div class="product-detail">
+<div class="pd">
 
   @if (!store.selectedProduct()) {
+
     <!-- Empty state -->
-    <div class="product-detail__empty">
-      <mat-icon class="product-detail__empty-icon">inventory_2</mat-icon>
-      <p class="product-detail__empty-text">{{ 'productDiscovery.productDetail.noProduct' | translate }}</p>
+    <div class="pd-empty">
+      <div class="pd-empty__icon-wrap"><mat-icon>inventory_2</mat-icon></div>
+      <p class="pd-empty__text">{{ 'productDiscovery.productDetail.noProduct' | translate }}</p>
     </div>
+
   } @else {
 
-    <!-- Header -->
-    <div class="product-detail__header">
-      <button class="product-detail__back-btn" (click)="navigateBack()" aria-label="Go back">
+    <!-- ── Banner ── -->
+    <div class="pd-banner">
+      <button class="pd-banner__back" (click)="navigateBack()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <div>
-        <h1 class="product-detail__header-title">{{ 'productDiscovery.productDetail.title' | translate }}</h1>
-        <p class="product-detail__header-brand">{{ store.selectedProduct()!.brand }}</p>
+      <div class="pd-banner__text">
+        <p class="pd-banner__brand">{{ store.selectedProduct()!.brand }}</p>
+        <h1 class="pd-banner__title">{{ store.selectedProduct()!.name }}</h1>
       </div>
       <button
-        class="product-detail__favorite-btn"
-        [class.product-detail__favorite-btn--active]="isFavorite()"
+        class="pd-banner__heart"
+        [class.pd-banner__heart--active]="isFavorite()"
         (click)="toggleFavorite()"
-        aria-label="Toggle favorite"
       >
         <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
       </button>
     </div>
 
-    <div class="product-detail__divider"></div>
+    <!-- ── Content ── -->
+    <div class="pd-content">
 
-    <div class="product-detail__content">
-
-      <!-- Left: product image area -->
-      <div class="product-detail__image-panel">
-        <div class="product-detail__image-area">
-          <mat-icon class="product-detail__image-icon">inventory_2</mat-icon>
-        </div>
+      <!-- Left: image panel -->
+      <div class="pd-image">
+        @if (store.selectedProduct()!.imageUrl) {
+          <img
+            class="pd-image__photo"
+            [src]="store.selectedProduct()!.imageUrl"
+            [alt]="store.selectedProduct()!.name"
+            (error)="onImageError($event)"
+          />
+        } @else {
+          <div class="pd-image__deco pd-image__deco--1"></div>
+          <div class="pd-image__deco pd-image__deco--2"></div>
+          <mat-icon class="pd-image__icon">inventory_2</mat-icon>
+        }
         @if (store.selectedProduct()!.isAiRecommended) {
-          <div class="product-detail__image-ai-badge">
-            <mat-icon class="product-detail__image-ai-icon">auto_awesome</mat-icon>
+          <div class="pd-image__badge">
+            <mat-icon>auto_awesome</mat-icon>
             <span>{{ 'productDiscovery.productDetail.aiRecommended' | translate }}</span>
           </div>
         }
       </div>
 
-      <!-- Right: product details card -->
-      <div class="product-detail__details-card">
+      <!-- Right: details -->
+      <div class="pd-details">
 
-        <!-- Brand and name -->
-        <p class="product-detail__brand">{{ store.selectedProduct()!.brand }}</p>
-        <h2 class="product-detail__name">{{ store.selectedProduct()!.name }}</h2>
+        <p class="pd-details__desc">{{ store.selectedProduct()!.description }}</p>
 
-        <!-- Description -->
-        <p class="product-detail__description">{{ store.selectedProduct()!.description }}</p>
-
-        <!-- AI Compatibility section -->
+        <!-- Skin Compatibility -->
         @if (compatibility()) {
-          <div class="product-detail__compatibility">
-            <div class="product-detail__compatibility-header">
-              <mat-icon class="product-detail__compatibility-ai-icon">auto_awesome</mat-icon>
-              <p class="product-detail__compatibility-title">{{ 'productDiscovery.productDetail.aiCompatibilityTitle' | translate }}</p>
+          <div class="pd-compat">
+            <div class="pd-compat__header">
+              <div class="pd-compat__icon-wrap">
+                <mat-icon>verified</mat-icon>
+              </div>
+              <p class="pd-compat__title">{{ 'productDiscovery.productDetail.aiCompatibilityTitle' | translate }}</p>
             </div>
 
-            <!-- Score bar -->
-            <div class="product-detail__score-bar-row">
-              <div class="product-detail__score-bar-track">
+            <div class="pd-compat__score-row">
+              <div class="pd-compat__bar">
                 <div
-                  class="product-detail__score-bar-fill"
+                  class="pd-compat__bar-fill"
                   [style.width.%]="compatibility()!.compatibilityScore"
                   [style.background-color]="compatibility()!.compatibilityColor"
                 ></div>
               </div>
-              <span
-                class="product-detail__score-value"
-                [style.color]="compatibility()!.compatibilityColor"
-              >
+              <span class="pd-compat__pct" [style.color]="compatibility()!.compatibilityColor">
                 {{ compatibility()!.compatibilityScore }}%
               </span>
             </div>
 
-            <!-- Score label -->
-            <p
-              class="product-detail__score-label"
-              [style.color]="compatibility()!.compatibilityColor"
-            >
+            <p class="pd-compat__label" [style.color]="compatibility()!.compatibilityColor">
               {{ compatibility()!.compatibilityLabel }}
             </p>
-
-            <!-- Explanation -->
-            <p class="product-detail__compatibility-explanation">{{ compatibility()!.explanation }}</p>
+            <p class="pd-compat__explanation">{{ compatibility()!.reason }}</p>
           </div>
         }
 
         <!-- Key Benefits -->
         @if (store.selectedProduct()!.hasBenefits) {
-          <div class="product-detail__benefits">
-            <p class="product-detail__benefits-title">{{ 'productDiscovery.productDetail.keyBenefits' | translate }}</p>
-            <div class="product-detail__benefits-list">
+          <div class="pd-benefits">
+            <p class="pd-benefits__title">{{ 'productDiscovery.productDetail.keyBenefits' | translate }}</p>
+            <div class="pd-benefits__list">
               @for (benefit of store.selectedProduct()!.benefits; track benefit) {
-                <div class="product-detail__benefit-item">
-                  <div class="product-detail__benefit-icon-wrapper">
-                    <mat-icon class="product-detail__benefit-icon">check</mat-icon>
-                  </div>
-                  <p class="product-detail__benefit-text">{{ benefit }}</p>
+                <div class="pd-benefits__item">
+                  <div class="pd-benefits__check"><mat-icon>check</mat-icon></div>
+                  <p class="pd-benefits__text">{{ benefit }}</p>
                 </div>
               }
             </div>
           </div>
         }
 
-        <!-- Action buttons -->
-        <div class="product-detail__actions">
-          <button class="product-detail__routine-btn" (click)="router.navigate(['/routine'])">
-            {{ 'productDiscovery.productDetail.addToRoutineBtn' | translate }}
-          </button>
+        <!-- Actions -->
+        <div class="pd-actions">
           <button
-            class="product-detail__save-btn"
-            [class.product-detail__save-btn--active]="isFavorite()"
+            class="pd-actions__save"
+            [class.pd-actions__save--active]="isFavorite()"
             (click)="toggleFavorite()"
           >
+            <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
             {{ isFavorite() ? ('productDiscovery.productDetail.savedBtn' | translate) : ('productDiscovery.productDetail.saveBtn' | translate) }}
           </button>
         </div>
 
       </div>
+
     </div>
+
   }
 
 </div>

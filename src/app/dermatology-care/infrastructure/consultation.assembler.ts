@@ -24,15 +24,15 @@ export class ConsultationAssembler implements BaseAssembler<Consultation, Consul
   toEntityFromResource(resource: ConsultationResource): Consultation {
     return new Consultation({
       id:                resource.id,
-      appointmentId:     resource.appointment_id,
-      patientId:         resource.patient_id,
-      dermatologistId:   resource.dermatologist_id,
-      clinicalPhotoUrls: resource.clinical_photo_urls,
+      appointmentId:     resource.appointmentId     ?? resource.appointment_id     ?? 0,
+      patientId:         resource.patientId         ?? resource.patient_id         ?? 0,
+      dermatologistId:   resource.dermatologistId   ?? resource.dermatologist_id   ?? 0,
+      clinicalPhotoUrls: resource.clinicalPhotoUrls ?? resource.clinical_photo_urls ?? [],
       notes:             resource.notes,
       recommendations:   resource.recommendations,
       status:            resource.status as ConsultationStatus,
-      startedAt:         resource.started_at,
-      finishedAt:        resource.finished_at,
+      startedAt:         resource.startedAt         ?? resource.started_at         ?? '',
+      finishedAt:        resource.finishedAt        ?? resource.finished_at        ?? '',
     });
   }
 
@@ -43,16 +43,16 @@ export class ConsultationAssembler implements BaseAssembler<Consultation, Consul
    */
   toResourceFromEntity(entity: Consultation): ConsultationResource {
     return {
-      id:                  entity.id,
-      appointment_id:      entity.appointmentId,
-      patient_id:          entity.patientId,
-      dermatologist_id:    entity.dermatologistId,
-      clinical_photo_urls: entity.clinicalPhotoUrls,
-      notes:               entity.notes,
-      recommendations:     entity.recommendations,
-      status:              entity.status,
-      started_at:          entity.startedAt,
-      finished_at:         entity.finishedAt,
+      id:                entity.id,
+      appointmentId:     entity.appointmentId,
+      patientId:         entity.patientId,
+      dermatologistId:   entity.dermatologistId,
+      clinicalPhotoUrls: entity.clinicalPhotoUrls,
+      notes:             entity.notes,
+      recommendations:   entity.recommendations,
+      status:            entity.status,
+      startedAt:         entity.startedAt,
+      finishedAt:        entity.finishedAt,
     } as ConsultationResource;
   }
 }

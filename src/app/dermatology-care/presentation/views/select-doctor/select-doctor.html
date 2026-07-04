@@ -1,103 +1,131 @@
 <div class="select-doctor">
 
-  <!-- Header -->
-  <div class="select-doctor__header">
-    <button class="select-doctor__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner header ─────────────────────────────────────────────────────── -->
+  <div class="sd-banner">
+    <button class="sd-banner__back" (click)="navigateBack()" aria-label="Go back">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <div>
-      <h1 class="select-doctor__title">{{ 'dermatology.selectDoctor.title' | translate }}</h1>
-      <p class="select-doctor__count">{{ resultCountLabel() }}</p>
+    <div class="sd-banner__text">
+      <h1 class="sd-banner__title">{{ 'dermatology.selectDoctor.title' | translate }}</h1>
+      <p class="sd-banner__count">
+        {{ resultCount() }} {{ 'dermatology.selectDoctor.specialistsAvailable' | translate }}
+      </p>
+    </div>
+    <div class="sd-banner__deco" aria-hidden="true">
+      <mat-icon class="sd-banner__deco-icon">medical_services</mat-icon>
     </div>
   </div>
 
-  <div class="select-doctor__divider"></div>
-
-  <div class="select-doctor__content">
-
-    <!-- Left: list -->
-    <div class="select-doctor__list-section">
-
-      <!-- Search bar -->
-      <div class="select-doctor__search-bar">
-        <mat-icon class="select-doctor__search-icon">search</mat-icon>
-        <input
-          class="select-doctor__search-input"
-          type="text"
-          [placeholder]="'dermatology.selectDoctor.searchPlaceholder' | translate"
-          [(ngModel)]="searchQuery"
-        />
-        <button class="select-doctor__filter-btn" (click)="toggleFilterPanel()" aria-label="Toggle filter">
-          <mat-icon [class.select-doctor__filter-icon--active]="selectedPriceIdx() !== 0">tune</mat-icon>
+  <!-- ── Controls bar: search + price filter pills ─────────────────────────── -->
+  <div class="sd-controls">
+    <div class="sd-search">
+      <mat-icon class="sd-search__icon">search</mat-icon>
+      <input
+        class="sd-search__input"
+        type="text"
+        [placeholder]="'dermatology.selectDoctor.searchPlaceholder' | translate"
+        [(ngModel)]="searchQuery"
+      />
+      @if (searchQuery()) {
+        <button class="sd-search__clear" (click)="searchQuery.set('')" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
         </button>
-      </div>
-
-      <!-- Active filter chip -->
-      @if (selectedPriceIdx() !== 0) {
-        <div class="select-doctor__filter-chip">
-          <span>{{ priceRanges[selectedPriceIdx()].labelKey | translate }}</span>
-          <button class="select-doctor__chip-clear" (click)="clearPriceFilter()" aria-label="Clear filter">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
       }
-
-      <!-- Doctor cards -->
-      <div class="select-doctor__cards">
-        @if (filteredDermatologists().length === 0) {
-          <div class="select-doctor__empty">
-            <div class="select-doctor__empty-icon">
-              <mat-icon>person_search</mat-icon>
-            </div>
-            <h3 class="select-doctor__empty-title">{{ 'dermatology.selectDoctor.noSpecialists' | translate }}</h3>
-            <p class="select-doctor__empty-desc">{{ 'dermatology.selectDoctor.noSpecialistsDesc' | translate }}</p>
-          </div>
-        } @else {
-          @for (dermatologist of filteredDermatologists(); track dermatologist.id) {
-            <div class="select-doctor__card">
-              <div class="select-doctor__card-avatar">
-                @if (photoForDermatologist(dermatologist)) {
-                  <img class="select-doctor__card-avatar-img" [src]="photoForDermatologist(dermatologist)!" alt="Dermatologist photo" />
-                } @else {
-                  <mat-icon>person</mat-icon>
-                }
-              </div>
-              <div class="select-doctor__card-info">
-                <p class="select-doctor__card-specialty">{{ dermatologist.specialty }}</p>
-                <div class="select-doctor__card-meta">
-                  <span class="select-doctor__card-fee">{{ dermatologist.formattedFee }} {{ 'dermatology.selectDoctor.perSession' | translate }}</span>
-                  <span class="select-doctor__card-rating">⭐ {{ dermatologist.rating }}</span>
-                </div>
-                <p class="select-doctor__card-experience">{{ dermatologist.yearsExperience }} {{ 'dermatology.selectDoctor.yearsExp' | translate }}</p>
-                <button
-                  class="select-doctor__book-btn"
-                  (click)="selectDermatologist(dermatologist)"
-                >
-                  {{ 'dermatology.selectDoctor.bookBtn' | translate }}
-                </button>
-              </div>
-            </div>
-          }
-        }
-      </div>
     </div>
 
-    <!-- Right: filter panel (desktop) / Bottom sheet (mobile) -->
-    <div class="select-doctor__filter-panel" [class.select-doctor__filter-panel--visible]="showFilterPanel()">
-      <p class="select-doctor__filter-title">{{ 'dermatology.selectDoctor.filterByPrice' | translate }}</p>
-      <div class="select-doctor__filter-options">
-        @for (range of priceRanges; track range.labelKey; let i = $index) {
-          <label class="select-doctor__filter-option" (click)="selectPriceRange(i)">
-            <div class="select-doctor__radio" [class.select-doctor__radio--selected]="selectedPriceIdx() === i">
-              @if (selectedPriceIdx() === i) {
-                <div class="select-doctor__radio-dot"></div>
+    <div class="sd-price-pills" role="group" [attr.aria-label]="'dermatology.selectDoctor.filterByPrice' | translate">
+      @for (range of priceRanges; track range.labelKey; let i = $index) {
+        <button
+          class="sd-price-pill"
+          [class.sd-price-pill--active]="selectedPriceIdx() === i"
+          (click)="selectPriceRange(i)"
+        >
+          {{ range.labelKey | translate }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Doctor cards grid ──────────────────────────────────────────────────── -->
+  @if (filteredDermatologists().length === 0) {
+    <div class="sd-empty">
+      <div class="sd-empty__icon-wrap">
+        <mat-icon>person_search</mat-icon>
+      </div>
+      <h3 class="sd-empty__title">{{ 'dermatology.selectDoctor.noSpecialists' | translate }}</h3>
+      <p class="sd-empty__desc">{{ 'dermatology.selectDoctor.noSpecialistsDesc' | translate }}</p>
+    </div>
+  } @else {
+    <div class="sd-grid">
+      @for (d of filteredDermatologists(); track d.id) {
+
+        <div class="doctor-card" [class.doctor-card--top]="d.hasHighRating">
+
+          <!-- Top row: avatar + badges -->
+          <div class="doctor-card__top-row">
+            <div class="doctor-card__avatar">
+              @if (photoForDermatologist(d)) {
+                <img
+                  class="doctor-card__avatar-img"
+                  [src]="photoForDermatologist(d)!"
+                  [alt]="displayName(d)"
+                />
+              } @else {
+                <span class="doctor-card__initials">{{ initialsFor(d) }}</span>
+              }
+              <!-- Online indicator -->
+              @if (d.available) {
+                <span class="doctor-card__online-dot" aria-label="Available"></span>
               }
             </div>
-            <span class="select-doctor__filter-label">{{ range.labelKey | translate }}</span>
-          </label>
-        }
-      </div>
-    </div>
 
-  </div>
+            <div class="doctor-card__badges">
+              @if (d.hasHighRating) {
+                <span class="doctor-card__badge doctor-card__badge--top">
+                  <mat-icon>workspace_premium</mat-icon> Top rated
+                </span>
+              }
+              @if (d.available) {
+                <span class="doctor-card__badge doctor-card__badge--available">
+                  Available
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Identity -->
+          <div class="doctor-card__identity">
+            <h2 class="doctor-card__name">{{ displayName(d) }}</h2>
+            <span class="doctor-card__specialty-chip">{{ d.specialty }}</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="doctor-card__divider"></div>
+
+          <!-- Stats row -->
+          <div class="doctor-card__stats">
+            <div class="doctor-card__stat">
+              <span class="doctor-card__stat-value">{{ d.formattedFee }}</span>
+              <span class="doctor-card__stat-label">{{ 'dermatology.selectDoctor.perSession' | translate }}</span>
+            </div>
+            @if (d.patientCount > 0) {
+              <div class="doctor-card__stat-sep"></div>
+              <div class="doctor-card__stat">
+                <span class="doctor-card__stat-value">{{ d.patientCount }}+</span>
+                <span class="doctor-card__stat-label">{{ 'dermatology.selectDoctor.patients' | translate }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Book button -->
+          <button class="doctor-card__book-btn" (click)="selectDermatologist(d)">
+            {{ 'dermatology.selectDoctor.bookBtn' | translate }}
+            <mat-icon class="doctor-card__book-arrow">arrow_forward</mat-icon>
+          </button>
+
+        </div>
+      }
+    </div>
+  }
+
 </div>

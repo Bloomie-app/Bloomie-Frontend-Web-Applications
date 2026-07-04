@@ -142,6 +142,7 @@ export class IntelligentSupportStore {
       type: MessageType.User,
       sentAt: new Date().toISOString(),
     });
+    this.messagesSignal.update((messages) => [...messages, userMessage]);
 
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
@@ -150,12 +151,13 @@ export class IntelligentSupportStore {
       .sendChatMessage(userMessage)
       .pipe(retry(2))
       .subscribe({
-        next: (createdMessage) => {
-          this.messagesSignal.update((messages) => [...messages, createdMessage]);
+        next: (aiMessage) => {
+          this.messagesSignal.update((messages) => [...messages, aiMessage]);
           this.loadingSignal.set(false);
           this.evaluateLimitation(text);
         },
         error: (err) => {
+          this.messagesSignal.update((messages) => messages.filter((m) => m !== userMessage));
           this.errorSignal.set(this.formatError(err, 'Failed to send message'));
           this.loadingSignal.set(false);
         },
@@ -291,5 +293,30 @@ export class IntelligentSupportStore {
         : error.message;
     }
     return fallback;
+  }
+
+  initializeChat(patientId: number, skinProfileId: number): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.intelligentSupportApi.getActiveQuery(patientId).subscribe({
+      next: (activeQuery) => {
+        this.currentQuerySignal.set(activeQuery);
+        this.loadMessages(activeQuery.id);
+      },
+      error: () => {
+        this.startQuery(
+          new SupportQuery({
+            id: 0,
+            userId: patientId,
+            skinProfileId: skinProfileId,
+            lastFacialScanId: 0,
+            suggestedAction: SuggestedAction.ContinueRoutine,
+            status: SupportQueryStatus.InProgress,
+            createdAt: new Date().toISOString(),
+          }),
+        );
+      },
+    });
   }
 }

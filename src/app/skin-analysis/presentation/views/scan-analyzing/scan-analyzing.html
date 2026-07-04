@@ -1,18 +1,32 @@
-<div class="scan-analyzing">
+<div class="sa">
 
-  <div class="scan-analyzing__content">
-    <mat-icon class="scan-analyzing__icon">face_retouching_natural</mat-icon>
-    <h2 class="scan-analyzing__title">{{ 'skinAnalysis.scanAnalyzing.title' | translate }}</h2>
-    <p class="scan-analyzing__subtitle">{{ 'skinAnalysis.scanAnalyzing.subtitle' | translate }}</p>
+  <div class="sa__content">
 
-    <div class="scan-analyzing__progress-bar">
-      <div class="scan-analyzing__progress-fill" [style.width.%]="progress()"></div>
+    <!-- Pulsing icon -->
+    <div class="sa__icon-wrap">
+      <div class="sa__ring sa__ring--1"></div>
+      <div class="sa__ring sa__ring--2"></div>
+      <div class="sa__ring sa__ring--3"></div>
+      <mat-icon class="sa__icon">face_retouching_natural</mat-icon>
     </div>
-    <p class="scan-analyzing__percentage">{{ progress() }}%</p>
+
+    <h2 class="sa__title">{{ 'skinAnalysis.scanAnalyzing.title' | translate }}</h2>
+
+    <!-- Cycling step message -->
+    <p class="sa__step">{{ currentStep() }}</p>
+
+    <!-- Progress bar -->
+    <div class="sa__bar-wrap">
+      <div class="sa__bar">
+        <div class="sa__bar-fill" [style.width.%]="progress()"></div>
+      </div>
+      <span class="sa__pct">{{ progress() }}%</span>
+    </div>
+
   </div>
 
-  <div class="scan-analyzing__footer">
-    <button class="scan-analyzing__cancel-btn" (click)="navigateBack()">
+  <div class="sa__footer">
+    <button class="sa__cancel" (click)="navigateBack()">
       {{ 'skinAnalysis.scanAnalyzing.backBtn' | translate }}
     </button>
   </div>

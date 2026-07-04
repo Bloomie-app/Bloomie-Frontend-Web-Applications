@@ -1,599 +1,530 @@
+/* =============================================================================
+   select-doctor.css
+   ============================================================================= */
+
 .select-doctor {
-  padding: 32px 40px;
+  padding: 0;
   background: #fffdf8;
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.select-doctor__header {
+/* ── Banner header ──────────────────────────────────────────────────────────── */
+
+.sd-banner {
+  position: relative;
+  background: linear-gradient(135deg, #a26769 0%, #7d4648 100%);
+  padding: 36px 40px 40px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 20px;
+  overflow: hidden;
 }
 
-.select-doctor__back-btn {
+.sd-banner__back {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e0d6d6;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s;
+  color: #ffffff;
 }
 
-.select-doctor__back-btn:hover { background: #f5f0f0; }
+.sd-banner__back:hover { background: rgba(255, 255, 255, 0.28); }
 
-.select-doctor__title {
+.sd-banner__back mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.sd-banner__text { flex: 1; }
+
+.sd-banner__title {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 32px;
-  color: #333;
+  font-weight: 800;
+  font-size: 28px;
+  color: #ffffff;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.select-doctor__count {
+.sd-banner__count {
   font-family: 'Montserrat', sans-serif;
   font-size: 13px;
-  color: #999;
-  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 6px 0 0;
 }
 
-.select-doctor__divider {
-  height: 1px;
-  background: #e8dede;
-  margin-bottom: 24px;
+.sd-banner__deco {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.12;
 }
 
-.select-doctor__content {
+.sd-banner__deco-icon {
+  font-size: 100px;
+  width: 100px;
+  height: 100px;
+  color: #ffffff;
+}
+
+/* ── Controls bar ───────────────────────────────────────────────────────────── */
+
+.sd-controls {
   display: flex;
-  gap: 24px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 40px 20px;
+  background: #fffdf8;
 }
 
-.select-doctor__list-section {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Search bar */
-.select-doctor__search-bar {
+/* Search box */
+.sd-search {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #e4e3e3;
-  border-radius: 28px;
-  padding: 12px 20px;
-  margin-bottom: 12px;
+  background: #ffffff;
+  border: 1.5px solid #e8dede;
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.select-doctor__search-icon {
-  color: rgba(0, 0, 0, 0.7);
+.sd-search:focus-within {
+  border-color: #a26769;
+  box-shadow: 0 4px 16px rgba(162, 103, 105, 0.12);
+}
+
+.sd-search__icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #bbb;
   flex-shrink: 0;
 }
 
-.select-doctor__search-input {
+.sd-search__input {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
   font-family: 'Montserrat', sans-serif;
   font-size: 14px;
-  color: #000;
+  color: #333;
 }
 
-.select-doctor__search-input::placeholder { color: #999; }
+.sd-search__input::placeholder { color: #bbb; }
 
-.select-doctor__filter-btn {
+.sd-search__clear {
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.select-doctor__filter-icon--active { color: #a26769; }
-
-/* Filter chip */
-.select-doctor__filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(162, 103, 105, 0.1);
-  color: #a26769;
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  margin-bottom: 12px;
-}
-
-.select-doctor__chip-clear {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: #a26769;
   padding: 0;
-}
-
-.select-doctor__chip-clear mat-icon { font-size: 14px; }
-
-/* Cards */
-.select-doctor__cards { display: flex; flex-direction: column; gap: 16px; }
-
-.select-doctor__card {
-  background: #b3cee3;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
-  padding: 16px;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  transition: box-shadow 0.15s;
-}
-
-.select-doctor__card:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14); }
-
-.select-doctor__card-avatar {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  color: #bbb;
+  transition: color 0.15s;
 }
 
-.select-doctor__card-avatar mat-icon {
-  font-size: 32px;
-  color: #a26769;
-}
+.sd-search__clear:hover { color: #a26769; }
 
-.select-doctor__card-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
+.sd-search__clear mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
-.select-doctor__card-info { flex: 1; min-width: 0; }
-
-.select-doctor__card-specialty {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  color: #000;
-  margin: 0 0 4px;
-}
-
-.select-doctor__card-meta {
+/* Price filter pills */
+.sd-price-pills {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.select-doctor__card-fee {
+.sd-price-pill {
   font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  font-size: 14px;
-  color: #a26769;
-}
-
-.select-doctor__card-rating {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  color: #555;
-}
-
-.select-doctor__card-experience {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  color: #555;
-  margin: 0 0 12px;
-}
-
-.select-doctor__book-btn {
-  background: #7baab3;
-  color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  border: none;
+  border: 1.5px solid #e8dede;
   border-radius: 20px;
-  padding: 8px 20px;
+  padding: 7px 16px;
+  background: #ffffff;
+  color: #888;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.18s ease;
+  white-space: nowrap;
 }
 
-.select-doctor__book-btn:hover { background: #6697a0; }
+.sd-price-pill:hover {
+  border-color: #cebebe;
+  color: #a26769;
+  background: #fdf5f5;
+}
 
-/* Empty state */
-.select-doctor__empty {
+.sd-price-pill--active {
+  background: #a26769;
+  border-color: #a26769;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(162, 103, 105, 0.30);
+}
+
+.sd-price-pill--active:hover {
+  background: #8e5759;
+  border-color: #8e5759;
+  color: #ffffff;
+}
+
+/* ── Doctor cards grid ──────────────────────────────────────────────────────── */
+
+.sd-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 4px 40px 48px;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────────── */
+
+.sd-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 64px 32px;
+  padding: 72px 32px;
+  gap: 12px;
 }
 
-.select-doctor__empty-icon {
-  width: 80px;
-  height: 80px;
-  background: #f0e8e8;
+.sd-empty__icon-wrap {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, #f5eaea, #ede0e0);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 20px rgba(162, 103, 105, 0.15);
 }
 
-.select-doctor__empty-icon mat-icon {
-  font-size: 40px;
+.sd-empty__icon-wrap mat-icon {
+  font-size: 44px;
+  width: 44px;
+  height: 44px;
   color: #a26769;
 }
 
-.select-doctor__empty-title {
+.sd-empty__title {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 18px;
   color: #333;
-  margin: 0 0 8px;
+  margin: 0;
 }
 
-.select-doctor__empty-desc {
+.sd-empty__desc {
   font-family: 'Montserrat', sans-serif;
   font-size: 14px;
-  color: #666;
+  color: #999;
   line-height: 1.5;
+  margin: 0;
+  max-width: 320px;
 }
 
-/* Filter panel */
-.select-doctor__filter-panel {
-  width: 288px;
-  flex-shrink: 0;
+/* ── Doctor card ────────────────────────────────────────────────────────────── */
+
+.doctor-card {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.select-doctor__filter-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  color: #333;
-  margin: 0 0 16px;
-}
-
-.select-doctor__filter-options { display: flex; flex-direction: column; gap: 12px; }
-
-.select-doctor__filter-option {
+  border-radius: 24px;
+  border: 1.5px solid #ede8e8;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  padding: 26px;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.select-doctor__radio {
-  width: 20px;
-  height: 20px;
+.doctor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(162, 103, 105, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: #cebebe;
+}
+
+/* Subtle top accent bar for top-rated */
+.doctor-card--top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #a26769, #cebebe);
+  border-radius: 24px 24px 0 0;
+}
+
+/* ── Avatar + badges row ────────────────────────────────────────────────────── */
+
+.doctor-card__top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.doctor-card__avatar {
+  position: relative;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  border: 2px solid #000;
+  flex-shrink: 0;
+}
+
+.doctor-card__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #f0eaea;
+}
+
+.doctor-card__initials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #cebebe 0%, #a26769 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.select-doctor__radio--selected {
-  border-color: #a26769;
-  background: #a26769;
-}
-
-.select-doctor__radio-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ffffff;
-}
-
-.select-doctor__filter-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #000;
+  font-weight: 700;
+  font-size: 22px;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(162, 103, 105, 0.30);
 }
 
-/* ────────────────────────────────────────── */
-/* RESPONSIVE: TABLET (768px - 1023px)       */
-/* ────────────────────────────────────────── */
-@media (max-width: 1023px) {
-  .select-doctor {
-    padding: 24px 24px;
-  }
-
-  .select-doctor__title {
-    font-size: 28px;
-  }
-
-  .select-doctor__content {
-    gap: 16px;
-  }
-
-  .select-doctor__filter-panel {
-    width: 240px;
-    padding: 16px;
-  }
-
-  .select-doctor__card {
-    padding: 12px;
-    gap: 12px;
-  }
-
-  .select-doctor__card-avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .select-doctor__card-avatar mat-icon {
-    font-size: 28px;
-  }
+.doctor-card__online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  background: #7fa059;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(127, 160, 89, 0.40);
 }
 
-/* ────────────────────────────────────────── */
-/* RESPONSIVE: MOBILE (max-width: 767px)     */
-/* ────────────────────────────────────────── */
-@media (max-width: 767px) {
-  .select-doctor {
-    padding: 16px 16px;
-  }
-
-  /* Header */
-  .select-doctor__header {
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .select-doctor__title {
-    font-size: 24px;
-  }
-
-  .select-doctor__count {
-    font-size: 12px;
-  }
-
-  .select-doctor__divider {
-    margin-bottom: 16px;
-  }
-
-  /* Content layout: stack vertically */
-  .select-doctor__content {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  .select-doctor__list-section {
-    min-width: unset;
-  }
-
-  /* Search bar */
-  .select-doctor__search-bar {
-    padding: 10px 16px;
-    margin-bottom: 10px;
-  }
-
-  .select-doctor__search-input {
-    font-size: 13px;
-  }
-
-  /* Filter chip */
-  .select-doctor__filter-chip {
-    font-size: 11px;
-    padding: 3px 10px;
-    margin-bottom: 10px;
-  }
-
-  /* Cards */
-  .select-doctor__cards {
-    gap: 12px;
-  }
-
-  .select-doctor__card {
-    padding: 12px;
-    gap: 12px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .select-doctor__card-avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .select-doctor__card-avatar mat-icon {
-    font-size: 28px;
-  }
-
-  .select-doctor__card-info {
-    width: 100%;
-  }
-
-  .select-doctor__card-specialty {
-    font-size: 14px;
-  }
-
-  .select-doctor__card-meta {
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-
-  .select-doctor__card-fee {
-    font-size: 13px;
-  }
-
-  .select-doctor__card-rating {
-    font-size: 11px;
-  }
-
-  .select-doctor__card-experience {
-    font-size: 11px;
-    margin: 0 0 10px;
-  }
-
-  .select-doctor__book-btn {
-    width: 100%;
-    padding: 10px 16px;
-    font-size: 13px;
-  }
-
-  /* Empty state */
-  .select-doctor__empty {
-    padding: 48px 16px;
-  }
-
-  .select-doctor__empty-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
-  }
-
-  .select-doctor__empty-icon mat-icon {
-    font-size: 32px;
-  }
-
-  .select-doctor__empty-title {
-    font-size: 16px;
-    margin: 0 0 6px;
-  }
-
-  .select-doctor__empty-desc {
-    font-size: 13px;
-    max-width: 100%;
-  }
-
-  /* Filter panel: modal behavior on mobile */
-  .select-doctor__filter-panel {
-    position: fixed;
-    inset: auto 0 0 0;
-    width: 100%;
-    max-height: 50vh;
-    border-radius: 20px 20px 0 0;
-    padding: 20px 16px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 999;
-  }
-
-  .select-doctor__filter-panel--visible {
-    transform: translateY(0);
-  }
-
-  .select-doctor__filter-title {
-    font-size: 14px;
-    margin: 0 0 14px;
-  }
-
-  .select-doctor__filter-options {
-    gap: 10px;
-  }
-
-  .select-doctor__radio {
-    width: 18px;
-    height: 18px;
-  }
-
-  .select-doctor__filter-label {
-    font-size: 13px;
-  }
-
-  /* Back button smaller on mobile */
-  .select-doctor__back-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .select-doctor__back-btn mat-icon {
-    font-size: 20px;
-  }
-
-  .select-doctor__filter-btn mat-icon {
-    font-size: 20px;
-  }
+.doctor-card__badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
-/* ────────────────────────────────────────── */
-/* RESPONSIVE: SMALL MOBILE (max-width: 480px) */
-/* ────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .select-doctor {
-    padding: 12px 12px;
-  }
+.doctor-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 3px 9px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
 
-  .select-doctor__title {
-    font-size: 20px;
-  }
+.doctor-card__badge mat-icon {
+  font-size: 11px;
+  width: 11px;
+  height: 11px;
+}
 
-  .select-doctor__count {
-    font-size: 11px;
-  }
+.doctor-card__badge--top {
+  background: linear-gradient(135deg, #f5eaea, #ede0d8);
+  color: #a26769;
+}
 
-  .select-doctor__search-input {
-    font-size: 12px;
-  }
+.doctor-card__badge--available {
+  background: #eef5e8;
+  color: #7fa059;
+}
 
-  .select-doctor__card {
-    padding: 10px;
-    gap: 10px;
-  }
+/* ── Identity ───────────────────────────────────────────────────────────────── */
 
-  .select-doctor__card-avatar {
-    width: 48px;
-    height: 48px;
-  }
+.doctor-card__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  .select-doctor__card-avatar mat-icon {
-    font-size: 24px;
-  }
+.doctor-card__name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #2e2e2e;
+  margin: 0;
+  line-height: 1.2;
+}
 
-  .select-doctor__card-specialty {
-    font-size: 13px;
-  }
+.doctor-card__specialty-chip {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a26769;
+  background: #f5eaea;
+  border-radius: 10px;
+  padding: 3px 10px;
+  width: fit-content;
+  letter-spacing: 0.02em;
+}
 
-  .select-doctor__book-btn {
-    padding: 8px 14px;
-    font-size: 12px;
-  }
+/* ── Star rating ────────────────────────────────────────────────────────────── */
 
-  .select-doctor__empty {
-    padding: 40px 12px;
-  }
+.doctor-card__stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
 
-  .select-doctor__empty-icon {
-    width: 56px;
-    height: 56px;
-  }
+.doctor-card__star {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #e0d8d8;
+  transition: color 0.1s;
+}
 
-  .select-doctor__empty-icon mat-icon {
-    font-size: 28px;
-  }
+.doctor-card__star--filled {
+  color: #d4a959;
+}
 
-  .select-doctor__empty-title {
-    font-size: 15px;
-  }
+.doctor-card__rating-num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #555;
+  margin-left: 6px;
+}
 
-  .select-doctor__empty-desc {
-    font-size: 12px;
-  }
+/* ── Divider ────────────────────────────────────────────────────────────────── */
+
+.doctor-card__divider {
+  height: 1px;
+  background: linear-gradient(90deg, #ede8e8 0%, transparent 100%);
+}
+
+/* ── Stats row ──────────────────────────────────────────────────────────────── */
+
+.doctor-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.doctor-card__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.doctor-card__stat-value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #a26769;
+  line-height: 1;
+}
+
+.doctor-card__stat-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  color: #bbb;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.doctor-card__stat-sep {
+  width: 1px;
+  height: 32px;
+  background: #ede8e8;
+  flex-shrink: 0;
+}
+
+/* ── Book button ────────────────────────────────────────────────────────────── */
+
+.doctor-card__book-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, #a26769 0%, #8e5759 100%);
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(162, 103, 105, 0.30);
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin-top: auto;
+}
+
+.doctor-card__book-btn:hover {
+  box-shadow: 0 8px 24px rgba(162, 103, 105, 0.40);
+  transform: translateY(-1px);
+}
+
+.doctor-card__book-arrow {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+.doctor-card__book-btn:hover .doctor-card__book-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Responsive — tablet ────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .sd-banner { padding: 28px 24px 32px; }
+  .sd-banner__title { font-size: 24px; }
+  .sd-banner__deco { display: none; }
+  .sd-controls { padding: 20px 24px 16px; }
+  .sd-grid { grid-template-columns: repeat(2, 1fr); padding: 4px 24px 40px; gap: 16px; }
+}
+
+/* ── Responsive — mobile ────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .sd-banner { padding: 24px 16px 28px; }
+  .sd-banner__title { font-size: 20px; }
+  .sd-controls { padding: 16px 16px 14px; gap: 12px; }
+  .sd-grid { grid-template-columns: 1fr; padding: 4px 16px 32px; gap: 14px; }
+
+  .doctor-card { padding: 20px; gap: 14px; border-radius: 20px; }
+  .doctor-card__avatar { width: 60px; height: 60px; }
+  .doctor-card__initials { font-size: 18px; }
+  .doctor-card__name { font-size: 15px; }
 }

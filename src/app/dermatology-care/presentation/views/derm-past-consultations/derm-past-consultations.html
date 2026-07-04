@@ -9,70 +9,76 @@
   <div class="derm-past__divider"></div>
 
   <!-- Search bar -->
-  <div class="derm-past__search">
-    <mat-icon>search</mat-icon>
-    <input
-      class="derm-past__search-input"
-      type="text"
-      [placeholder]="'dermatology.dermPastConsultations.searchPlaceholder' | translate"
-      [(ngModel)]="searchQuery"
-    />
+  <div class="derm-past__search-wrap">
+    <div class="derm-past__search">
+      <mat-icon>search</mat-icon>
+      <input
+        class="derm-past__search-input"
+        type="text"
+        [placeholder]="'dermatology.dermPastConsultations.searchPlaceholder' | translate"
+        [(ngModel)]="searchQuery"
+      />
+    </div>
   </div>
 
   <!-- Cards -->
   <div class="derm-past__cards">
     @if (filteredConsultations().length === 0) {
       <div class="derm-past__empty">
-        <mat-icon>history</mat-icon>
-        <p>{{ 'dermatology.dermPastConsultations.noResults' | translate }}</p>
+        <div class="derm-past__empty-icon">
+          <mat-icon>history</mat-icon>
+        </div>
+        <p class="derm-past__empty-text">{{ 'dermatology.dermPastConsultations.noResults' | translate }}</p>
       </div>
     } @else {
       @for (consultation of filteredConsultations(); track consultation.id) {
         <div class="derm-past__card">
 
-          <!-- Patient avatar -->
-          <div class="derm-past__patient-avatar">
-            @if (patientPhotoForConsultation(consultation)) {
-              <img class="derm-past__patient-avatar-img" [src]="patientPhotoForConsultation(consultation)!" alt="Patient photo" />
-            } @else {
-              <mat-icon class="derm-past__patient-avatar-icon">person</mat-icon>
-            }
-          </div>
-
-          <!-- Date row -->
-          <div class="derm-past__row">
-            <mat-icon class="derm-past__row-icon">calendar_today</mat-icon>
-            <span class="derm-past__row-label">{{ 'dermatology.dermPastConsultations.date' | translate }}</span>
-            <span class="derm-past__chip">{{ consultation.startedAt }}</span>
-          </div>
-
-          <!-- Patient row -->
-          <div class="derm-past__row">
-            <mat-icon class="derm-past__row-icon">person</mat-icon>
-            <p class="derm-past__row-text">
-              <span class="derm-past__row-label">{{ 'dermatology.dermPastConsultations.diagnosis' | translate }}:</span>
-              {{ consultation.notes | slice:0:60 }}...
-            </p>
-          </div>
-
-          <!-- Photos badge -->
-          @if (consultation.hasClinicalPhotos) {
-            <div class="derm-past__photos-badge">
-              <mat-icon>photo_camera</mat-icon>
-              <span>{{ consultation.clinicalPhotoUrls.length }} {{ 'dermatology.dermPastConsultations.photos' | translate }}</span>
+          <!-- Card header: avatar + name + date -->
+          <div class="derm-past__card-header">
+            <div class="derm-past__avatar">
+              @if (patientPhotoForConsultation(consultation)) {
+                <img class="derm-past__avatar-img" [src]="patientPhotoForConsultation(consultation)!" alt="Patient" />
+              } @else {
+                <mat-icon class="derm-past__avatar-icon">person</mat-icon>
+              }
             </div>
-          } @else {
-            <div class="derm-past__no-photos">
-              <mat-icon>hide_image</mat-icon>
-              <span>{{ 'dermatology.dermPastConsultations.noPhotos' | translate }}</span>
+            <div class="derm-past__card-meta">
+              <p class="derm-past__patient-name">{{ getPatientName(consultation.patientId) }}</p>
+              <span class="derm-past__date-label">{{ formatDate(consultation.startedAt) }}</span>
             </div>
-          }
+          </div>
 
+          <!-- Divider -->
+          <div class="derm-past__inner-divider"></div>
+
+          <!-- Notes preview -->
+          <p class="derm-past__notes-preview">
+            {{ consultation.notes | slice:0:120 }}{{ consultation.notes.length > 120 ? '…' : '' }}
+          </p>
+
+          <!-- Footer: badges + action -->
           <div class="derm-past__card-footer">
+            <div class="derm-past__badges">
+              @if (consultation.durationInMinutes > 0) {
+                <span class="derm-past__badge">
+                  <mat-icon>timer</mat-icon>
+                  {{ consultation.durationInMinutes }} min
+                </span>
+              }
+              @if (consultation.hasClinicalPhotos) {
+                <span class="derm-past__badge derm-past__badge--photos">
+                  <mat-icon>photo_camera</mat-icon>
+                  {{ consultation.clinicalPhotoUrls.length }} {{ 'dermatology.dermPastConsultations.photos' | translate }}
+                </span>
+              }
+            </div>
             <button class="derm-past__view-btn" (click)="selectConsultation(consultation)">
               {{ 'dermatology.dermPastConsultations.viewBtn' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
             </button>
           </div>
+
         </div>
       }
     }

@@ -8,7 +8,9 @@ import { UserAssembler } from '../infrastructure/user.assembler';
 import { UserResource } from '../infrastructure/user.response';
 import { DermatologistResource } from '../infrastructure/dermatologist.response';
 
-// Temporary: stores the authenticated user in localStorage until JWT is implemented.
+// Temporary: stores the authenticated user in sessionStorage until JWT is implemented.
+// sessionStorage is scoped per browser tab, so different accounts can stay signed in
+// side by side in separate tabs without one login overwriting the other.
 const CURRENT_USER_STORAGE_KEY = 'currentUser';
 
 /**
@@ -58,57 +60,79 @@ export class IamStore {
   constructor(private iamApi: IamApi) {
     this.restorePersistedSession();
   }
-
-  login(email: string, _password: string): void {
+  login(email: string, password: string): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const normalized = email.trim().toLowerCase();
-
     this.iamApi
-      .getAllUsers()
+      .login(email, password)
       .pipe(retry(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (users) => {
-          const found = users.find(u => u.email.toLowerCase() === normalized);
-          if (!found) {
-            this.handleAuthenticationError(new Error('User not found'), 'User not found');
-            return;
-          }
-          this.handleAuthenticationSuccess(found);
+        next: (authResponse) => {
+          console.log('Auth response:', authResponse);
+          sessionStorage.setItem('authToken', authResponse.token);
+          console.log('Token saved, id:', authResponse.id);
+
+          this.iamApi.getUserById(authResponse.id).subscribe({
+            next: (user) => {
+              console.log('User obtained:', user);
+              const resource: UserResource = {
+                id: authResponse.id,
+                email: authResponse.email,
+                name: user.name,
+                lastName: user.lastName,
+                role: user.role,
+                photoUrl: user.photoUrl ?? null,
+              } as any;
+              this.handleAuthenticationSuccess(resource);
+            },
+            error: (err) => {
+              console.log('Error getUserById:', err);
+              const resource: UserResource = {
+                id: authResponse.id,
+                email: authResponse.email,
+                name: authResponse.email.split('@')[0],
+                lastName: '',
+                role: 'ROLE_YOUNG_ADULT',
+                photoUrl: null,
+              } as any;
+              this.handleAuthenticationSuccess(resource);
+            },
+          });
         },
-        error: (err) => this.handleAuthenticationError(err, 'Invalid email or password'),
+        error: (err) => {
+          console.log('Error login:', err);
+          this.handleAuthenticationError(err, 'Invalid email or password');
+        },
       });
   }
-
   updateUserPhoto(photoUrl: string): Observable<void> {
     const user = this.currentUserSignal();
     if (!user) return EMPTY;
 
     const applyLocally = (): void => {
       const updated = new User({
-        id:       user.id,
-        email:    user.email,
-        name:     user.name,
+        id: user.id,
+        email: user.email,
+        name: user.name,
         lastName: user.lastName,
-        role:     user.role,
+        role: user.role,
         photoUrl,
       });
       this.currentUserSignal.set(updated);
-      const stored = localStorage.getItem(CURRENT_USER_STORAGE_KEY);
+      const stored = sessionStorage.getItem(CURRENT_USER_STORAGE_KEY);
       if (stored) {
         try {
           const parsed = JSON.parse(stored) as UserResource;
           parsed.photoUrl = photoUrl;
-          localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(parsed));
-        } catch { /* ignore */ }
+          sessionStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(parsed));
+        } catch {
+          /* ignore */
+        }
       }
     };
 
-    return this.iamApi.updateUserPhoto(user.id, photoUrl).pipe(
-      retry(1),
-      tap(applyLocally)
-    );
+    return this.iamApi.updateUserPhoto(user.id, photoUrl).pipe(retry(1), tap(applyLocally));
   }
 
   /**
@@ -127,7 +151,8 @@ export class IamStore {
   logout(): void {
     this.currentUserSignal.set(null);
     this.errorSignal.set(null);
-    localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
     this.router.navigate(['/iam/sign-in-home']).then();
   }
 
@@ -147,28 +172,57 @@ export class IamStore {
       .registerYoungAdult(requestBody as any)
       .pipe(retry(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (user) => this.handleAuthenticationSuccess(user),
+        next: (user) => {
+          this.iamApi.login(email, password)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (authResponse) => {
+                sessionStorage.setItem('authToken', authResponse.token);
+                this.handleAuthenticationSuccess(user);
+              },
+              error: () => {
+                this.handleAuthenticationSuccess(user);
+              }
+            });
+        },
         error: (err) =>
           this.handleAuthenticationError(err, 'Failed to register young adult account'),
       });
   }
 
-  registerDermatologist(email: string, password: string, name: string, lastName: string, specialty: string): void {
+  registerDermatologist(
+    email: string,
+    password: string,
+    name: string,
+    lastName: string,
+  ): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     const requestBody = {
       firstName: name,
-      lastName:  lastName,
-      email:     email,
-      password:  password,
+      lastName: lastName,
+      email: email,
+      password: password,
     };
 
     this.iamApi
       .registerDermatologist(requestBody as any)
       .pipe(retry(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (user) => this.handleAuthenticationSuccess(user),
+        next: (user) => {
+          this.iamApi.login(email, password)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (authResponse) => {
+                sessionStorage.setItem('authToken', authResponse.token);
+                this.handleAuthenticationSuccess(user);
+              },
+              error: () => {
+                this.handleAuthenticationSuccess(user);
+              }
+            });
+        },
         error: (err) =>
           this.handleAuthenticationError(err, 'Failed to register dermatologist account'),
       });
@@ -180,7 +234,7 @@ export class IamStore {
     this.loadingSignal.set(false);
     this.errorSignal.set(null);
 
-    localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(resource));
+    sessionStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(resource));
 
     this.navigateToRoleEntryPoint(user.role);
   }
@@ -198,7 +252,7 @@ export class IamStore {
   }
 
   private restorePersistedSession(): void {
-    const stored = localStorage.getItem(CURRENT_USER_STORAGE_KEY);
+    const stored = sessionStorage.getItem(CURRENT_USER_STORAGE_KEY);
     if (!stored) return;
 
     try {
@@ -206,7 +260,7 @@ export class IamStore {
       const user = this.userAssembler.toEntityFromResource(resource);
       this.currentUserSignal.set(user);
     } catch {
-      localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+      sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
     }
   }
 
@@ -226,5 +280,36 @@ export class IamStore {
       return;
     }
     this.router.navigate(['/dashboard']).then();
+  }
+
+  updateUserProfile(userId: number, firstName: string, lastName: string, email: string): Observable<User> {
+    return this.iamApi.updateUserProfile(userId, firstName, lastName, email).pipe(
+      tap(updatedUser => {
+        const resource: UserResource = {
+          id:        updatedUser.id,
+          email:     updatedUser.email,
+          firstName: updatedUser.name,
+          lastName:  updatedUser.lastName,
+          role:      updatedUser.role,
+          photoUrl:  updatedUser.photoUrl,
+        } as any;
+        sessionStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(resource));
+        this.currentUserSignal.set(updatedUser);
+      })
+    );
+  }
+
+  /**
+   * Changes the password of the currently authenticated user.
+   *
+   * @param currentPassword - Current plain-text password, verified by the backend.
+   * @param newPassword - New plain-text password to set.
+   * @returns Observable that completes when the password has been changed.
+   */
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    const user = this.currentUserSignal();
+    if (!user) return EMPTY;
+
+    return this.iamApi.changePassword(user.id, currentPassword, newPassword);
   }
 }

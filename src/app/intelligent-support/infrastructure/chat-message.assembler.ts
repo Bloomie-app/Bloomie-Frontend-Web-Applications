@@ -19,33 +19,23 @@ export class ChatMessageAssembler implements BaseAssembler<
     return response.chat_messages.map((resource) => this.toEntityFromResource(resource));
   }
 
-  /**
-   * Converts a ChatMessageResource to a ChatMessage entity.
-   * @param resource - The resource to convert.
-   * @returns The converted ChatMessage entity.
-   */
   toEntityFromResource(resource: ChatMessageResource): ChatMessage {
     return new ChatMessage({
       id: resource.id,
-      supportQueryId: resource.support_query_id,
+      supportQueryId: resource.supportQueryId,
       text: resource.text,
-      type: resource.type as MessageType,
-      sentAt: resource.sent_at,
+      type: resource.messageType as MessageType,
+      sentAt: resource.sentAt,
     });
   }
 
-  /**
-   * Converts a ChatMessage entity to a ChatMessageResource.
-   * @param entity - The entity to convert.
-   * @returns The converted ChatMessageResource.
-   */
   toResourceFromEntity(entity: ChatMessage): ChatMessageResource {
     return {
       id: entity.id,
-      support_query_id: entity.supportQueryId,
+      supportQueryId: entity.supportQueryId,
       text: entity.text,
-      type: entity.type,
-      sent_at: entity.sentAt,
+      messageType: entity.type,
+      sentAt: entity.sentAt,
     } as ChatMessageResource;
   }
 }

@@ -24,12 +24,10 @@ export class ProductCompatibilityAssembler implements BaseAssembler<ProductCompa
   toEntityFromResource(resource: ProductCompatibilityResource): ProductCompatibility {
     return new ProductCompatibility({
       id:                 resource.id,
-      productId:          resource.product_id,
-      facialScanId:       resource.facial_scan_id,
-      skinProfileId:      resource.skin_profile_id,
-      compatibilityScore: resource.compatibility_score,
-      explanation:        resource.explanation,
-      evaluatedAt:        resource.evaluated_at,
+      productId:          resource.productId,
+      skinType:           resource.skinType,
+      compatibilityScore: resource.compatibilityScore,
+      reason:             resource.reason,
     });
   }
 
@@ -40,13 +38,11 @@ export class ProductCompatibilityAssembler implements BaseAssembler<ProductCompa
    */
   toResourceFromEntity(entity: ProductCompatibility): ProductCompatibilityResource {
     return {
-      id:                  entity.id,
-      product_id:          entity.productId,
-      facial_scan_id:      entity.facialScanId,
-      skin_profile_id:     entity.skinProfileId,
-      compatibility_score: entity.compatibilityScore,
-      explanation:         entity.explanation,
-      evaluated_at:        entity.evaluatedAt,
+      id:                 entity.id,
+      productId:          entity.productId,
+      skinType:           entity.skinType,
+      compatibilityScore: entity.compatibilityScore,
+      reason:             entity.reason,
     } as ProductCompatibilityResource;
   }
 }

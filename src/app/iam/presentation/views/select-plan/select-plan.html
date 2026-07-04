@@ -1,0 +1,88 @@
+<div class="sp">
+
+  <!-- Header -->
+  <div class="sp-header">
+    <div class="sp-header__icon-wrap">
+      <mat-icon>workspace_premium</mat-icon>
+    </div>
+    @if (isReactivation()) {
+      <h1 class="sp-header__title">Your plan has ended</h1>
+      <p class="sp-header__subtitle">Choose a plan to keep using Bloomie</p>
+    } @else {
+      <h1 class="sp-header__title">Choose Your Plan</h1>
+      <p class="sp-header__subtitle">Start your skincare journey with Bloomie</p>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="sp-loading">
+      <mat-icon class="sp-loading__icon">autorenew</mat-icon>
+      <p>Loading plans...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="sp-error">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Plans grid -->
+  @if (!loading() && plans().length > 0) {
+    <div class="sp-grid">
+      @for (plan of plans(); track plan.id) {
+        <div class="sp-card">
+
+          <!-- Plan icon -->
+          <div class="sp-card__icon-wrap"
+               [style.background-color]="getPlanColor(plan.type) + '22'">
+            <mat-icon [style.color]="getPlanColor(plan.type)">
+              {{ getPlanIcon(plan.type) }}
+            </mat-icon>
+          </div>
+
+          <!-- Plan info -->
+          <h2 class="sp-card__name">{{ plan.name }}</h2>
+          <p class="sp-card__price">
+            ${{ plan.price }}<span class="sp-card__period">/month</span>
+          </p>
+          <p class="sp-card__duration">{{ plan.durationDays }} days</p>
+
+          <!-- Modules -->
+          <ul class="sp-card__modules">
+            @for (module of plan.modules; track module) {
+              <li class="sp-card__module">
+                <mat-icon>check_circle</mat-icon>
+                <span>{{ module }}</span>
+              </li>
+            }
+          </ul>
+
+          <!-- Select button -->
+          <button
+            class="sp-card__btn"
+            [style.background-color]="getPlanColor(plan.type)"
+            (click)="selectPlan(plan)">
+            Get Started
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Stripe badge -->
+  <div class="sp-footer">
+    <mat-icon>lock</mat-icon>
+    <span>Secure payment powered by Stripe</span>
+  </div>
+
+  @if (isReactivation()) {
+    <button type="button" class="sp-logout-link" (click)="onLogout()">Log out</button>
+  }
+
+</div>

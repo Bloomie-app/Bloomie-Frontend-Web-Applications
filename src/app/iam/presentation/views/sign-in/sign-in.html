@@ -9,7 +9,10 @@
 
   <div class="sign-in__form-wrapper">
     <form class="sign-in__form" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="sign-in__form-title">{{ 'iam.signIn.formTitle' | translate }}</h2>
+      <div class="sign-in__form-header">
+        <h2 class="sign-in__form-title">{{ 'iam.signIn.formTitle' | translate }}</h2>
+        <app-language-switcher></app-language-switcher>
+      </div>
 
       <div class="sign-in__field">
         <label class="sign-in__label" for="sign-in-email">

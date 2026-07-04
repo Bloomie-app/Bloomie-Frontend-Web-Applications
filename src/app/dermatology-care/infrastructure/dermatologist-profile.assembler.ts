@@ -24,7 +24,7 @@ export class DermatologistProfileAssembler implements BaseAssembler<
       specialty: resource.specialtyName ?? resource.specialty ?? '',
       fullName: fullName,
       licenseNumber: resource.licenseNumber ?? '',
-      contactPhone: resource.contactPhone ?? '',
+      contactPhone: resource.contactPhone ?? resource.phone ?? '',
       biography: resource.biography ?? '',
       consultationFee: resource.consultationFee ?? 0,
       photoUrl: resource.photoUrl ?? null,
@@ -36,13 +36,13 @@ export class DermatologistProfileAssembler implements BaseAssembler<
     return {
       id: entity.id,
       dermatologistId: entity.userId,
-      firstName: nameParts[0] ?? '',
-      lastName: nameParts.slice(1).join(' ') ?? '',
-      specialty: entity.specialty, // ← "specialty" no "specialtyName" para el PUT
-      licenseNumber: entity.licenseNumber ?? null,
-      phone: entity.contactPhone ?? null, // ← "phone" no "contactPhone" para el PUT
-      biography: entity.biography ?? null,
-      consultationFee: entity.consultationFee,
+      firstName: nameParts[0] || 'N/A',
+      lastName: nameParts.slice(1).join(' ') || 'N/A',
+      specialty: entity.specialty || 'General Dermatology',
+      licenseNumber: entity.licenseNumber || 'N/A',
+      phone: entity.contactPhone || 'N/A',
+      biography: entity.biography || '',
+      consultationFee: entity.consultationFee ?? 0,
       photoUrl: entity.photoUrl ?? null,
     } as DermatologistProfileResource;
   }

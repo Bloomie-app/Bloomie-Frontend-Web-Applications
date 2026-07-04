@@ -1,13 +1,18 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 import { SkinAnalysisStore } from '../../../../skin-analysis/application/skin-analysis.store';
 import { RoutineManagementStore } from '../../../../routine-management/application/routine-management.store';
 import { DermatologyCareStore } from '../../../../dermatology-care/application/dermatology-care.store';
 import { ProductDiscoveryStore } from '../../../../product-discovery/application/product-discovery.store';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
 import { SkinSensitivity, SkinType, } from '../../../../skin-analysis/domain/model/skin-profile.entity';
 import { FacialScan } from '../../../../skin-analysis/domain/model/facial-scan.entity';
 import { RoutineItem } from '../../../../routine-management/domain/model/routine-item.entity';
@@ -106,8 +111,29 @@ export class DashboardHome implements OnInit {
   /** Used to resolve translated strings for dynamic computed values. */
   private readonly translateService = inject(TranslateService);
 
+  /**
+   * Reactive tick for the active language. `computed()` signals don't track
+   * `TranslateService.instant()` calls as a dependency on their own, so any
+   * computed that resolves translations dynamically must read this signal
+   * to recompute when the user switches language — otherwise it stays
+   * frozen in whichever language was active the first time it ran.
+   */
+  private readonly languageChange = toSignal(this.translateService.onLangChange, { initialValue: null });
+
   /** Provides the authenticated user's profile for personalized display. */
   private readonly iamStore = inject(IamStore);
+
+  /** Used to confirm a just-completed Stripe checkout before leaving the dashboard. */
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
+  private readonly route = inject(ActivatedRoute);
+  private readonly http = inject(HttpClient);
+
+  /**
+   * True while polling the backend to confirm the Stripe webhook has
+   * activated the subscription after a checkout redirect.
+   */
+  readonly confirmingPayment = signal(false);
 
   // ─── Current user ────────────────────────────────────────────────────────────
 
@@ -115,8 +141,8 @@ export class DashboardHome implements OnInit {
   readonly currentUserName = computed((): string => this.iamStore.currentUser()?.name ?? '');
 
   /** First letter of the user's name, used as the avatar placeholder. */
-  readonly currentUserFirstLetter = computed((): string =>
-    this.currentUserName()[0]?.toUpperCase() ?? '?',
+  readonly currentUserFirstLetter = computed(
+    (): string => this.currentUserName()[0]?.toUpperCase() ?? '?',
   );
 
   // ─── Greeting ────────────────────────────────────────────────────────────────
@@ -217,6 +243,7 @@ export class DashboardHome implements OnInit {
    * Returns the i18n "no appointment" key when none is scheduled.
    */
   readonly nextAppointmentDateLabel = computed((): string => {
+    this.languageChange();
     const appointment = this.nextAppointment();
     if (!appointment) return this.translateService.instant('dashboard.stats.noAppointment');
     return new Date(appointment.scheduledAt).toLocaleDateString('en-US', {
@@ -260,9 +287,9 @@ export class DashboardHome implements OnInit {
     return [
       {
         titleKey: 'dashboard.stats.skinHealthScore',
-        value: `${this.skinHealthScore()}/100`,
-        subtitleKey: scoreImprovement > 0 ? 'dashboard.stats.thisWeek' : undefined,
-        subtitleParam: scoreImprovement > 0 ? scoreImprovement : undefined,
+        value: `${this.skinHealthScore()}`,
+        subtitleKey: scoreImprovement !== 0 ? 'dashboard.stats.thisWeek' : undefined,
+        subtitleParam: scoreImprovement !== 0 ? scoreImprovement : undefined,
         icon: 'monitor_heart',
       },
       {
@@ -278,13 +305,6 @@ export class DashboardHome implements OnInit {
         subtitleRaw: this.nextAppointmentDoctorLabel(),
         icon: 'calendar_month',
       },
-      {
-        titleKey: 'dashboard.stats.productsInRoutine',
-        value: `${this.productsInRoutineCount()}`,
-        unitKey: 'dashboard.stats.steps',
-        subtitleKey: 'dashboard.stats.lastUpdatedToday',
-        icon: 'check_circle',
-      },
     ];
   });
 
@@ -295,6 +315,7 @@ export class DashboardHome implements OnInit {
    * Falls back to an empty string when no profile exists.
    */
   readonly skinTypeLabel = computed((): string => {
+    this.languageChange();
     const skinProfile = this.skinAnalysisStore.skinProfile();
     if (!skinProfile) return '';
     const skinType = skinProfile.skinType;
@@ -317,6 +338,7 @@ export class DashboardHome implements OnInit {
    * Falls back to an empty string when no profile exists.
    */
   readonly skinSensitivityLabel = computed((): string => {
+    this.languageChange();
     const skinProfile = this.skinAnalysisStore.skinProfile();
     if (!skinProfile) return '';
 
@@ -394,6 +416,29 @@ export class DashboardHome implements OnInit {
     return 'trend-badge--stable';
   });
 
+  /** stroke-dasharray for the main SVG score ring (r=40, circumference≈251.3). */
+  readonly mainCircleDasharray = computed((): string => {
+    const score = this.skinStatusScore();
+    const c = 251.3;
+    const filled = (score / 100) * c;
+    return `${filled.toFixed(1)} ${(c - filled).toFixed(1)}`;
+  });
+
+  /** Time label for the next appointment (e.g. "02:30 PM"). */
+  readonly nextAppointmentTimeLabel = computed((): string => {
+    const appointment = this.nextAppointment();
+    if (!appointment) return '';
+    return new Date(appointment.scheduledAt).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  });
+
+  /** Converts a 0–100 score to stroke-dasharray for a ring with circumference≈100 (r≈15.9). */
+  protected toRingDasharray(score: number): string {
+    return `${score} ${100 - score}`;
+  }
+
   // ─── Skin progress chart ─────────────────────────────────────────────────────
 
   /**
@@ -407,46 +452,56 @@ export class DashboardHome implements OnInit {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const weekLabels = ['W1', 'W2', 'W3', 'W4'];
+    const analyses = this.skinAnalysisStore.skinAnalyses();
+    const locale = this.translateService.currentLang === 'es' ? 'es-ES' : 'en-US';
 
-    /** Score buckets indexed 0–3 from oldest to newest week. */
-    const weeklyScores: (number | null)[] = [null, null, null, null];
+    /**
+     * Build 4 seven-day windows, oldest → newest (left → right).
+     * Bar i=0: days 27–21 ago, bar i=3: days 6–0 ago.
+     */
+    const weeklyData = Array.from({ length: 4 }, (_, i) => {
+      const weeksFromNow = 3 - i;
+      const endDaysAgo = weeksFromNow * 7;
+      const startDaysAgo = endDaysAgo + 6;
 
-    const completedScans = this.skinAnalysisStore
-      .facialScans()
-      .filter((scan: FacialScan) => scan.isCompleted);
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - startDaysAgo);
 
-    completedScans.forEach((scan: FacialScan) => {
-      const scanDate = new Date(scan.scannedAt);
-      scanDate.setHours(0, 0, 0, 0);
-      const daysAgo = Math.floor((today.getTime() - scanDate.getTime()) / (1000 * 60 * 60 * 24));
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() - endDaysAgo);
 
-      if (daysAgo < 0 || daysAgo > 29) return;
+      /** Average overallScore of all analyses whose analyzedAt falls in this window. */
+      const inWindow = analyses.filter((a) => {
+        const d = new Date(a.analyzedAt);
+        d.setHours(0, 0, 0, 0);
+        return d >= startDate && d <= endDate;
+      });
 
-      /** Week index: 0 = oldest (days 22–29), 3 = most recent (days 0–6). */
-      const weekIndex = 3 - Math.floor(daysAgo / 7);
-      const currentBest = weeklyScores[weekIndex];
-      if (currentBest === null) {
-        weeklyScores[weekIndex] = 50;
-      }
+      const score: number | null =
+        inWindow.length > 0
+          ? Math.round(inWindow.reduce((s, a) => s + a.overallScore, 0) / inWindow.length)
+          : null;
+
+      /** Show the first day of the window (e.g. "Jun 1" / "1 jun"). */
+      const label = startDate.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
+
+      return { label, score };
     });
 
-    const validScores = weeklyScores.filter((score): score is number => score !== null);
+    const validScores = weeklyData.map((w) => w.score).filter((s): s is number => s !== null);
     const maximumScore = validScores.length > 0 ? Math.max(...validScores) : 100;
-    const latestNonNullIndex = weeklyScores.reduce(
-      (lastIndex, score, index) => (score !== null ? index : lastIndex),
-      -1,
-    );
+    const latestNonNullIndex = weeklyData.reduce((last, w, i) => (w.score !== null ? i : last), -1);
 
-    return weekLabels.map((label, index) => {
-      const score = weeklyScores[index] ?? 0;
-      const heightPercent = score > 0 ? Math.max(10, Math.round((score / maximumScore) * 100)) : 0;
+    return weeklyData.map(({ label, score }, i) => {
+      const numericScore = score ?? 0;
+      const heightPercent =
+        numericScore > 0 ? Math.max(10, Math.round((numericScore / maximumScore) * 100)) : 0;
 
       return {
         weekLabel: label,
-        score: Math.round(score),
+        score: numericScore,
         heightPercent,
-        isLatest: index === latestNonNullIndex,
+        isLatest: i === latestNonNullIndex,
       };
     });
   });
@@ -521,11 +576,7 @@ export class DashboardHome implements OnInit {
    * Calculated as: completed days this week × number of items in the active routine.
    * This is the correct business rule: each completed day applies all routine items.
    */
-  readonly weekProductsAppliedCount = computed((): number => {
-    const completedDays = this.routineManagementStore.completedDaysThisWeek();
-    const itemsPerDay = this.routineManagementStore.activeRoutineItems().length;
-    return completedDays * itemsPerDay;
-  });
+  readonly weekMissedDays = computed((): number => 7 - this.weekRoutineCompletedDays());
 
   // ─── Skin scan due widget ────────────────────────────────────────────────────
 
@@ -556,6 +607,7 @@ export class DashboardHome implements OnInit {
    *  3. Routine update suggestion (if routine status is UPDATE)
    */
   readonly upcomingActions = computed((): UpcomingAction[] => {
+    this.languageChange();
     const actions: UpcomingAction[] = [];
 
     const appointment = this.nextAppointment();
@@ -636,6 +688,7 @@ export class DashboardHome implements OnInit {
    * message section and only shows the "Ask AI anything" button.
    */
   readonly aiAssistantLastMessage = computed((): string | null => {
+    this.languageChange();
     const analysis = this.skinAnalysisStore.latestScanAnalysis();
     if (!analysis) return null;
 
@@ -685,6 +738,7 @@ export class DashboardHome implements OnInit {
      * This hook is kept for future dashboard-specific initialization (e.g.
      * analytics events, scroll restoration, etc.).
      */
+    this.checkStripeReturn();
   }
 
   // ─── Navigation helpers ──────────────────────────────────────────────────────
@@ -718,10 +772,64 @@ export class DashboardHome implements OnInit {
   }
 
   /**
+   * Navigates to the dermatology appointments view.
+   */
+  goToAppointments(): void {
+    this.router.navigate(['/dermatology']);
+  }
+
+  /**
    * Navigates to a given route from an upcoming action item.
    * @param route - The route path to navigate to.
    */
   navigateToAction(route: string): void {
     this.router.navigate([route]);
   }
+
+  private checkStripeReturn(): void {
+    const sessionId = this.route.snapshot.queryParams['session_id'];
+    if (!sessionId) return;
+
+    const processed = localStorage.getItem(`stripe_processed_${sessionId}`);
+    if (processed) return;
+    localStorage.setItem(`stripe_processed_${sessionId}`, 'true');
+
+    localStorage.removeItem('pendingPlanId');
+    localStorage.removeItem('pendingPlanName');
+    localStorage.removeItem('pendingPlanAmount');
+    window.history.replaceState({}, '', '/dashboard');
+
+    this.confirmSubscriptionActivation();
+  }
+
+  /**
+   * Polls the backend for the subscription created by the Stripe webhook.
+   * The webhook runs asynchronously and may not have processed the payment
+   * yet by the time Stripe redirects the user back — navigating onward
+   * before it lands would let the subscription guard bounce the user to
+   * plan selection later, even though they already paid.
+   *
+   * @param attempt - The current retry attempt (used to cap total wait time).
+   */
+  private confirmSubscriptionActivation(attempt = 0): void {
+    const user = this.iamStore.currentUser();
+    const maxAttempts = 8;
+
+    if (!user || attempt >= maxAttempts) {
+      this.confirmingPayment.set(false);
+      this.router.navigate(['/skin-analysis/onboarding-scan']);
+      return;
+    }
+
+    this.confirmingPayment.set(true);
+    this.subscriptionStore.loadForPatient(user.id, true).subscribe(() => {
+      if (this.subscriptionStore.hasActiveAccess()) {
+        this.confirmingPayment.set(false);
+        this.router.navigate(['/skin-analysis/onboarding-scan']);
+      } else {
+        setTimeout(() => this.confirmSubscriptionActivation(attempt + 1), 2000);
+      }
+    });
+  }
 }
+

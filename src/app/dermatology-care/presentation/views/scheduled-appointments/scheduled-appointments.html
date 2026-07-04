@@ -1,74 +1,124 @@
-<div class="scheduled-appointments">
+<div class="sa-page">
 
-  <!-- Header -->
-  <div class="scheduled-appointments__header">
-    <button class="scheduled-appointments__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="sa-banner">
+    <button class="sa-banner__back" (click)="navigateBack()" aria-label="Go back">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <div>
-      <h1 class="scheduled-appointments__title">{{ 'dermatology.scheduledAppointments.title' | translate }}</h1>
-      <p class="scheduled-appointments__subtitle">
+    <div class="sa-banner__text">
+      <h1 class="sa-banner__title">{{ 'dermatology.scheduledAppointments.title' | translate }}</h1>
+      <p class="sa-banner__count">
         {{ activeAppointmentCount() }} {{ 'dermatology.scheduledAppointments.activeLabel' | translate }}
       </p>
     </div>
+    <div class="sa-banner__deco" aria-hidden="true">
+      <mat-icon class="sa-banner__deco-icon">event</mat-icon>
+    </div>
   </div>
 
-  <div class="scheduled-appointments__divider"></div>
+  <!-- ── Content ─────────────────────────────────────────────────────────────── -->
+  <div class="sa-content">
 
-  <!-- Appointment cards -->
-  <div class="scheduled-appointments__cards">
-    @if (store.appointments().length === 0) {
-      <div class="scheduled-appointments__empty">
-        <mat-icon class="scheduled-appointments__empty-icon">event_busy</mat-icon>
-        <p class="scheduled-appointments__empty-text">{{ 'dermatology.scheduledAppointments.noAppointments' | translate }}</p>
-      </div>
-    } @else {
-      @for (appointment of store.appointments(); track appointment.id) {
-        <div
-          class="scheduled-appointments__card"
-          [class.scheduled-appointments__card--cancelled]="appointment.isCancelled"
-        >
-          <p class="scheduled-appointments__card-date">{{ appointment.formattedScheduledAt }}</p>
-          <div class="scheduled-appointments__card-status">
-            <div
-              class="scheduled-appointments__status-dot"
-              [class.scheduled-appointments__status-dot--active]="!appointment.isCancelled"
-              [class.scheduled-appointments__status-dot--cancelled]="appointment.isCancelled"
-            ></div>
-            <span class="scheduled-appointments__status-label">
-              {{ 'dermatology.scheduledAppointments.status.' + appointment.status | translate }}
-            </span>
-          </div>
-
-          @if (!appointment.isCancelled) {
-            <div class="scheduled-appointments__card-actions">
-              <button
-                class="scheduled-appointments__cancel-btn"
-                (click)="cancelAppointment(appointment)"
-              >
-                {{ 'dermatology.scheduledAppointments.cancelBtn' | translate }}
-              </button>
-              <button
-                class="scheduled-appointments__join-btn"
-                [class.scheduled-appointments__join-btn--live]="appointment.status === AppointmentStatus.InProgress"
-                (click)="joinCall()"
-              >
-                <mat-icon>video_call</mat-icon>
-                @if (appointment.status === AppointmentStatus.InProgress) {
-                  {{ 'dermatology.scheduledAppointments.joinNow' | translate }}
-                } @else {
-                  {{ 'dermatology.scheduledAppointments.startCall' | translate }}
-                }
-              </button>
-            </div>
-          } @else {
-            <div class="scheduled-appointments__cancelled-notice">
-              <p>{{ 'dermatology.scheduledAppointments.cancelledNotice' | translate }}</p>
-            </div>
-          }
+    @if (upcomingAppointments().length === 0) {
+      <!-- Empty state -->
+      <div class="sa-empty">
+        <div class="sa-empty__icon-wrap">
+          <mat-icon>event_busy</mat-icon>
         </div>
-      }
+        <h3 class="sa-empty__title">{{ 'dermatology.scheduledAppointments.noAppointments' | translate }}</h3>
+        <p class="sa-empty__desc">{{ 'dermatology.scheduledAppointments.noAppointmentsDesc' | translate }}</p>
+      </div>
+
+    } @else {
+      <div class="sa-cards">
+        @for (apt of upcomingAppointments(); track apt.id) {
+
+          <div class="sa-card"
+               [class.sa-card--cancelled]="apt.isCancelled"
+               [class.sa-card--live]="apt.status === AppointmentStatus.InProgress">
+
+            <!-- Status row -->
+            <div class="sa-card__top">
+              <span class="sa-card__status"
+                    [class.sa-card__status--scheduled]="apt.status === AppointmentStatus.Scheduled"
+                    [class.sa-card__status--confirmed]="apt.status === AppointmentStatus.Confirmed"
+                    [class.sa-card__status--live]="apt.status === AppointmentStatus.InProgress"
+                    [class.sa-card__status--cancelled]="apt.isCancelled">
+                <mat-icon class="sa-card__status-icon">
+                  {{ apt.status === AppointmentStatus.Confirmed ? 'check_circle' :
+                     apt.status === AppointmentStatus.InProgress ? 'radio_button_checked' :
+                     apt.isCancelled ? 'cancel' : 'event' }}
+                </mat-icon>
+                {{ 'dermatology.scheduledAppointments.status.' + apt.status | translate }}
+              </span>
+
+              @if (apt.status === AppointmentStatus.InProgress) {
+                <span class="sa-card__live-badge">
+                  <span class="sa-card__live-dot"></span>
+                  LIVE
+                </span>
+              }
+            </div>
+
+            <!-- Date block -->
+            <div class="sa-card__date-block">
+              <p class="sa-card__date-main">{{ formattedDate(apt) }}</p>
+              <p class="sa-card__time">{{ formattedTime(apt) }}</p>
+            </div>
+
+            <!-- Doctor row -->
+            <div class="sa-card__doctor">
+              <div class="sa-card__avatar">
+                @if (doctorPhotoForAppointment(apt)) {
+                  <img class="sa-card__avatar-img"
+                       [src]="doctorPhotoForAppointment(apt)!"
+                       alt="Doctor photo" />
+                } @else if (doctorProfileForAppointment(apt); as profile) {
+                  <span class="sa-card__initials">{{ initialsForProfile(profile) }}</span>
+                } @else {
+                  <mat-icon class="sa-card__avatar-icon">person</mat-icon>
+                }
+              </div>
+              <div class="sa-card__doctor-info">
+                <span class="sa-card__doctor-name">{{ doctorDisplayName(apt) }}</span>
+                @if (doctorProfileForAppointment(apt); as profile) {
+                  <span class="sa-card__doctor-specialty">{{ profile.specialty }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="sa-card__divider"></div>
+
+            <!-- Actions or cancelled notice -->
+            @if (!apt.isCancelled) {
+              <div class="sa-card__actions">
+                <button class="sa-cancel-btn" (click)="cancelAppointment(apt)">
+                  <mat-icon>close</mat-icon>
+                  {{ 'dermatology.scheduledAppointments.cancelBtn' | translate }}
+                </button>
+                <button class="sa-join-btn"
+                        [class.sa-join-btn--live]="apt.status === AppointmentStatus.InProgress"
+                        (click)="joinCall(apt)">
+                  <mat-icon>video_call</mat-icon>
+                  @if (apt.status === AppointmentStatus.InProgress) {
+                    {{ 'dermatology.scheduledAppointments.joinNow' | translate }}
+                  } @else {
+                    {{ 'dermatology.scheduledAppointments.startCall' | translate }}
+                  }
+                </button>
+              </div>
+            } @else {
+              <div class="sa-cancelled-notice">
+                <mat-icon class="sa-cancelled-notice__icon">info</mat-icon>
+                <span>{{ 'dermatology.scheduledAppointments.cancelledNotice' | translate }}</span>
+              </div>
+            }
+
+          </div>
+        }
+      </div>
     }
+
   </div>
 
 </div>

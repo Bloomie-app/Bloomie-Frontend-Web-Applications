@@ -1,13 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SkinAnalysisStore } from '../../../application/skin-analysis.store';
 
-/**
- * Entry point for the skin analysis section.
- * Presents options to start a new scan, view past analyses, or track skin progress.
- */
 @Component({
   selector: 'app-skin-scan-home',
   imports: [MatIconModule, TranslatePipe],
@@ -18,32 +14,46 @@ export class SkinScanHome {
   readonly store = inject(SkinAnalysisStore);
   protected router = inject(Router);
 
-  /** Cards displayed in the skin scan home section. */
-  readonly cards = [
-    {
-      titleKey: 'skinAnalysis.scanHome.startTitle',
-      descKey: 'skinAnalysis.scanHome.startDesc',
-      btnKey: 'skinAnalysis.scanHome.startBtn',
-      icon: 'face_retouching_natural',
-      action: () => this.router.navigate(['/skin-analysis/prepare']),
-    },
-    {
-      titleKey: 'skinAnalysis.scanHome.historyTitle',
-      descKey: 'skinAnalysis.scanHome.historyDesc',
-      btnKey: 'skinAnalysis.scanHome.historyBtn',
-      icon: 'history',
-      action: () => this.router.navigate(['/skin-analysis/past-analyses']),
-    },
-    {
-      titleKey: 'skinAnalysis.scanHome.progressTitle',
-      descKey: 'skinAnalysis.scanHome.progressDesc',
-      btnKey: 'skinAnalysis.scanHome.progressBtn',
-      icon: 'trending_up',
-      action: () => this.router.navigate(['/skin-analysis/skin-progress']),
-    },
-  ];
+  readonly MAX_WEEKLY_SCANS = 2;
 
-  /** Navigates back to the dashboard. */
+  /** Number of completed scans in the current Mon–Sun week. */
+  readonly scansThisWeek = computed((): number => {
+    const today = new Date();
+    const dow   = today.getDay();
+    const mon   = new Date(today);
+    mon.setDate(today.getDate() - ((dow + 6) % 7));
+    mon.setHours(0, 0, 0, 0);
+    const nextMon = new Date(mon);
+    nextMon.setDate(mon.getDate() + 7);
+
+    return this.store.facialScans().filter(s => {
+      if (!s.isCompleted) return false;
+      const d = new Date(s.scannedAt);
+      return d >= mon && d < nextMon;
+    }).length;
+  });
+
+  /** True when the user still has scans available this week. */
+  readonly canScan = computed(() => this.scansThisWeek() < this.MAX_WEEKLY_SCANS);
+
+  /** Days remaining until next Monday (when the weekly quota resets). */
+  readonly daysUntilNextScan = computed((): number => {
+    const dow = new Date().getDay();
+    return (8 - dow) % 7 || 7;
+  });
+
+  /** True when there is at least one completed scan to show progress stats. */
+  readonly hasProgressData = computed(() => this.store.completedScanCount() > 0);
+
+  navigateToScan(): void {
+    if (!this.canScan()) return;
+    this.router.navigate(['/skin-analysis/prepare']);
+  }
+
+  navigateToPastAnalyses(): void {
+    this.router.navigate(['/skin-analysis/past-analyses']);
+  }
+
   navigateBack(): void {
     this.router.navigate(['/dashboard']);
   }

@@ -1,55 +1,112 @@
-<div class="past-analyses">
+<div class="pa">
 
-  <!-- Header -->
-  <div class="past-analyses__header">
-    <button class="past-analyses__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ── -->
+  <div class="pa-banner">
+    <button class="pa-banner__back" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
+    <div class="pa-banner__icon-wrap">
+      <mat-icon>history</mat-icon>
+    </div>
     <div>
-      <h1 class="past-analyses__title">{{ 'skinAnalysis.pastAnalyses.title' | translate }}</h1>
-      <p class="past-analyses__subtitle">
+      <h1 class="pa-banner__title">{{ 'skinAnalysis.pastAnalyses.title' | translate }}</h1>
+      <p class="pa-banner__subtitle">
         {{ store.completedScanCount() }} {{ 'skinAnalysis.pastAnalyses.scansFound' | translate }}
       </p>
     </div>
   </div>
 
-  <div class="past-analyses__divider"></div>
+  <!-- ── Content ── -->
+  <div class="pa-content">
 
-  <!-- Scan list -->
-  <div class="past-analyses__list">
-    @if (store.facialScans().length === 0) {
-      <div class="past-analyses__empty">
-        <mat-icon class="past-analyses__empty-icon">image_search</mat-icon>
-        <p class="past-analyses__empty-text">{{ 'skinAnalysis.pastAnalyses.noScans' | translate }}</p>
-        <p class="past-analyses__empty-desc">{{ 'skinAnalysis.pastAnalyses.noScansDesc' | translate }}</p>
+    @if (scanItems().length === 0) {
+      <div class="pa-empty">
+        <div class="pa-empty__icon-wrap">
+          <mat-icon>image_search</mat-icon>
+        </div>
+        <p class="pa-empty__title">{{ 'skinAnalysis.pastAnalyses.noScans' | translate }}</p>
+        <p class="pa-empty__desc">{{ 'skinAnalysis.pastAnalyses.noScansDesc' | translate }}</p>
       </div>
     } @else {
-      @for (scan of store.facialScans(); track scan.id) {
-        <div class="past-analyses__card">
-          <div class="past-analyses__card-info">
-            <p class="past-analyses__card-date">
-              {{ 'skinAnalysis.pastAnalyses.date' | translate }} {{ scan.formattedScannedAt }}
-            </p>
-            <div class="past-analyses__card-status">
-              <div
-                class="past-analyses__status-dot"
-                [class.past-analyses__status-dot--completed]="scan.isCompleted"
-                [class.past-analyses__status-dot--failed]="scan.hasFailed"
-                [class.past-analyses__status-dot--progress]="scan.isInProgress"
-              ></div>
-              <span class="past-analyses__status-label">
-                {{ 'skinAnalysis.pastAnalyses.status.' + scan.status | translate }}
-              </span>
+      <div class="pa-list">
+        @for (item of scanItems(); track item.scan.id; let i = $index) {
+          <div class="pa-card">
+
+            <!-- Card header: date + optional "Latest" badge + overall score circle -->
+            <div class="pa-card__header">
+              <div class="pa-card__meta">
+                <p class="pa-card__date">{{ item.scan.formattedScannedAt }}</p>
+                @if (item.isLatest) {
+                  <span class="pa-card__badge">Latest</span>
+                }
+              </div>
+              @if (item.analysis) {
+                <div class="pa-card__score-circle" [style.--score-color]="scoreColor(item.analysis.overallScore)">
+                  <span class="pa-card__score-num">{{ item.analysis.overallScore }}</span>
+                  <span class="pa-card__score-denom">/100</span>
+                </div>
+              }
             </div>
+
+            <!-- Metrics grid (only when analysis data available) -->
+            @if (item.analysis) {
+              <div class="pa-metrics">
+
+                <div class="pa-metric">
+                  <div class="pa-metric__top">
+                    <mat-icon>water_drop</mat-icon>
+                    <span class="pa-metric__label">{{ 'skinAnalysis.scanResult.hydration' | translate }}</span>
+                    <span class="pa-metric__val">{{ item.analysis.hydrationScore }}</span>
+                  </div>
+                  <div class="pa-metric__bar">
+                    <div class="pa-metric__fill" [style.width.%]="item.analysis.hydrationScore"></div>
+                  </div>
+                </div>
+
+                <div class="pa-metric">
+                  <div class="pa-metric__top">
+                    <mat-icon>texture</mat-icon>
+                    <span class="pa-metric__label">{{ 'skinAnalysis.scanResult.texture' | translate }}</span>
+                    <span class="pa-metric__val">{{ item.analysis.textureScore }}</span>
+                  </div>
+                  <div class="pa-metric__bar">
+                    <div class="pa-metric__fill" [style.width.%]="item.analysis.textureScore"></div>
+                  </div>
+                </div>
+
+                <div class="pa-metric">
+                  <div class="pa-metric__top">
+                    <mat-icon>spa</mat-icon>
+                    <span class="pa-metric__label">{{ 'skinAnalysis.scanResult.sensitivity' | translate }}</span>
+                    <span class="pa-metric__val">{{ item.analysis.sensitivityScore }}</span>
+                  </div>
+                  <div class="pa-metric__bar">
+                    <div class="pa-metric__fill" [style.width.%]="item.analysis.sensitivityScore"></div>
+                  </div>
+                </div>
+
+                <div class="pa-metric">
+                  <div class="pa-metric__top">
+                    <mat-icon>wb_sunny</mat-icon>
+                    <span class="pa-metric__label">{{ 'skinAnalysis.scanResult.brightness' | translate }}</span>
+                    <span class="pa-metric__val">{{ item.analysis.brightnessScore }}</span>
+                  </div>
+                  <div class="pa-metric__bar">
+                    <div class="pa-metric__fill" [style.width.%]="item.analysis.brightnessScore"></div>
+                  </div>
+                </div>
+
+              </div>
+
+            } @else {
+              <p class="pa-card__no-analysis">Analysis data loading…</p>
+            }
+
           </div>
-          @if (scan.isCompleted) {
-            <button class="past-analyses__view-btn" (click)="onViewAnalysis(scan)">
-              {{ 'skinAnalysis.pastAnalyses.viewBtn' | translate }}
-            </button>
-          }
-        </div>
-      }
+        }
+      </div>
     }
+
   </div>
 
 </div>

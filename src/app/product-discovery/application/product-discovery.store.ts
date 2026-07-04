@@ -5,6 +5,7 @@ import { Product, ProductCategory } from '../domain/model/product.entity';
 import { ProductCompatibility } from '../domain/model/product-compatibility.entity';
 import { FavoriteProduct } from '../domain/model/favorite-product.entity';
 import { ProductDiscoveryApi } from '../infrastructure/product-discovery-api';
+import { IamStore } from '../../iam/application/iam.store';
 
 /**
  * Holds product discovery application state and coordinates
@@ -33,9 +34,13 @@ export class ProductDiscoveryStore {
   readonly compatibilities = this.compatibilitiesSignal.asReadonly();
 
   /**
-   * Readonly signal for the list of favorite product records.
+   * Readonly signal for the current user's favorite product records.
+   * Filters out favorite records belonging to other users.
    */
-  readonly favorites = this.favoritesSignal.asReadonly();
+  readonly favorites = computed(() => {
+    const currentUserId = this.iamStore.currentUser()?.id ?? -1;
+    return this.favoritesSignal().filter((favorite) => favorite.belongsToUser(currentUserId));
+  });
 
   /**
    * Readonly signal for the currently selected product.
@@ -100,7 +105,7 @@ export class ProductDiscoveryStore {
   /**
    * Computed signal for the number of saved favorite products.
    */
-  readonly favoriteCount = computed(() => this.favoritesSignal().length);
+  readonly favoriteCount = computed(() => this.favorites().length);
 
   /**
    * Computed signal for the count of AI-recommended products in the catalog.
@@ -110,6 +115,7 @@ export class ProductDiscoveryStore {
   );
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly iamStore = inject(IamStore);
 
   /**
    * Creates an instance of ProductDiscoveryStore and loads initial data.
@@ -117,7 +123,6 @@ export class ProductDiscoveryStore {
    */
   constructor(private productDiscoveryApi: ProductDiscoveryApi) {
     this.loadProducts();
-    this.loadProductCompatibilities();
     this.loadFavoriteProducts();
   }
 
@@ -155,11 +160,13 @@ export class ProductDiscoveryStore {
   }
 
   /**
-   * Sets the currently selected product for detail viewing.
+   * Sets the currently selected product for detail viewing and loads
+   * its compatibility evaluations across all skin types.
    * @param product - The product to select.
    */
   selectProduct(product: Product): void {
     this.selectedProductSignal.set(product);
+    this.loadCompatibilitiesForProduct(product.id);
   }
 
   /**
@@ -174,19 +181,19 @@ export class ProductDiscoveryStore {
   }
 
   /**
-   * Returns the compatibility record for a given product and skin profile.
-   * @param productId     - The product identifier.
-   * @param skinProfileId - The skin profile identifier.
+   * Returns the compatibility record for a given product and skin type.
+   * @param productId - The product identifier.
+   * @param skinType  - The target skin type (OILY, DRY, SENSITIVE, COMBINATION, NORMAL).
    * @returns Reactive selection for the matched compatibility record.
    */
   getCompatibilityForProduct(
     productId: number,
-    skinProfileId: number,
+    skinType: string,
   ): Signal<ProductCompatibility | undefined> {
     return computed(() =>
       this.compatibilitiesSignal().find(
         (compatibility) =>
-          compatibility.productId === productId && compatibility.skinProfileId === skinProfileId,
+          compatibility.productId === productId && compatibility.skinType === skinType,
       ),
     );
   }
@@ -198,7 +205,7 @@ export class ProductDiscoveryStore {
    */
   isProductFavorite(productId: number): Signal<boolean> {
     return computed(() =>
-      this.favoritesSignal().some((favorite) => favorite.matchesProduct(productId)),
+      this.favorites().some((favorite) => favorite.matchesProduct(productId)),
     );
   }
 
@@ -271,17 +278,21 @@ export class ProductDiscoveryStore {
   }
 
   /**
-   * Loads all product compatibility records from the API.
+   * Loads compatibility evaluations for a specific product across all skin types.
+   * @param productId - The product identifier to load compatibilities for.
    */
-  private loadProductCompatibilities(): void {
+  private loadCompatibilitiesForProduct(productId: number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.productDiscoveryApi
-      .getProductCompatibilities()
+      .getProductCompatibilitiesByProductId(productId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (compatibilities) => {
-          this.compatibilitiesSignal.set(compatibilities);
+          this.compatibilitiesSignal.update((existing) => [
+            ...existing.filter((compatibility) => compatibility.productId !== productId),
+            ...compatibilities,
+          ]);
           this.loadingSignal.set(false);
           this.errorSignal.set(null);
         },

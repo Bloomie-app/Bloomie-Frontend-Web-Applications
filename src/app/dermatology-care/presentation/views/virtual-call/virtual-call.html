@@ -1,110 +1,99 @@
-<div class="virtual-call">
+<div class="vc-page">
 
-  <!-- End call modal -->
+  <!-- ── End call modal ── -->
   @if (showEndModal()) {
-    <div class="virtual-call__modal-overlay">
-      <div class="virtual-call__modal">
-        <mat-icon class="virtual-call__modal-icon">call_end</mat-icon>
-        <h3 class="virtual-call__modal-title">{{ 'dermatology.virtualCall.endCallTitle' | translate }}</h3>
-        <p class="virtual-call__modal-desc">{{ 'dermatology.virtualCall.endCallDesc' | translate }}</p>
-        <div class="virtual-call__modal-actions">
-          <button class="virtual-call__modal-cancel" (click)="cancelEndCall()">{{ 'dermatology.virtualCall.stayBtn' | translate }}</button>
-          <button class="virtual-call__modal-confirm" (click)="confirmEndCall()">{{ 'dermatology.virtualCall.endBtn' | translate }}</button>
+    <div class="vc-modal-overlay">
+      <div class="vc-modal">
+        <div class="vc-modal__icon-wrap">
+          <mat-icon>call_end</mat-icon>
+        </div>
+        <h3 class="vc-modal__title">{{ 'dermatology.virtualCall.endCallTitle' | translate }}</h3>
+        <p class="vc-modal__desc">{{ 'dermatology.virtualCall.endCallDesc' | translate }}</p>
+        <div class="vc-modal__actions">
+          <button class="vc-modal__stay" (click)="cancelEndCall()">
+            {{ 'dermatology.virtualCall.stayBtn' | translate }}
+          </button>
+          <button class="vc-modal__end" (click)="confirmEndCall()">
+            {{ 'dermatology.virtualCall.endBtn' | translate }}
+          </button>
         </div>
       </div>
     </div>
   }
 
-  <!-- Main layout -->
-  <div class="virtual-call__layout">
+  <!-- ── Top bar ── -->
+  <div class="vc-topbar">
+    <div class="vc-topbar__left">
+      <span class="vc-topbar__live-dot"></span>
+      <span class="vc-topbar__name">{{ doctorDisplayName() }}</span>
+    </div>
+    <div class="vc-topbar__center">
+      <mat-icon class="vc-topbar__timer-icon">timer</mat-icon>
+      <span class="vc-topbar__timer">{{ callDuration() }}</span>
+    </div>
+    <div class="vc-topbar__right">
+      <button class="vc-topbar__chat-btn"
+              [class.vc-topbar__chat-btn--active]="showChat()"
+              (click)="toggleChatPanel()"
+              title="Toggle chat">
+        <mat-icon>chat_bubble_outline</mat-icon>
+      </button>
+      <!-- End call -->
+      <button class="vc-topbar__end-btn" (click)="requestEndCall()" title="End call">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </div>
+  </div>
 
-    <!-- Left: Video area -->
-    <div class="virtual-call__video-section">
+  <!-- ── Body ── -->
+  <div class="vc-body">
 
-      <!-- Doctor video placeholder -->
-      <div class="virtual-call__doctor-video">
-        <div class="virtual-call__video-avatar">
-          <mat-icon>person</mat-icon>
+    <div class="vc-video-area">
+      <iframe
+        [src]="wherebyUrl"
+        allow="camera; microphone; fullscreen; display-capture; autoplay"
+        style="width:100%; height:100%; border:none; border-radius:12px;">
+      </iframe>
+    </div>
+
+    <!-- ── Chat panel ── -->
+    @if (showChat()) {
+      <aside class="vc-chat">
+        <div class="vc-chat__header">
+          <span class="vc-chat__title">{{ 'dermatology.virtualCall.chatTitle' | translate }}</span>
+          <button class="vc-chat__close" (click)="toggleChatPanel()" title="Close chat">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
-        <span class="virtual-call__doctor-label">{{ 'dermatology.virtualCall.doctorLabel' | translate }}</span>
-        @if (!camOn()) {
-          <div class="virtual-call__cam-off-overlay">
-            <mat-icon>videocam_off</mat-icon>
-          </div>
-        }
-      </div>
 
-      <!-- Patient mini video -->
-      <div class="virtual-call__patient-mini">
-        <mat-icon>person</mat-icon>
-        <span class="virtual-call__you-label">{{ 'dermatology.virtualCall.youLabel' | translate }}</span>
-      </div>
-
-      <!-- Controls -->
-      <div class="virtual-call__controls">
-        <button
-          class="virtual-call__ctrl-btn"
-          [class.virtual-call__ctrl-btn--off]="!micOn()"
-          (click)="toggleMic()"
-          [attr.aria-label]="micOn() ? 'Mute' : 'Unmute'"
-        >
-          <mat-icon>{{ micOn() ? 'mic' : 'mic_off' }}</mat-icon>
-        </button>
-        <button
-          class="virtual-call__ctrl-btn virtual-call__ctrl-btn--end"
-          (click)="requestEndCall()"
-          aria-label="End call"
-        >
-          <mat-icon>call_end</mat-icon>
-        </button>
-        <button
-          class="virtual-call__ctrl-btn"
-          [class.virtual-call__ctrl-btn--off]="!camOn()"
-          (click)="toggleCam()"
-          [attr.aria-label]="camOn() ? 'Turn off camera' : 'Turn on camera'"
-        >
-          <mat-icon>{{ camOn() ? 'videocam' : 'videocam_off' }}</mat-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- Right: Chat panel -->
-    <div class="virtual-call__chat-panel">
-      <div class="virtual-call__chat-header">
-        <mat-icon>chat_bubble</mat-icon>
-        <span>{{ 'dermatology.virtualCall.chatTitle' | translate }}</span>
-      </div>
-
-      <div class="virtual-call__messages">
-        @for (message of messages(); track message.id) {
-          <div class="virtual-call__message" [class.virtual-call__message--patient]="message.from === 'patient'">
-            @if (message.from === 'doctor') {
-              <div class="virtual-call__msg-avatar">
-                <mat-icon>person</mat-icon>
+        <div class="vc-chat__messages">
+          @for (msg of messages(); track msg.id) {
+            <div class="vc-msg" [class.vc-msg--patient]="msg.from === 'patient'">
+              @if (msg.from === 'doctor') {
+                <div class="vc-msg__avatar">
+                  <span>{{ doctorInitials() }}</span>
+                </div>
+              }
+              <div class="vc-msg__bubble" [class.vc-msg__bubble--patient]="msg.from === 'patient'">
+                <p class="vc-msg__text">{{ msg.text }}</p>
+                <span class="vc-msg__time">{{ msg.time }}</span>
               </div>
-            }
-            <div class="virtual-call__bubble" [class.virtual-call__bubble--patient]="message.from === 'patient'">
-              <p class="virtual-call__bubble-text">{{ message.text }}</p>
-              <span class="virtual-call__bubble-time">{{ message.time }}</span>
             </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
 
-      <!-- Input -->
-      <div class="virtual-call__chat-input">
-        <input
-          class="virtual-call__input"
-          type="text"
-          [placeholder]="'dermatology.virtualCall.inputPlaceholder' | translate"
-          [(ngModel)]="inputText"
-          (keyup.enter)="sendMessage()"
-        />
-        <button class="virtual-call__send-btn" (click)="sendMessage()" aria-label="Send">
-          <mat-icon>send</mat-icon>
-        </button>
-      </div>
-    </div>
+        <div class="vc-chat__input-row">
+          <input class="vc-chat__input"
+                 type="text"
+                 [placeholder]="'dermatology.virtualCall.inputPlaceholder' | translate"
+                 [(ngModel)]="inputText"
+                 (keyup.enter)="sendMessage()" />
+          <button class="vc-chat__send" (click)="sendMessage()" title="Send">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </aside>
+    }
 
   </div>
 </div>

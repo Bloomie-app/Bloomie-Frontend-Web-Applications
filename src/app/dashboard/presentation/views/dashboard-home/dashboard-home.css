@@ -170,7 +170,7 @@
 
 .dashboard__stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
@@ -446,6 +446,253 @@
   font-size: 12px;
   color: #999;
   margin: 0;
+}
+
+/* ── Skin hero (large SVG ring + info) ────────────────────────────────────── */
+
+.skin-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.skin-hero__circle {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.skin-hero__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.skin-hero__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.skin-hero__score {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  color: #a26769;
+  line-height: 1;
+}
+
+.skin-hero__out-of {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 2px;
+}
+
+.skin-hero__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skin-hero__type {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.skin-hero__sensitivity {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+/* ── Metric rings 2×2 grid ─────────────────────────────────────────────────── */
+
+.skin-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fdfcfb;
+  border: 1px solid #ede8e8;
+  border-radius: 14px;
+  padding: 14px 10px 10px;
+}
+
+.metric-card__ring-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.metric-card__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.metric-card__pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #444;
+}
+
+.metric-card__label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-align: center;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Next appointment widget ───────────────────────────────────────────────── */
+
+.appt-widget__icon-bg {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f5f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appt-widget__icon-bg mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #a26769;
+}
+
+.appt-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fdf8f6;
+  border: 1px solid #ede8e8;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.appt-card__icon-col {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #cebebe, #a26769);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appt-card__icon-col mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+}
+
+.appt-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.appt-card__specialty {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appt-card__datetime {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #888;
+}
+
+.appt-card__clock {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: #cebebe;
+}
+
+.appt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.appt-empty__icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #cebebe;
+}
+
+.appt-empty__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+.appt-empty__hint {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Progress chart score label ────────────────────────────────────────────── */
+
+.progress-chart__score-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #bbb;
+  height: 14px;
+  display: flex;
+  align-items: center;
 }
 
 /* ── Skin metric bars ──────────────────────────────────────────────────────── */
@@ -763,7 +1010,6 @@
   overflow: hidden;
 }
 
-/* Alternating tinted backgrounds matching prototipo */
 .recommendations-grid .recommendation-card:nth-child(odd) {
   background: #ddeaf5;
 }

@@ -1,412 +1,247 @@
-.product-detail {
-  padding: 32px 40px;
+/* ── Root ── */
+.pd {
   background: #fffdf8;
   min-height: 100%;
-}
-
-/* ── Empty state ── */
-.product-detail__empty {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 80px;
 }
 
-.product-detail__empty-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  color: #cebebe;
+/* ── Empty ── */
+.pd-empty {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 32px;
+}
+.pd-empty__icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(206,190,190,0.20);
+  display: flex; align-items: center; justify-content: center;
   margin-bottom: 16px;
 }
-
-.product-detail__empty-text {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-  color: #999;
-  margin: 0;
+.pd-empty__icon-wrap mat-icon { font-size: 32px; width: 32px; height: 32px; color: #cebebe; }
+.pd-empty__text {
+  font-family: 'Montserrat', sans-serif; font-size: 15px; color: #aaa; margin: 0;
 }
 
-/* ── Header ── */
-.product-detail__header {
+/* ── Banner ── */
+.pd-banner {
+  background: linear-gradient(135deg, #a26769 0%, #7d4648 100%);
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 16px;
-}
-
-.product-detail__back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e0d6d6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s;
 }
-
-.product-detail__back-btn:hover { background: #f5f0f0; }
-
-.product-detail__header-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 32px;
-  color: #333;
-  margin: 0;
-}
-
-.product-detail__header-brand {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  color: #999;
-  margin: 4px 0 0;
-}
-
-.product-detail__favorite-btn {
-  margin-left: auto;
-  width: 40px;
-  height: 40px;
+.pd-banner__back {
+  width: 38px; height: 38px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e0d6d6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.28);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
   transition: background 0.15s;
 }
+.pd-banner__back:hover { background: rgba(255,255,255,0.30); }
+.pd-banner__back mat-icon { color: #fff; font-size: 20px; }
 
-.product-detail__favorite-btn:hover { background: #f5f0f0; }
-
-.product-detail__favorite-btn mat-icon { color: #333; }
-
-.product-detail__favorite-btn--active mat-icon { color: #a26769; }
-
-.product-detail__divider {
-  height: 1px;
-  background: #e8dede;
-  margin-bottom: 32px;
+.pd-banner__text { flex: 1; min-width: 0; }
+.pd-banner__brand {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.65);
+  margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.07em;
 }
+.pd-banner__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: 20px; color: #fff; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.pd-banner__heart {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.28);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+.pd-banner__heart:hover { background: rgba(255,255,255,0.30); transform: scale(1.08); }
+.pd-banner__heart mat-icon { color: rgba(255,255,255,0.70); font-size: 20px; }
+.pd-banner__heart--active mat-icon { color: #fff; }
 
 /* ── Content layout ── */
-.product-detail__content {
+.pd-content {
+  flex: 1;
   display: flex;
   gap: 32px;
+  padding: 28px 32px 40px;
   align-items: flex-start;
 }
 
 /* ── Image panel ── */
-.product-detail__image-panel {
-  width: 420px;
+.pd-image {
+  width: 380px;
   flex-shrink: 0;
   border-radius: 28px;
-  background: #cebebe;
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  background: linear-gradient(160deg, #f0e4e4 0%, #e0cdcd 100%);
+  min-height: 460px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
-
-.product-detail__image-area {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.product-detail__image-icon {
-  font-size: 120px;
-  width: 120px;
-  height: 120px;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.product-detail__image-ai-badge {
+.pd-image__deco {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  border-radius: 999px;
-  padding: 6px 12px;
+  border-radius: 50%;
+  pointer-events: none;
 }
-
-.product-detail__image-ai-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #a26769;
+.pd-image__deco--1 {
+  width: 340px; height: 340px;
+  border: 2px solid rgba(162,103,105,0.12);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
 }
-
-.product-detail__image-ai-badge span {
+.pd-image__deco--2 {
+  width: 220px; height: 220px;
+  border: 2px solid rgba(162,103,105,0.18);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+.pd-image__icon {
+  font-size: 110px; width: 110px; height: 110px;
+  color: rgba(162,103,105,0.30);
+  position: relative; z-index: 1;
+}
+.pd-image__photo {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute; inset: 0;
+}
+.pd-image__badge {
+  position: absolute;
+  top: 18px; left: 18px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 50px;
+  padding: 6px 14px 6px 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+}
+.pd-image__badge mat-icon { font-size: 16px; width: 16px; height: 16px; color: #a26769; }
+.pd-image__badge span {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  color: #333;
+  font-weight: 700; font-size: 11px; color: #a26769;
 }
 
-/* ── Details card ── */
-.product-detail__details-card {
-  flex: 1;
-  min-width: 0;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 32px;
+/* ── Details panel ── */
+.pd-details {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 24px;
 }
 
-.product-detail__brand {
+.pd-details__desc {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: #999;
-  margin: 0 0 4px;
+  font-size: 14px; color: #555; line-height: 1.7; margin: 0;
 }
 
-.product-detail__name {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 24px;
-  color: #000;
-  margin: 0 0 16px;
-  line-height: 1.3;
+/* ── Skin Compatibility ── */
+.pd-compat {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+  border: 1px solid #ede8e8;
+  padding: 20px 24px;
 }
-
-.product-detail__description {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #000;
-  line-height: 1.6;
-  margin: 0 0 24px;
+.pd-compat__header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
 }
-
-/* ── AI Compatibility ── */
-.product-detail__compatibility {
-  background: linear-gradient(135deg, #f5f0f0, #ede5e5);
-  border: 1px solid #e0d0d0;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
+.pd-compat__icon-wrap {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(162,103,105,0.10);
+  display: flex; align-items: center; justify-content: center;
 }
-
-.product-detail__compatibility-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+.pd-compat__icon-wrap mat-icon { font-size: 18px; width: 18px; height: 18px; color: #a26769; }
+.pd-compat__title {
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #2d1f1f; margin: 0;
 }
-
-.product-detail__compatibility-ai-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #a26769;
+.pd-compat__score-row {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 6px;
 }
-
-.product-detail__compatibility-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: #333;
-  margin: 0;
+.pd-compat__bar {
+  flex: 1; height: 10px;
+  background: #f0e8e8; border-radius: 50px; overflow: hidden;
 }
-
-.product-detail__score-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
+.pd-compat__bar-fill {
+  height: 100%; border-radius: 50px; transition: width 0.5s ease;
 }
-
-.product-detail__score-bar-track {
-  flex: 1;
-  height: 12px;
-  background: #e0d0d0;
-  border-radius: 999px;
-  overflow: hidden;
+.pd-compat__pct {
+  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 18px;
+  flex-shrink: 0; width: 52px; text-align: right;
 }
-
-.product-detail__score-bar-fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.4s ease;
-}
-
-.product-detail__score-value {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  flex-shrink: 0;
-  width: 56px;
-}
-
-.product-detail__score-label {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
+.pd-compat__label {
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 12px;
   margin: 0 0 8px;
 }
-
-.product-detail__compatibility-explanation {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  color: #555;
-  line-height: 1.6;
-  margin: 0;
+.pd-compat__explanation {
+  font-family: 'Montserrat', sans-serif; font-size: 13px; color: #777;
+  line-height: 1.6; margin: 0;
 }
 
 /* ── Key Benefits ── */
-.product-detail__benefits {
-  margin-bottom: 32px;
+.pd-benefits {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+  border: 1px solid #ede8e8;
+  padding: 20px 24px;
+}
+.pd-benefits__title {
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #2d1f1f;
+  margin: 0 0 14px;
+  text-transform: uppercase; letter-spacing: 0.05em; font-size: 12px;
+}
+.pd-benefits__list { display: flex; flex-direction: column; gap: 10px; }
+.pd-benefits__item { display: flex; align-items: flex-start; gap: 10px; }
+.pd-benefits__check {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(162,103,105,0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.pd-benefits__check mat-icon { font-size: 13px; width: 13px; height: 13px; color: #a26769; }
+.pd-benefits__text {
+  font-family: 'Montserrat', sans-serif; font-size: 14px; color: #444; margin: 0; line-height: 1.5;
 }
 
-.product-detail__benefits-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #000;
-  margin: 0 0 12px;
+/* ── Actions ── */
+.pd-actions {
+  display: flex; gap: 12px;
 }
-
-.product-detail__benefits-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.product-detail__benefit-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.product-detail__benefit-icon-wrapper {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(206, 190, 190, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.product-detail__benefit-icon {
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-  color: #a26769;
-}
-
-.product-detail__benefit-text {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #000;
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* ── Action buttons ── */
-.product-detail__actions {
-  display: flex;
-  gap: 16px;
-}
-
-.product-detail__routine-btn {
+.pd-actions__save {
   flex: 1;
-  background: #a26769;
-  color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  border: none;
-  border-radius: 22px;
-  padding: 16px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.product-detail__routine-btn:hover { background: #8e5759; }
-
-.product-detail__save-btn {
-  padding: 16px 24px;
-  border-radius: 22px;
-  border: 2px solid #cebebe;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 14px 22px;
+  border-radius: 50px;
+  border: 2px solid rgba(162,103,105,0.25);
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #a26769;
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #a26769;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
+.pd-actions__save mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.pd-actions__save:hover { background: rgba(162,103,105,0.06); border-color: rgba(162,103,105,0.50); }
+.pd-actions__save--active { background: rgba(162,103,105,0.08); border-color: rgba(162,103,105,0.50); }
 
-.product-detail__save-btn:hover { background: rgba(162, 103, 105, 0.05); }
-
-.product-detail__save-btn--active {
-  background: rgba(162, 103, 105, 0.10);
-  border-color: #a26769;
-}
-
+/* ── Mobile ── */
 @media (max-width: 1023px) {
-  .product-detail {
-    padding: 1rem 1rem 1.5rem;
-  }
+  .pd-banner { padding: 16px 20px; }
+  .pd-banner__title { font-size: 17px; }
 
-  .product-detail__header-title {
-    font-size: 22px;
-  }
+  .pd-content { flex-direction: column; padding: 16px 16px 32px; gap: 20px; }
 
-  .product-detail__content {
-    flex-direction: column;
-    gap: 20px;
+  .pd-image {
+    width: 100%; min-height: 240px; border-radius: 20px;
   }
+  .pd-image__icon { font-size: 80px; width: 80px; height: 80px; }
 
-  .product-detail__image-panel {
-    width: 100%;
-    min-height: 240px;
-    border-radius: 20px;
-  }
-
-  .product-detail__image-icon {
-    font-size: 80px;
-    width: 80px;
-    height: 80px;
-  }
-
-  .product-detail__details-card {
-    padding: 20px;
-    border-radius: 18px;
-  }
-
-  .product-detail__name {
-    font-size: 20px;
-  }
-
-  .product-detail__actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .product-detail__routine-btn,
-  .product-detail__save-btn {
-    width: 100%;
-    font-size: 14px;
-    padding: 14px;
-  }
-
-  .product-detail__empty {
-    padding: 48px 16px;
-  }
+  .pd-actions { flex-direction: column; }
+  .pd-actions__save { width: 100%; justify-content: center; }
 }

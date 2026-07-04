@@ -9,55 +9,58 @@
   <div class="derm-summary__divider"></div>
 
   @if (store.selectedConsultation(); as consultation) {
+
+    <!-- Patient strip -->
+    <div class="derm-summary__patient-strip">
+      <div class="derm-summary__patient-avatar">
+        @if (patientPhoto()) {
+          <img class="derm-summary__patient-avatar-img" [src]="patientPhoto()!" alt="Patient" />
+        } @else {
+          <mat-icon class="derm-summary__patient-avatar-icon">person</mat-icon>
+        }
+      </div>
+      <div class="derm-summary__patient-meta">
+        <p class="derm-summary__patient-name">{{ patientName() }}</p>
+        <span class="derm-summary__patient-role">{{ 'dermatology.dermSummary.patientRole' | translate }}</span>
+      </div>
+    </div>
+
     <div class="derm-summary__layout">
 
-      <!-- Left -->
+      <!-- Left column -->
       <div class="derm-summary__left">
 
-        <!-- Green info card -->
+        <!-- Info card -->
         <div class="derm-summary__info-card">
           <div class="derm-summary__row">
             <mat-icon class="derm-summary__row-icon">calendar_today</mat-icon>
             <span class="derm-summary__row-label">{{ 'dermatology.dermSummary.date' | translate }}</span>
-            <span class="derm-summary__chip">{{ consultation.startedAt }}</span>
-            <span class="derm-summary__chip">{{ consultation.finishedAt }}</span>
+            <span class="derm-summary__chip">{{ formatDate(consultation.startedAt) }}</span>
           </div>
           <div class="derm-summary__row">
+            <mat-icon class="derm-summary__row-icon">event</mat-icon>
+            <span class="derm-summary__row-label">{{ 'dermatology.dermSummary.endDate' | translate }}</span>
+            <span class="derm-summary__chip">{{ formatDate(consultation.finishedAt) }}</span>
+          </div>
+          <div class="derm-summary__row derm-summary__row--last">
             <mat-icon class="derm-summary__row-icon">timer</mat-icon>
             <span class="derm-summary__row-label">{{ 'dermatology.dermSummary.duration' | translate }}</span>
-            <span>{{ consultation.durationInMinutes }} min</span>
+            <span class="derm-summary__chip">{{ consultation.durationInMinutes }} min</span>
           </div>
-
-          @if (consultation.hasClinicalPhotos) {
-            <div class="derm-summary__photos-label">
-              <mat-icon>photo_camera</mat-icon>
-              <span class="derm-summary__row-label">{{ 'dermatology.dermSummary.clinicalPhotos' | translate }}</span>
-            </div>
-            <div class="derm-summary__photos">
-              @for (url of consultation.clinicalPhotoUrls; track url) {
-                <img class="derm-summary__photo" [src]="url" alt="Clinical photo" />
-              }
-            </div>
-          } @else {
-            <div class="derm-summary__no-photos">
-              <mat-icon>hide_image</mat-icon>
-              <span>{{ 'dermatology.dermSummary.noPhotos' | translate }}</span>
-            </div>
-          }
         </div>
 
-        <!-- Diagnosis card -->
+        <!-- Diagnosis + recommendations card -->
         <div class="derm-summary__body-card">
           <p class="derm-summary__section-label">{{ 'dermatology.dermSummary.diagnosis' | translate }}</p>
           <p class="derm-summary__body-text">{{ consultation.notes }}</p>
 
           <p class="derm-summary__section-label">{{ 'dermatology.dermSummary.recommendations' | translate }}</p>
-          <p class="derm-summary__body-text">{{ consultation.recommendations }}</p>
+          <p class="derm-summary__body-text derm-summary__body-text--last">{{ consultation.recommendations }}</p>
         </div>
 
       </div>
 
-      <!-- Right: return button -->
+      <!-- Right column -->
       <div class="derm-summary__right">
         <button class="derm-summary__return-btn" (click)="navigateBack()">
           {{ 'dermatology.dermSummary.returnBtn' | translate }}

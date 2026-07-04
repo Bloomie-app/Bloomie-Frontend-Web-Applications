@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-sign-in-home',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, LanguageSwitcher],
   templateUrl: './sign-in-home.html',
   styleUrl: './sign-in-home.css',
 })

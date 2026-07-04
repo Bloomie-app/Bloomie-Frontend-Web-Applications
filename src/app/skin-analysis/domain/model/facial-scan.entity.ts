@@ -1,7 +1,8 @@
 import { BaseEntity } from '../../../shared/infrastructure/base-entity';
 
 export enum FacialScanStatus {
-  InProgress = 'IN_PROGRESS',
+  Started = 'STARTED',
+  Submitted = 'SUBMITTED',
   Completed = 'COMPLETED',
   Failed = 'FAILED',
 }
@@ -23,29 +24,53 @@ export class FacialScan implements BaseEntity {
 
   private _id: number;
 
-  get id(): number { return this._id; }
-  set id(value: number) { this._id = value; }
+  get id(): number {
+    return this._id;
+  }
+  set id(value: number) {
+    this._id = value;
+  }
 
   private _patientId: number;
 
-  get patientId(): number { return this._patientId; }
+  get patientId(): number {
+    return this._patientId;
+  }
 
   private _status: FacialScanStatus;
 
-  get status(): FacialScanStatus { return this._status; }
-  set status(value: FacialScanStatus) { this._status = value; }
+  get status(): FacialScanStatus {
+    return this._status;
+  }
+  set status(value: FacialScanStatus) {
+    this._status = value;
+  }
 
   private _photoUrl: string;
 
-  get photoUrl(): string { return this._photoUrl; }
+  get photoUrl(): string {
+    return this._photoUrl;
+  }
 
   private _scannedAt: string;
 
-  get scannedAt(): string { return this._scannedAt; }
+  get scannedAt(): string {
+    return this._scannedAt;
+  }
 
-  get isCompleted(): boolean { return this._status === FacialScanStatus.Completed; }
-  get hasFailed(): boolean { return this._status === FacialScanStatus.Failed; }
-  get isInProgress(): boolean { return this._status === FacialScanStatus.InProgress; }
+  get isCompleted(): boolean {
+    return (
+      this._status === FacialScanStatus.Submitted || this._status === FacialScanStatus.Completed
+    );
+  }
+
+  get hasFailed(): boolean {
+    return this._status === FacialScanStatus.Failed;
+  }
+
+  get isInProgress(): boolean {
+    return this._status === FacialScanStatus.Started;
+  }
 
   get formattedScannedAt(): string {
     return new Date(this._scannedAt).toLocaleDateString('en-US', {

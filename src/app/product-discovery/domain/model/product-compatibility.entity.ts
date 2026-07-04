@@ -11,8 +11,7 @@ const GOOD_COMPATIBILITY_THRESHOLD  = 60;
 const EXCELLENT_COMPATIBILITY_THRESHOLD = 85;
 
 /**
- * Represents the AI-generated compatibility evaluation between a product
- * and a specific skin profile derived from a facial scan.
+ * Represents the compatibility evaluation between a product and a specific skin type.
  */
 export class ProductCompatibility implements BaseEntity {
 
@@ -23,19 +22,15 @@ export class ProductCompatibility implements BaseEntity {
   constructor(props: {
     id:                 number;
     productId:          number;
-    facialScanId:       number;
-    skinProfileId:      number;
+    skinType:           string;
     compatibilityScore: number;
-    explanation:        string;
-    evaluatedAt:        string;
+    reason:             string;
   }) {
     this._id                 = props.id;
     this._productId          = props.productId;
-    this._facialScanId       = props.facialScanId;
-    this._skinProfileId      = props.skinProfileId;
+    this._skinType           = props.skinType;
     this._compatibilityScore = props.compatibilityScore;
-    this._explanation        = props.explanation;
-    this._evaluatedAt        = props.evaluatedAt;
+    this._reason             = props.reason;
   }
 
   /** Unique identifier for the compatibility record. */
@@ -49,33 +44,23 @@ export class ProductCompatibility implements BaseEntity {
 
   get productId(): number { return this._productId; }
 
-  /** Identifier of the facial scan used in the evaluation. */
-  private _facialScanId: number;
+  /** Target skin type (OILY, DRY, SENSITIVE, COMBINATION, NORMAL). */
+  private _skinType: string;
 
-  get facialScanId(): number { return this._facialScanId; }
-
-  /** Identifier of the skin profile this evaluation belongs to. */
-  private _skinProfileId: number;
-
-  get skinProfileId(): number { return this._skinProfileId; }
+  get skinType(): string { return this._skinType; }
 
   /**
    * Numeric score from 0 to 100 representing how compatible
-   * the product is with the user's skin profile.
+   * the product is with the target skin type.
    */
   private _compatibilityScore: number;
 
   get compatibilityScore(): number { return this._compatibilityScore; }
 
-  /** AI-generated explanation of the compatibility result. */
-  private _explanation: string;
+  /** One-sentence explanation of the compatibility result. */
+  private _reason: string;
 
-  get explanation(): string { return this._explanation; }
-
-  /** ISO 8601 date-time string for when the evaluation was performed. */
-  private _evaluatedAt: string;
-
-  get evaluatedAt(): string { return this._evaluatedAt; }
+  get reason(): string { return this._reason; }
 
   /**
    * Returns true if the compatibility score qualifies as an excellent match.
@@ -115,17 +100,5 @@ export class ProductCompatibility implements BaseEntity {
     if (this._compatibilityScore >= EXCELLENT_COMPATIBILITY_THRESHOLD) return '#4a9a4a';
     if (this._compatibilityScore >= GOOD_COMPATIBILITY_THRESHOLD)      return '#c8a030';
     return '#c8302a';
-  }
-
-  /**
-   * Returns a formatted date string for when the evaluation was performed.
-   * @returns Date formatted as 'MMM DD, YYYY'.
-   */
-  get formattedEvaluatedAt(): string {
-    return new Date(this._evaluatedAt).toLocaleDateString('en-US', {
-      month: 'short',
-      day:   '2-digit',
-      year:  'numeric',
-    });
   }
 }

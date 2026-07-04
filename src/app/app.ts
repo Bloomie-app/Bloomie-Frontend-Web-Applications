@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component } from '@angular/core';
 import { Layout } from './shared/presentation/components/layout/layout';
 
 @Component({
@@ -9,10 +8,4 @@ import { Layout } from './shared/presentation/components/layout/layout';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  constructor() {
-    const translate = inject(TranslateService);
-    translate.setDefaultLang('en');
-    translate.use('en');
-  }
-}
+export class App {}

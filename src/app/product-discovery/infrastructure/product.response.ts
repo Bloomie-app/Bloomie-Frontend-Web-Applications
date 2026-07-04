@@ -4,20 +4,14 @@ import {BaseResource, BaseResponse} from '../../shared/infrastructure/base-respo
  * Resource representation of a skincare product returned by the API.
  */
 export interface ProductResource extends BaseResource {
-  /** Unique identifier for the product. */
-  id:               number;
-  /** Display name of the product. */
-  name:             string;
-  /** Brand that manufactures the product. */
-  brand:            string;
-  /** Skincare category the product belongs to (e.g. CLEANSER, SERUM). */
-  category:         string;
-  /** Detailed description of the product and its purpose. */
-  description:      string;
-  /** List of key benefits provided by the product. */
-  benefits:         string[];
-  /** Whether this product has been flagged as AI-recommended. */
-  is_ai_recommended: boolean;
+  id: number;
+  name: string;
+  brand: string;
+  category: string;
+  description: string;
+  benefits: string[];
+  aiRecommended: boolean;
+  imageUrl?: string;
 }
 
 /**

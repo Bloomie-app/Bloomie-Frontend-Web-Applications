@@ -8,8 +8,12 @@ import {environment} from '../../../environments/environment';
 /**
  * Endpoint client for product CRUD operations.
  */
-export class ProductsApiEndpoint extends BaseApiEndpoint<Product, ProductResource, ProductsResponse, ProductAssembler> {
-
+export class ProductsApiEndpoint extends BaseApiEndpoint<
+  Product,
+  ProductResource,
+  ProductsResponse,
+  ProductAssembler
+> {
   /**
    * Creates an instance of ProductsApiEndpoint.
    * @param http - The HttpClient to be used for making API requests.
@@ -17,8 +21,8 @@ export class ProductsApiEndpoint extends BaseApiEndpoint<Product, ProductResourc
   constructor(http: HttpClient) {
     super(
       http,
-      `${environment.serverBasePath}${environment.productsEndpointPath}`,
-      new ProductAssembler()
+      `${environment.backendBasePath}${environment.backendProductsEndpointPath}`,
+      new ProductAssembler(),
     );
   }
 }

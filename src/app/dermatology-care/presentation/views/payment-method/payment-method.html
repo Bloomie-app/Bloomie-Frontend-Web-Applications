@@ -1,6 +1,5 @@
 <div class="payment-method">
 
-  <!-- Header — hidden on confirmation -->
   @if (step() !== 'confirmed') {
     <div class="payment-method__header">
       <button class="payment-method__back-btn" (click)="navigateBack()" aria-label="Go back">
@@ -15,6 +14,26 @@
       </div>
     </div>
     <div class="payment-method__divider"></div>
+
+    <div class="payment-method__steps">
+      <div class="payment-method__step-item">
+        <div class="payment-method__step-bubble"
+             [class.payment-method__step-bubble--active]="step() === 'select'"
+             [class.payment-method__step-bubble--done]="step() === 'add-card'">
+          @if (step() === 'add-card') {
+            <mat-icon class="payment-method__step-check">check</mat-icon>
+          } @else {
+            <span>1</span>
+          }
+        </div>
+      </div>
+      <div class="payment-method__step-line" [class.payment-method__step-line--done]="step() === 'add-card'"></div>
+      <div class="payment-method__step-item">
+        <div class="payment-method__step-bubble" [class.payment-method__step-bubble--active]="step() === 'add-card'">
+          <span>2</span>
+        </div>
+      </div>
+    </div>
   }
 
   <div class="payment-method__container">
@@ -24,22 +43,14 @@
       <div class="payment-method__card">
         <p class="payment-method__card-title">{{ 'dermatology.payment.selectMethod' | translate }}</p>
         <p class="payment-method__section-label">{{ 'dermatology.payment.creditDebit' | translate }}</p>
-        <div class="payment-method__methods">
-          @for (method of cardMethods; track method.id) {
-            <div class="payment-method__method-row" [class.payment-method__method-row--selected]="selectedPayment() === method.id" (click)="selectPaymentMethod(method.id)">
-              <mat-icon class="payment-method__method-icon">{{ method.icon }}</mat-icon>
-              <span class="payment-method__method-label">{{ method.labelKey | translate }}</span>
-              <div class="payment-method__radio" [class.payment-method__radio--selected]="selectedPayment() === method.id">
-                @if (selectedPayment() === method.id) { <div class="payment-method__radio-dot"></div> }
-              </div>
-            </div>
-          }
-        </div>
-        <p class="payment-method__section-label">{{ 'dermatology.payment.digitalWallets' | translate }}</p>
         <div class="payment-method__methods payment-method__methods--mb">
-          @for (method of walletMethods; track method.id) {
-            <div class="payment-method__method-row" [class.payment-method__method-row--selected]="selectedPayment() === method.id" (click)="selectPaymentMethod(method.id)">
-              <mat-icon class="payment-method__method-icon">{{ method.icon }}</mat-icon>
+          @for (method of cardMethods; track method.id) {
+            <div class="payment-method__method-row"
+                 [class.payment-method__method-row--selected]="selectedPayment() === method.id"
+                 (click)="selectPaymentMethod(method.id)">
+              <div class="payment-method__method-icon-wrap">
+                <mat-icon class="payment-method__method-icon">{{ method.icon }}</mat-icon>
+              </div>
               <span class="payment-method__method-label">{{ method.labelKey | translate }}</span>
               <div class="payment-method__radio" [class.payment-method__radio--selected]="selectedPayment() === method.id">
                 @if (selectedPayment() === method.id) { <div class="payment-method__radio-dot"></div> }
@@ -58,38 +69,96 @@
       <div class="payment-method__card">
         @if (showError()) {
           <div class="payment-method__error-banner">
-            <mat-icon class="payment-method__error-icon">warning</mat-icon>
+            <mat-icon class="payment-method__error-icon">warning_amber</mat-icon>
             <p class="payment-method__error-text">{{ 'dermatology.payment.errorMessage' | translate }}</p>
           </div>
         }
+
+        @if (bookingError()) {
+          <div class="payment-method__error-banner">
+            <mat-icon class="payment-method__error-icon">event_busy</mat-icon>
+            <div>
+              <p class="payment-method__error-text">{{ bookingError() }}</p>
+              <button type="button" class="payment-method__error-action" (click)="chooseAnotherTime()">
+                {{ 'dermatology.payment.chooseAnotherTime' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+
         <div class="payment-method__card-preview">
-          <mat-icon class="payment-method__card-preview-icon">credit_card</mat-icon>
-          <p class="payment-method__card-preview-number">{{ cardNumber || '0000 0000 0000 0000' }}</p>
-          <p class="payment-method__card-preview-holder">{{ cardHolderName || 'CARD HOLDER' }}</p>
+          <div class="payment-method__preview-top">
+            <div class="payment-method__chip">
+              <div class="payment-method__chip-inner"></div>
+            </div>
+            <mat-icon class="payment-method__preview-network">credit_card</mat-icon>
+          </div>
+          <p class="payment-method__preview-number">{{ cardNumber || '0000 0000 0000 0000' }}</p>
+          <div class="payment-method__preview-bottom">
+            <div class="payment-method__preview-field">
+              <p class="payment-method__preview-hint">CARDHOLDER</p>
+              <p class="payment-method__preview-holder">{{ cardHolderName || 'FULL NAME' }}</p>
+            </div>
+            <div class="payment-method__preview-field payment-method__preview-field--right">
+              <p class="payment-method__preview-hint">EXPIRES</p>
+              <p class="payment-method__preview-expiry">{{ expirationDate || 'MM/YY' }}</p>
+            </div>
+          </div>
         </div>
+
         <label class="payment-method__field">
           <p class="payment-method__field-label">{{ 'dermatology.payment.cardholderName' | translate }}</p>
-          <input class="payment-method__input" type="text" [placeholder]="'dermatology.payment.cardholderPlaceholder' | translate" [(ngModel)]="cardHolderName" />
+          <div class="payment-method__input-wrap">
+            <mat-icon class="payment-method__input-icon">person</mat-icon>
+            <input class="payment-method__input" type="text"
+                   [placeholder]="'dermatology.payment.cardholderPlaceholder' | translate"
+                   [(ngModel)]="cardHolderName" />
+          </div>
         </label>
+
         <label class="payment-method__field">
           <p class="payment-method__field-label">{{ 'dermatology.payment.cardNumber' | translate }}</p>
-          <input class="payment-method__input" type="text" placeholder="0000 0000 0000 0000" maxlength="19" [(ngModel)]="cardNumber" />
+          <div class="payment-method__input-wrap">
+            <mat-icon class="payment-method__input-icon">credit_card</mat-icon>
+            <input class="payment-method__input" type="tel"
+                   placeholder="0000 0000 0000 0000"
+                   maxlength="19"
+                   [value]="cardNumber"
+                   (input)="onCardNumberInput($event)" />
+          </div>
         </label>
+
         <div class="payment-method__row">
           <label class="payment-method__field payment-method__field--flex">
             <p class="payment-method__field-label">{{ 'dermatology.payment.expirationDate' | translate }}</p>
-            <input class="payment-method__input" type="text" placeholder="dd/mm/yyyy" maxlength="10" [value]="expirationDate" (input)="onExpirationDateInput($event)" />
+            <div class="payment-method__input-wrap">
+              <mat-icon class="payment-method__input-icon">calendar_today</mat-icon>
+              <input class="payment-method__input" type="tel"
+                     placeholder="MM/YY"
+                     maxlength="5"
+                     [value]="expirationDate"
+                     (input)="onExpirationDateInput($event)" />
+            </div>
           </label>
           <label class="payment-method__field payment-method__field--cvv">
             <p class="payment-method__field-label">{{ 'dermatology.payment.cvv' | translate }}</p>
-            <input class="payment-method__input" type="text" placeholder="•••" maxlength="4" [(ngModel)]="cvv" />
+            <div class="payment-method__input-wrap">
+              <mat-icon class="payment-method__input-icon">lock</mat-icon>
+              <input class="payment-method__input" type="tel"
+                     placeholder="•••"
+                     maxlength="3"
+                     [(ngModel)]="cvv" />
+            </div>
           </label>
         </div>
+
         <div class="payment-method__security-note">
-          <mat-icon class="payment-method__lock-icon">lock</mat-icon>
+          <mat-icon class="payment-method__lock-icon">verified_user</mat-icon>
           <p class="payment-method__security-text">{{ 'dermatology.payment.securityNote' | translate }}</p>
         </div>
+
         <button class="payment-method__pay-btn" (click)="payNow()">
+          <mat-icon class="payment-method__btn-icon">lock</mat-icon>
           {{ 'dermatology.payment.payNow' | translate }}
         </button>
       </div>
@@ -99,19 +168,35 @@
     @if (step() === 'confirmed') {
       <div class="payment-method__confirmation">
         <div class="payment-method__confirmation-circle">
-          <mat-icon class="payment-method__confirmation-icon">check_circle</mat-icon>
+          <mat-icon class="payment-method__confirmation-check">check_circle</mat-icon>
         </div>
         <h2 class="payment-method__confirmation-title">{{ 'dermatology.payment.confirmationTitle' | translate }}</h2>
         <p class="payment-method__confirmation-desc">{{ 'dermatology.payment.confirmationDesc' | translate }}</p>
-        <div class="payment-method__confirmation-detail">
-          <p class="payment-method__confirmation-label">{{ 'dermatology.payment.confirmationSpecialist' | translate }}</p>
-          <p class="payment-method__confirmation-value">{{ store.selectedDermatologist()?.specialty }}</p>
+
+        <div class="payment-method__confirmation-card">
+          <div class="payment-method__confirmation-detail">
+            <div class="payment-method__detail-icon">
+              <mat-icon>medical_services</mat-icon>
+            </div>
+            <div>
+              <p class="payment-method__confirmation-label">{{ 'dermatology.payment.confirmationSpecialist' | translate }}</p>
+              <p class="payment-method__confirmation-value">{{ store.selectedDermatologist()?.specialty }}</p>
+            </div>
+          </div>
+          <div class="payment-method__confirmation-sep"></div>
+          <div class="payment-method__confirmation-detail">
+            <div class="payment-method__detail-icon payment-method__detail-icon--teal">
+              <mat-icon>payments</mat-icon>
+            </div>
+            <div>
+              <p class="payment-method__confirmation-label">{{ 'dermatology.payment.confirmationFee' | translate }}</p>
+              <p class="payment-method__confirmation-value payment-method__confirmation-value--fee">{{ store.selectedDermatologist()?.formattedFee }}</p>
+            </div>
+          </div>
         </div>
-        <div class="payment-method__confirmation-detail">
-          <p class="payment-method__confirmation-label">{{ 'dermatology.payment.confirmationFee' | translate }}</p>
-          <p class="payment-method__confirmation-value">{{ store.selectedDermatologist()?.formattedFee }}</p>
-        </div>
+
         <button class="payment-method__go-btn" (click)="goToAppointments()">
+          <mat-icon class="payment-method__btn-icon">calendar_month</mat-icon>
           {{ 'dermatology.payment.goToAppointments' | translate }}
         </button>
       </div>

@@ -1,16 +1,20 @@
-<div class="scan-error">
-  <div class="scan-error__content">
-    <mat-icon class="scan-error__icon">error_outline</mat-icon>
-    <h2 class="scan-error__title">{{ 'skinAnalysis.scanError.title' | translate }}</h2>
-    <p class="scan-error__subtitle">{{ 'skinAnalysis.scanError.subtitle' | translate }}</p>
-    <div class="scan-error__actions">
-      <button class="scan-error__retry-btn" (click)="onRetry()">
+<div class="se">
+
+  <div class="se-card">
+    <div class="se-card__icon-wrap">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <h2 class="se-card__title">{{ 'skinAnalysis.scanError.title' | translate }}</h2>
+    <p class="se-card__subtitle">{{ 'skinAnalysis.scanError.subtitle' | translate }}</p>
+    <div class="se-card__actions">
+      <button class="se-card__retry" (click)="onRetry()">
         <mat-icon>refresh</mat-icon>
         {{ 'skinAnalysis.scanError.retryBtn' | translate }}
       </button>
-      <button class="scan-error__back-btn" (click)="navigateBack()">
+      <button class="se-card__back" (click)="navigateBack()">
         {{ 'skinAnalysis.scanError.backBtn' | translate }}
       </button>
     </div>
   </div>
+
 </div>

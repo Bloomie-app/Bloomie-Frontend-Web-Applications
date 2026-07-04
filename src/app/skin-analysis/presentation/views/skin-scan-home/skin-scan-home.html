@@ -1,34 +1,94 @@
 <div class="skin-scan-home">
 
-  <!-- Header -->
-  <div class="skin-scan-home__header">
-    <button class="skin-scan-home__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="ssh-banner">
+    <button class="ssh-banner__back" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <div class="skin-scan-home__header-text">
-      <h1 class="skin-scan-home__title">{{ 'skinAnalysis.scanHome.title' | translate }}</h1>
-      <p class="skin-scan-home__subtitle">{{ 'skinAnalysis.scanHome.subtitle' | translate }}</p>
+    <div class="ssh-banner__icon-wrap">
+      <mat-icon>face_retouching_natural</mat-icon>
+    </div>
+    <div>
+      <h1 class="ssh-banner__title">{{ 'skinAnalysis.scanHome.title' | translate }}</h1>
+      <p class="ssh-banner__subtitle">{{ 'skinAnalysis.scanHome.subtitle' | translate }}</p>
     </div>
   </div>
 
-  <div class="skin-scan-home__divider"></div>
+  <div class="ssh-content">
 
-  <!-- Cards -->
-  <div class="skin-scan-home__cards">
-    @for (card of cards; track card.titleKey) {
-      <div class="skin-scan-home__card">
-        <div class="skin-scan-home__card-icon">
-          <mat-icon>{{ card.icon }}</mat-icon>
-        </div>
-        <div class="skin-scan-home__card-body">
-          <p class="skin-scan-home__card-title">{{ card.titleKey | translate }}</p>
-          <p class="skin-scan-home__card-desc">{{ card.descKey | translate }}</p>
-          <button class="skin-scan-home__card-btn" (click)="card.action()">
-            {{ card.btnKey | translate }}
-          </button>
+    <!-- ── Main grid ─────────────────────────────────────────────────────────── -->
+    <div class="ssh-main-grid">
+
+      <!-- Start Scan hero card -->
+      <div class="ssh-hero" [class.ssh-hero--locked]="!canScan()">
+        <div class="ssh-hero__deco ssh-hero__deco--1"></div>
+        <div class="ssh-hero__deco ssh-hero__deco--2"></div>
+        <div class="ssh-hero__deco ssh-hero__deco--3"></div>
+
+        <div class="ssh-hero__body">
+
+          <div class="ssh-hero__icon-wrap">
+            <mat-icon>{{ canScan() ? 'face_retouching_natural' : 'hourglass_empty' }}</mat-icon>
+          </div>
+
+          @if (canScan()) {
+            <h2 class="ssh-hero__title">{{ 'skinAnalysis.scanHome.startTitle' | translate }}</h2>
+            <p class="ssh-hero__desc">{{ 'skinAnalysis.scanHome.startDesc' | translate }}</p>
+          } @else {
+            <h2 class="ssh-hero__title">{{ 'skinAnalysis.scanHome.limitReached' | translate }}</h2>
+            <p class="ssh-hero__desc">{{ 'skinAnalysis.scanHome.limitReachedDesc' | translate }}</p>
+          }
+
+          <!-- Weekly scan tracker -->
+          <div class="ssh-limit">
+            <span class="ssh-limit__text">
+              {{ scansThisWeek() }}/{{ MAX_WEEKLY_SCANS }} {{ 'skinAnalysis.scanHome.weeklyScans' | translate }}
+            </span>
+          </div>
+
+          @if (canScan()) {
+            <button class="ssh-hero__btn" (click)="navigateToScan()">
+              {{ 'skinAnalysis.scanHome.startBtn' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          } @else {
+            <div class="ssh-countdown">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ 'skinAnalysis.scanHome.nextScanIn' | translate : { days: daysUntilNextScan() } }}</span>
+            </div>
+          }
+
+          <!-- Why explanation -->
+          <div class="ssh-why">
+            <mat-icon>info_outline</mat-icon>
+            <div>
+              <p class="ssh-why__title">{{ 'skinAnalysis.scanHome.whyTitle' | translate }}</p>
+              <p class="ssh-why__text">{{ 'skinAnalysis.scanHome.whyText' | translate }}</p>
+            </div>
+          </div>
+
         </div>
       </div>
-    }
+
+      <!-- Past Analyses card -->
+      <div class="ssh-card" (click)="navigateToPastAnalyses()">
+        <div class="ssh-card__icon">
+          <mat-icon>history</mat-icon>
+        </div>
+        <h3 class="ssh-card__title">{{ 'skinAnalysis.scanHome.historyTitle' | translate }}</h3>
+        <p class="ssh-card__desc">{{ 'skinAnalysis.scanHome.historyDesc' | translate }}</p>
+        <div class="ssh-card__count">
+          <mat-icon>photo_camera</mat-icon>
+          <span>{{ 'skinAnalysis.scanHome.totalScansCount' | translate: { count: store.completedScanCount() } }}</span>
+        </div>
+        <button class="ssh-card__btn" (click)="navigateToPastAnalyses(); $event.stopPropagation()">
+          {{ 'skinAnalysis.scanHome.historyBtn' | translate }}
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+
+    </div>
+
   </div>
 
 </div>

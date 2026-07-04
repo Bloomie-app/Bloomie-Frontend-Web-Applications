@@ -47,20 +47,12 @@ export class ProductDiscoveryApi extends BaseApi {
   }
 
   /**
-   * Retrieves all product compatibility records.
-   * @returns Stream with the product compatibility collection.
+   * Retrieves compatibility evaluations for a specific product across all skin types.
+   * @param productId - The product ID to filter by.
+   * @returns Stream with the filtered compatibility collection.
    */
-  getProductCompatibilities(): Observable<ProductCompatibility[]> {
-    return this.productCompatibilitiesEndpoint.getAll();
-  }
-
-  /**
-   * Retrieves a single product compatibility record by ID.
-   * @param id - The ID of the compatibility record.
-   * @returns Stream with the matched ProductCompatibility entity.
-   */
-  getProductCompatibility(id: number): Observable<ProductCompatibility> {
-    return this.productCompatibilitiesEndpoint.getById(id);
+  getProductCompatibilitiesByProductId(productId: number): Observable<ProductCompatibility[]> {
+    return this.productCompatibilitiesEndpoint.getByProductId(productId);
   }
 
   /**

@@ -1,136 +1,199 @@
-<div class="book-appointment">
+<div class="ba-page">
 
-  <!-- Header -->
-  <div class="book-appointment__header">
-    <button class="book-appointment__back-btn" (click)="navigateBack()" aria-label="Go back">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="book-appointment__title">{{ 'dermatology.bookAppointment.title' | translate }}</h1>
-  </div>
+  @if (store.selectedDermatologist(); as derm) {
 
-  <div class="book-appointment__divider"></div>
+    <!-- ── Left column: Doctor profile ──────────────────────────────────────── -->
+    <aside class="ba-profile">
 
-  <div class="book-appointment__content">
+      <!-- Back button -->
+      <button class="ba-back" (click)="navigateBack()" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
 
-    <!-- Left: Doctor profile -->
-    <div class="book-appointment__profile-section">
-      <div class="book-appointment__profile-card">
-        <div class="book-appointment__profile-avatar">
+      <!-- Hero card -->
+      <div class="ba-hero">
+        <div class="ba-hero__ring ba-hero__ring--1" aria-hidden="true"></div>
+        <div class="ba-hero__ring ba-hero__ring--2" aria-hidden="true"></div>
+
+        <div class="ba-hero__avatar">
           @if (doctorPhotoUrl()) {
-            <img [src]="doctorPhotoUrl()!"
-                 alt="Doctor photo"
-                 class="book-appointment__profile-img" />
+            <img class="ba-hero__avatar-img" [src]="doctorPhotoUrl()!" [alt]="displayName(derm)" />
           } @else {
-            <mat-icon>person</mat-icon>
+            <span class="ba-hero__initials">{{ initialsFor(derm) }}</span>
           }
         </div>
-        <div class="book-appointment__profile-info">
-          <p class="book-appointment__profile-name">
-            {{ store.selectedDermatologist()?.fullName }}
-          </p>
-          <p class="book-appointment__profile-specialty">
-            {{ store.selectedDermatologist()?.specialty }}
-          </p>
-          <p class="book-appointment__profile-fee">
-            {{ store.selectedDermatologist()?.formattedFee }} {{ 'dermatology.bookAppointment.perSession' | translate }}
-          </p>
-        </div>
-      </div>
 
-      <!-- Info -->
-      <div class="book-appointment__stats">
-        <div class="book-appointment__stat">
-          <span class="book-appointment__stat-value">{{ store.selectedDermatologist()?.licenseNumber }}</span>
-          <span class="book-appointment__stat-label">{{ 'dermatology.bookAppointment.license' | translate }}</span>
-        </div>
-        <div class="book-appointment__stat">
-          <span class="book-appointment__stat-value">{{ store.selectedDermatologist()?.contactPhone }}</span>
-          <span class="book-appointment__stat-label">{{ 'dermatology.bookAppointment.phone' | translate }}</span>
+        <div class="ba-hero__identity">
+          <h1 class="ba-hero__name">{{ displayName(derm) }}</h1>
+          <span class="ba-hero__specialty">{{ derm.specialty }}</span>
+
+          <div class="ba-hero__fee-pill">
+            <mat-icon class="ba-hero__fee-icon">payments</mat-icon>
+            {{ derm.formattedFee }} / {{ 'dermatology.bookAppointment.perSession' | translate }}
+          </div>
         </div>
       </div>
 
       <!-- About -->
-      <div class="book-appointment__about-card">
-        <p class="book-appointment__section-label">{{ 'dermatology.bookAppointment.aboutDoctor' | translate }}</p>
-        <p class="book-appointment__about-text">
-          {{ store.selectedDermatologist()?.biography }}
-        </p>
-        <p class="book-appointment__section-label book-appointment__section-label--mt">
-          {{ 'dermatology.bookAppointment.workingTime' | translate }}
-        </p>
-        @if (workingTimeText() !== '-') {
-          <p class="book-appointment__working-time">{{ workingTimeText() }}</p>
-        }
+      @if (derm.biography) {
+        <div class="ba-about">
+          <p class="ba-section-label">
+            <mat-icon>info</mat-icon>
+            {{ 'dermatology.bookAppointment.aboutDoctor' | translate }}
+          </p>
+          <p class="ba-about__text">{{ derm.biography }}</p>
+        </div>
+      }
+
+      <!-- Working hours -->
+      @if (workingTimeText() !== '-') {
+        <div class="ba-hours">
+          <p class="ba-section-label">
+            <mat-icon>schedule</mat-icon>
+            {{ 'dermatology.bookAppointment.workingTime' | translate }}
+          </p>
+          <p class="ba-hours__text">{{ workingTimeText() }}</p>
+        </div>
+      }
+
+    </aside>
+
+    <!-- ── Right column: Schedule + tips ────────────────────────────────────── -->
+    <div class="ba-right">
+
+      <!-- Schedule card -->
+      <div class="ba-schedule">
+
+        <div class="ba-schedule__header">
+          <h2 class="ba-schedule__title">
+            {{ 'dermatology.bookAppointment.schedule' | translate }}
+          </h2>
+          <p class="ba-schedule__subtitle">
+            {{ 'dermatology.bookAppointment.title' | translate }}
+          </p>
+        </div>
+
+        <!-- Month navigation -->
+        <div class="ba-month-nav">
+          <button
+            class="ba-month-nav__btn"
+            [disabled]="!hasPrevPage()"
+            (click)="prevPage()"
+            aria-label="Previous days"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="ba-month-nav__label">{{ calendarMonth() }}</span>
+          <button
+            class="ba-month-nav__btn"
+            [disabled]="!hasNextPage()"
+            (click)="nextPage()"
+            aria-label="Next days"
+          >
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+
+        <!-- Day pills -->
+        <div
+          class="ba-days"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)"
+        >
+          @for (calDay of calendarDays(); track calDay.date.getTime(); let i = $index) {
+            <button
+              class="ba-day"
+              [class.ba-day--selected]="selectedDay() === i"
+              (click)="selectDay(i)"
+              [attr.aria-pressed]="selectedDay() === i"
+            >
+              <span class="ba-day__num">{{ calDay.day }}</span>
+              <span class="ba-day__name">{{ calDay.name }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Time slots -->
+        <div class="ba-times-header">
+          <p class="ba-section-label">
+            <mat-icon>access_time</mat-icon>
+            {{ 'dermatology.bookAppointment.availableTimes' | translate }}
+          </p>
+          @if (selectedDayLabel()) {
+            <span class="ba-times-date">{{ selectedDayLabel() }}</span>
+          }
+        </div>
+
+        <div class="ba-times">
+          @for (slot of timeSlots(); track slot) {
+            <button
+              class="ba-time"
+              [class.ba-time--selected]="selectedTime() === slot"
+              (click)="selectTime(slot)"
+              [attr.aria-pressed]="selectedTime() === slot"
+            >
+              {{ slot }}
+            </button>
+          }
+          @if (timeSlots().length === 0) {
+            <div class="ba-times-empty">
+              <mat-icon>event_busy</mat-icon>
+              <span>{{ 'dermatology.bookAppointment.noSlots' | translate }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Confirm button -->
+        <button
+          class="ba-confirm-btn"
+          [disabled]="!selectedTime()"
+          (click)="confirmBooking()"
+        >
+          <mat-icon>check_circle</mat-icon>
+          {{ 'dermatology.bookAppointment.continue' | translate }}
+        </button>
+
       </div>
+
+      <!-- What to expect card (fills empty space) -->
+      <div class="ba-expect">
+        <h3 class="ba-expect__title">
+          <mat-icon class="ba-expect__title-icon">tips_and_updates</mat-icon>
+          {{ 'dermatology.bookAppointment.beforeVisit' | translate }}
+        </h3>
+        <div class="ba-expect__items">
+          <div class="ba-expect__item">
+            <div class="ba-expect__item-icon-wrap">
+              <mat-icon>description</mat-icon>
+            </div>
+            <div>
+              <p class="ba-expect__item-title">{{ 'dermatology.bookAppointment.tip1Title' | translate }}</p>
+              <p class="ba-expect__item-desc">{{ 'dermatology.bookAppointment.tip1Desc' | translate }}</p>
+            </div>
+          </div>
+          <div class="ba-expect__item">
+            <div class="ba-expect__item-icon-wrap">
+              <mat-icon>photo_camera</mat-icon>
+            </div>
+            <div>
+              <p class="ba-expect__item-title">{{ 'dermatology.bookAppointment.tip2Title' | translate }}</p>
+              <p class="ba-expect__item-desc">{{ 'dermatology.bookAppointment.tip2Desc' | translate }}</p>
+            </div>
+          </div>
+          <div class="ba-expect__item">
+            <div class="ba-expect__item-icon-wrap">
+              <mat-icon>wifi</mat-icon>
+            </div>
+            <div>
+              <p class="ba-expect__item-title">{{ 'dermatology.bookAppointment.tip3Title' | translate }}</p>
+              <p class="ba-expect__item-desc">{{ 'dermatology.bookAppointment.tip3Desc' | translate }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Right: Schedule -->
-    <div class="book-appointment__schedule-card">
-      <p class="book-appointment__schedule-title">{{ 'dermatology.bookAppointment.schedule' | translate }}</p>
+  }
 
-      <!-- Day picker -->
-      <div class="book-appointment__day-header">
-        <button
-          class="book-appointment__nav-btn"
-          [disabled]="!hasPrevPage()"
-          (click)="prevPage()"
-          aria-label="Previous days"
-        >
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-        <p class="book-appointment__month-label">{{ calendarMonth() }}</p>
-        <button
-          class="book-appointment__nav-btn"
-          [disabled]="!hasNextPage()"
-          (click)="nextPage()"
-          aria-label="Next days"
-        >
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-
-      <div
-        class="book-appointment__days"
-        (touchstart)="onTouchStart($event)"
-        (touchend)="onTouchEnd($event)"
-      >
-        @for (calDay of calendarDays(); track calDay.date.getTime(); let i = $index) {
-          <button
-            class="book-appointment__day-btn"
-            [class.book-appointment__day-btn--selected]="selectedDay() === i"
-            (click)="selectDay(i)"
-          >
-            <span class="book-appointment__day-number">{{ calDay.day }}</span>
-            <span class="book-appointment__day-name">{{ calDay.name }}</span>
-          </button>
-        }
-      </div>
-
-      <!-- Time slots -->
-      <p class="book-appointment__section-label">{{ 'dermatology.bookAppointment.availableTimes' | translate }}</p>
-      <div class="book-appointment__time-slots">
-        @for (slot of timeSlots(); track slot) {
-          <button
-            class="book-appointment__time-btn"
-            [class.book-appointment__time-btn--selected]="selectedTime() === slot"
-            (click)="selectTime(slot)"
-          >
-            {{ slot }}
-          </button>
-        }
-        @if (timeSlots().length === 0) {
-          <p class="book-appointment__no-slots">{{ 'dermatology.bookAppointment.noSlots' | translate }}</p>
-        }
-      </div>
-
-      <button
-        class="book-appointment__continue-btn"
-        [disabled]="!selectedTime()"
-        (click)="confirmBooking()"
-      >
-        {{ 'dermatology.bookAppointment.continue' | translate }}
-      </button>
-    </div>
-
-  </div>
 </div>

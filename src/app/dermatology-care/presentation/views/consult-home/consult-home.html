@@ -1,34 +1,115 @@
 <div class="consult-home">
 
-  <!-- Header -->
-  <div class="consult-home__header">
-    <button class="consult-home__back-btn" (click)="navigateBack()" aria-label="Go back">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="consult-home__header-text">
-      <h1 class="consult-home__title">{{ 'dermatology.consultHome.title' | translate }}</h1>
-      <p class="consult-home__subtitle">{{ 'dermatology.consultHome.subtitle' | translate }}</p>
+  <!-- ── Back button ───────────────────────────────────────────────────────── -->
+  <button class="consult-back" (click)="navigateBack()" aria-label="Go back">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+
+  <!-- ── Hero card — Book a new appointment ───────────────────────────────── -->
+  <div class="hero-card">
+
+    <!-- Decorative rings -->
+    <div class="hero-card__ring hero-card__ring--1" aria-hidden="true"></div>
+    <div class="hero-card__ring hero-card__ring--2" aria-hidden="true"></div>
+    <div class="hero-card__ring hero-card__ring--3" aria-hidden="true"></div>
+
+    <!-- Decorative watermark icon -->
+    <mat-icon class="hero-card__watermark" aria-hidden="true">health_and_safety</mat-icon>
+
+    <!-- Content -->
+    <div class="hero-card__content">
+      @if (specialistsCount() > 0) {
+        <div class="hero-card__pill">
+          <mat-icon class="hero-card__pill-icon">verified</mat-icon>
+          {{ specialistsCount() }} {{ 'dermatology.consultHome.specialistsAvailable' | translate }}
+        </div>
+      }
+      <h1 class="hero-card__title">
+        {{ 'dermatology.consultHome.bookTitle' | translate }}
+      </h1>
+      <p class="hero-card__desc">
+        {{ 'dermatology.consultHome.bookDesc' | translate }}
+      </p>
+      <button class="hero-card__btn" (click)="navigateBook()">
+        {{ 'dermatology.consultHome.bookBtn' | translate }}
+        <mat-icon class="hero-card__btn-icon">arrow_forward</mat-icon>
+      </button>
     </div>
+
+    <!-- Right illustration -->
+    <div class="hero-card__illustration" aria-hidden="true">
+      <div class="hero-card__illus-circle">
+        <mat-icon class="hero-card__illus-icon">calendar_month</mat-icon>
+      </div>
+    </div>
+
   </div>
 
-  <div class="consult-home__divider"></div>
+  <!-- ── Section label ─────────────────────────────────────────────────────── -->
+  <p class="consult-section-label">
+    {{ 'dermatology.consultHome.manageLabel' | translate }}
+  </p>
 
-  <!-- Cards -->
-  <div class="consult-home__cards">
-    @for (card of cards; track card.titleKey) {
-      <div class="consult-home__card">
-        <div class="consult-home__card-icon">
-          <mat-icon>{{ card.icon }}</mat-icon>
+  <!-- ── Secondary cards ──────────────────────────────────────────────────── -->
+  <div class="consult-cards">
+
+    <!-- Past consultations -->
+    <div class="consult-card consult-card--past">
+      <mat-icon class="consult-card__watermark" aria-hidden="true">folder_open</mat-icon>
+
+      <div class="consult-card__header">
+        <div class="consult-card__icon-wrap consult-card__icon-wrap--past">
+          <mat-icon>history</mat-icon>
         </div>
-        <div class="consult-home__card-body">
-          <p class="consult-home__card-title">{{ card.titleKey | translate }}</p>
-          <p class="consult-home__card-desc">{{ card.descKey | translate }}</p>
-          <button class="consult-home__card-btn" (click)="card.action()">
-            {{ card.btnKey | translate }}
-          </button>
-        </div>
+        @if (pastCount() > 0) {
+          <span class="consult-card__badge">{{ pastCount() }}</span>
+        }
       </div>
-    }
+
+      <div class="consult-card__body">
+        <h2 class="consult-card__title">
+          {{ 'dermatology.consultHome.pastTitle' | translate }}
+        </h2>
+        <p class="consult-card__desc">
+          {{ 'dermatology.consultHome.pastDesc' | translate }}
+        </p>
+      </div>
+
+      <button class="consult-card__btn" (click)="navigatePast()">
+        {{ 'dermatology.consultHome.pastBtn' | translate }}
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- Scheduled appointments -->
+    <div class="consult-card consult-card--scheduled"
+         [class.consult-card--active]="upcomingCount() > 0">
+      <mat-icon class="consult-card__watermark" aria-hidden="true">event_available</mat-icon>
+
+      <div class="consult-card__header">
+        <div class="consult-card__icon-wrap consult-card__icon-wrap--scheduled">
+          <mat-icon>event_available</mat-icon>
+        </div>
+        @if (upcomingCount() > 0) {
+          <span class="consult-card__badge consult-card__badge--live">{{ upcomingCount() }}</span>
+        }
+      </div>
+
+      <div class="consult-card__body">
+        <h2 class="consult-card__title">
+          {{ 'dermatology.consultHome.scheduledTitle' | translate }}
+        </h2>
+        <p class="consult-card__desc">
+          {{ 'dermatology.consultHome.scheduledDesc' | translate }}
+        </p>
+      </div>
+
+      <button class="consult-card__btn consult-card__btn--primary" (click)="navigateScheduled()">
+        {{ 'dermatology.consultHome.scheduledBtn' | translate }}
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
   </div>
 
 </div>

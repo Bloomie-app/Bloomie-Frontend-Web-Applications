@@ -1,136 +1,113 @@
 <div class="ai-chat">
 
-  <!-- Header -->
-  <div class="ai-chat__header">
-    <button class="ai-chat__back-btn" (click)="onNavigateBack()" aria-label="Go back">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="ai-chat__header-brand">
-      <div class="ai-chat__avatar">
-        <mat-icon class="ai-chat__avatar-icon">smart_toy</mat-icon>
+  <!-- ── Banner ──────────────────────────────────────────────────────────────── -->
+  <div class="ac-banner">
+    <div class="ac-banner__left">
+      <button class="ac-banner__back" (click)="onNavigateBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="ac-banner__avatar">
+        <mat-icon>smart_toy</mat-icon>
       </div>
       <div>
-        <h1 class="ai-chat__title">{{ 'intelligentSupport.chat.title' | translate }}</h1>
-        <p class="ai-chat__subtitle">{{ 'intelligentSupport.chat.subtitle' | translate }}</p>
+        <h1 class="ac-banner__title">{{ 'intelligentSupport.chat.title' | translate }}</h1>
+        <p class="ac-banner__subtitle">{{ 'intelligentSupport.chat.subtitle' | translate }}</p>
       </div>
+    </div>
+    <div class="ac-banner__status">
+      <span class="ac-banner__dot"></span>
+      <span class="ac-banner__status-text">Online</span>
     </div>
   </div>
 
-  <div class="ai-chat__divider"></div>
+  <!-- ── Chat panel ───────────────────────────────────────────────────────────── -->
+  <div class="ac-panel">
 
-  <div class="ai-chat__body">
+    <!-- Messages -->
+    <div class="ac-messages">
 
-    <!-- Left: Chat panel -->
-    <div class="ai-chat__panel">
-
-      <!-- Messages area -->
-      <div class="ai-chat__messages">
-
-        <!-- Limitation banner -->
-        @if (store.showLimitationBanner()) {
-          <div class="ai-chat__limitation-banner">
-            <mat-icon class="ai-chat__limitation-icon">warning</mat-icon>
-            <div class="ai-chat__limitation-content">
-              <p class="ai-chat__limitation-title">{{ 'intelligentSupport.chat.limitation.title' | translate }}</p>
-              <p class="ai-chat__limitation-desc">{{ 'intelligentSupport.chat.limitation.description' | translate }}</p>
-              <button class="ai-chat__limitation-btn" (click)="onNavigateToDermatologist()">
-                <mat-icon class="ai-chat__limitation-btn-icon">stethoscope</mat-icon>
-                {{ 'intelligentSupport.chat.limitation.bookBtn' | translate }}
-              </button>
-            </div>
-            <button class="ai-chat__limitation-close" (click)="onDismissLimitationBanner()" aria-label="Dismiss banner">
-              <mat-icon>close</mat-icon>
+      <!-- Limitation banner -->
+      @if (store.showLimitationBanner()) {
+        <div class="ac-limit">
+          <mat-icon class="ac-limit__icon">warning</mat-icon>
+          <div class="ac-limit__body">
+            <p class="ac-limit__title">{{ 'intelligentSupport.chat.limitation.title' | translate }}</p>
+            <p class="ac-limit__desc">{{ 'intelligentSupport.chat.limitation.description' | translate }}</p>
+            <button class="ac-limit__btn" (click)="onNavigateToDermatologist()">
+              <mat-icon>stethoscope</mat-icon>
+              {{ 'intelligentSupport.chat.limitation.bookBtn' | translate }}
             </button>
           </div>
-        }
+          <button class="ac-limit__close" (click)="onDismissLimitationBanner()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
 
-        <!-- Chat messages -->
-        @for (message of store.messages(); track message.id) {
-          @if (message.isUserMessage) {
-            <div class="ai-chat__message ai-chat__message--user">
-              <div class="ai-chat__bubble ai-chat__bubble--user">
-                <p class="ai-chat__bubble-text">{{ message.text }}</p>
-                <span class="ai-chat__bubble-time">{{ message.formattedSentAt }}</span>
-              </div>
-            </div>
-          } @else if (message.isAiMessage) {
-            <div class="ai-chat__message ai-chat__message--ai">
-              <div class="ai-chat__bubble-avatar">
-                <mat-icon>smart_toy</mat-icon>
-              </div>
-              <div class="ai-chat__bubble ai-chat__bubble--ai">
-                <p class="ai-chat__bubble-text">{{ message.text }}</p>
-                <span class="ai-chat__bubble-time">{{ message.formattedSentAt }}</span>
-              </div>
-            </div>
-          } @else {
-            <div class="ai-chat__message ai-chat__message--system">
-              <p class="ai-chat__system-text">{{ message.text }}</p>
-            </div>
-          }
-        }
-
-        <!-- Loading indicator -->
-        @if (store.loading()) {
-          <div class="ai-chat__message ai-chat__message--ai">
-            <div class="ai-chat__bubble-avatar">
-              <mat-icon>smart_toy</mat-icon>
-            </div>
-            <div class="ai-chat__bubble ai-chat__bubble--ai ai-chat__bubble--typing">
-              <span class="ai-chat__typing-dot"></span>
-              <span class="ai-chat__typing-dot"></span>
-              <span class="ai-chat__typing-dot"></span>
+      <!-- Messages list -->
+      @for (message of store.messages(); track message.id) {
+        @if (message.isUserMessage) {
+          <div class="ac-msg ac-msg--user">
+            <div class="ac-bubble ac-bubble--user">
+              <p class="ac-bubble__text">{{ message.text }}</p>
+              <span class="ac-bubble__time">{{ message.formattedSentAt }}</span>
             </div>
           </div>
+        } @else if (message.isAiMessage) {
+          <div class="ac-msg ac-msg--ai">
+            <div class="ac-bubble-avatar">
+              <mat-icon>smart_toy</mat-icon>
+            </div>
+            <div class="ac-bubble ac-bubble--ai">
+              <p class="ac-bubble__text">{{ message.text }}</p>
+              <span class="ac-bubble__time">{{ message.formattedSentAt }}</span>
+            </div>
+          </div>
+        } @else {
+          <div class="ac-msg ac-msg--system">
+            <p class="ac-system-text">{{ message.text }}</p>
+          </div>
         }
+      }
 
-      </div>
-
-      <!-- Input bar -->
-      <div class="ai-chat__input-bar">
-        <input
-          #chatInput
-          class="ai-chat__input"
-          type="text"
-          [value]="inputText()"
-          (input)="inputText.set(chatInput.value)"
-          (keydown)="onKeyDown($event)"
-          [placeholder]="'intelligentSupport.chat.inputPlaceholder' | translate"
-          [disabled]="store.loading()"
-          aria-label="Type your skincare question"
-        />
-        <button
-          class="ai-chat__send-btn"
-          (click)="onSendMessage()"
-          [disabled]="!inputText().trim() || store.loading()"
-          [class.ai-chat__send-btn--disabled]="!inputText().trim() || store.loading()"
-          aria-label="Send message"
-        >
-          <mat-icon>send</mat-icon>
-        </button>
-      </div>
+      <!-- Typing indicator -->
+      @if (store.loading()) {
+        <div class="ac-msg ac-msg--ai">
+          <div class="ac-bubble-avatar">
+            <mat-icon>smart_toy</mat-icon>
+          </div>
+          <div class="ac-bubble ac-bubble--ai ac-bubble--typing">
+            <span class="ac-dot"></span>
+            <span class="ac-dot"></span>
+            <span class="ac-dot"></span>
+          </div>
+        </div>
+      }
 
     </div>
 
-    <!-- Right: FAQ panel -->
-    <div class="ai-chat__faq-panel">
-      <p class="ai-chat__faq-title">{{ 'intelligentSupport.chat.faqTitle' | translate }}</p>
-      <div class="ai-chat__faq-list">
-        @for (questionKey of faqQuestions; track questionKey) {
-          <button
-            class="ai-chat__faq-item"
-            (click)="onSelectFaq(questionKey)"
-          >
-            {{ questionKey | translate }}
-          </button>
-        }
-      </div>
-
-      <!-- Reminder box -->
-      <div class="ai-chat__reminder">
-        <p class="ai-chat__reminder-title">{{ 'intelligentSupport.chat.reminder.title' | translate }}</p>
-        <p class="ai-chat__reminder-desc">{{ 'intelligentSupport.chat.reminder.description' | translate }}</p>
-      </div>
+    <!-- Input bar -->
+    <div class="ac-input-bar">
+      <input
+        #chatInput
+        class="ac-input"
+        type="text"
+        [value]="inputText()"
+        (input)="inputText.set(chatInput.value)"
+        (keydown)="onKeyDown($event)"
+        [placeholder]="'intelligentSupport.chat.inputPlaceholder' | translate"
+        [disabled]="store.loading()"
+        aria-label="Type your skincare question"
+      />
+      <button
+        class="ac-send"
+        (click)="onSendMessage()"
+        [disabled]="!inputText().trim() || store.loading()"
+        [class.ac-send--disabled]="!inputText().trim() || store.loading()"
+        aria-label="Send message"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
     </div>
 
   </div>

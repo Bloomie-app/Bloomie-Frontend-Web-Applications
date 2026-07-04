@@ -4,26 +4,24 @@ import {BaseResource, BaseResponse} from '../../shared/infrastructure/base-respo
  * Resource representation of a consultation returned by the API.
  */
 export interface ConsultationResource extends BaseResource {
-  /** Unique identifier for the consultation. */
-  id:                  number;
-  /** Identifier of the appointment this consultation belongs to. */
-  appointment_id:      number;
-  /** Identifier of the patient attending the consultation. */
-  patient_id:          number;
-  /** Identifier of the dermatologist conducting the consultation. */
-  dermatologist_id:    number;
-  /** List of clinical photo URLs uploaded during the consultation. */
-  clinical_photo_urls: string[];
-  /** Clinical notes recorded by the dermatologist. */
-  notes:               string;
-  /** Treatment recommendations provided by the dermatologist. */
-  recommendations:     string;
-  /** Current lifecycle status of the consultation. */
-  status:              string;
-  /** ISO 8601 date-time string for when the consultation started. */
-  started_at:          string;
-  /** ISO 8601 date-time string for when the consultation ended. */
-  finished_at:         string;
+  id:                   number;
+  // snake_case (mock API)
+  appointment_id?:      number;
+  patient_id?:          number;
+  dermatologist_id?:    number;
+  clinical_photo_urls?: string[];
+  notes:                string;
+  recommendations:      string;
+  status:               string;
+  started_at?:          string;
+  finished_at?:         string;
+  // camelCase (real backend)
+  appointmentId?:       number;
+  patientId?:           number;
+  dermatologistId?:     number;
+  clinicalPhotoUrls?:   string[];
+  startedAt?:           string;
+  finishedAt?:          string;
 }
 
 /**

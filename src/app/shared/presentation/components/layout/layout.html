@@ -1,4 +1,4 @@
-@if (isAuthenticationRoute()) {
+@if (isAuthenticationRoute() || isOnboardingScanRoute() || isDermSetupRoute()) {
   <main class="shell__fullscreen">
     <router-outlet></router-outlet>
   </main>

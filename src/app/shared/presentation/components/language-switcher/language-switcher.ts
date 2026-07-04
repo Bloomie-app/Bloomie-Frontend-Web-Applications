@@ -13,7 +13,7 @@ export class LanguageSwitcher {
   languages = ['en', 'es'];
 
   constructor(private translate: TranslateService) {
-    this.currentLang = translate.getCurrentLang();
+    this.currentLang = translate.currentLang || 'en';
   }
 
   useLanguage(language: string): void {

@@ -1,38 +1,110 @@
 .derm-past { padding: 32px 40px; background: #fffdf8; min-height: 100%; }
+
+/* Header */
 .derm-past__header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.derm-past__back-btn { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #e0d6d6; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.derm-past__back-btn {
+  width: 40px; height: 40px; border-radius: 50%; background: #fff;
+  border: 1px solid #e0d6d6; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+}
 .derm-past__back-btn:hover { background: #f5f0f0; }
 .derm-past__title { font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: 32px; color: #333; margin: 0; }
-.derm-past__divider { height: 1px; background: #e8dede; margin-bottom: 20px; }
-.derm-past__search { display: flex; align-items: center; gap: 12px; background: #e4e3e3; border-radius: 28px; padding: 12px 20px; margin-bottom: 24px; max-width: 520px; box-shadow: 0 4px 4px rgba(0,0,0,0.10); }
-.derm-past__search mat-icon { color: rgba(0,0,0,0.7); flex-shrink: 0; }
-.derm-past__search-input { flex: 1; background: transparent; border: none; outline: none; font-family: 'Montserrat', sans-serif; font-size: 14px; color: #000; }
-.derm-past__search-input::placeholder { color: #999; }
-.derm-past__cards { display: flex; flex-direction: column; gap: 16px; max-width: 680px; }
-.derm-past__card { background: #b9e3b3; border-radius: 10px; box-shadow: 0 4px 4px rgba(0,0,0,0.25); padding: 16px; }
-.derm-past__patient-avatar { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; }
-.derm-past__patient-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.derm-past__patient-avatar-icon { font-size: 28px; color: #4a7a4a; }
-.derm-past__row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; font-size: 14px; color: #000; flex-wrap: wrap; }
-.derm-past__row-icon { font-size: 18px; color: #303030; flex-shrink: 0; }
-.derm-past__row-label { font-weight: 600; }
-.derm-past__row-text { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 14px; }
-.derm-past__chip { background: rgba(118,118,128,0.12); border-radius: 20px; padding: 4px 12px; font-family: 'Montserrat', sans-serif; font-size: 14px; }
-.derm-past__photos-badge, .derm-past__no-photos { display: flex; align-items: center; gap: 6px; font-family: 'Montserrat', sans-serif; font-size: 12px; margin-bottom: 8px; }
-.derm-past__photos-badge { color: #333; }
-.derm-past__no-photos { color: #999; }
-.derm-past__card-footer { display: flex; justify-content: flex-end; }
-.derm-past__view-btn { background: #7aaf7a; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; border: none; border-radius: 20px; padding: 8px 20px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.15s; }
-.derm-past__view-btn:hover { background: #68a068; }
-.derm-past__empty { display: flex; flex-direction: column; align-items: center; padding: 64px; gap: 16px; color: #999; }
+.derm-past__divider { height: 1px; background: #e8dede; margin-bottom: 24px; }
 
+/* Search */
+.derm-past__search-wrap { margin-bottom: 28px; }
+.derm-past__search {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid #e8dede; border-radius: 28px;
+  padding: 12px 20px; max-width: 520px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.derm-past__search mat-icon { color: #b0a0a0; flex-shrink: 0; }
+.derm-past__search-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'Montserrat', sans-serif; font-size: 14px; color: #333;
+}
+.derm-past__search-input::placeholder { color: #ccc; }
+
+/* Cards list */
+.derm-past__cards { display: flex; flex-direction: column; gap: 16px; max-width: 700px; }
+
+/* Card */
+.derm-past__card {
+  background: #fff; border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;
+  transition: box-shadow 0.2s;
+}
+.derm-past__card:hover { box-shadow: 0 8px 24px rgba(162,103,105,0.12); }
+
+/* Card header */
+.derm-past__card-header { display: flex; align-items: center; gap: 14px; }
+.derm-past__avatar {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: #f5eded; display: flex; align-items: center;
+  justify-content: center; overflow: hidden; flex-shrink: 0;
+}
+.derm-past__avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.derm-past__avatar-icon { font-size: 28px; color: #a26769; }
+.derm-past__card-meta { flex: 1; min-width: 0; }
+.derm-past__patient-name {
+  font-family: 'Montserrat', sans-serif; font-weight: 600;
+  font-size: 15px; color: #1a1a2e; margin: 0 0 3px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.derm-past__date-label { font-family: 'Montserrat', sans-serif; font-size: 12px; color: #aaa; }
+
+/* Inner divider */
+.derm-past__inner-divider { height: 1px; background: #f0ece9; }
+
+/* Notes preview */
+.derm-past__notes-preview {
+  font-family: 'Montserrat', sans-serif; font-size: 13px; color: #666;
+  line-height: 1.65; margin: 0; border-left: 3px solid #e8dede; padding-left: 12px;
+}
+
+/* Footer row */
+.derm-past__card-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.derm-past__badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.derm-past__badge {
+  display: flex; align-items: center; gap: 4px;
+  font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 500;
+  color: #999; background: #f5f5f5; border-radius: 12px; padding: 4px 10px;
+}
+.derm-past__badge mat-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; }
+.derm-past__badge--photos { color: #a26769; background: #fdf0f0; }
+
+/* View button */
+.derm-past__view-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: #a26769; color: #fff; font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: 13px; border: none; border-radius: 20px;
+  padding: 8px 18px; cursor: pointer; transition: background 0.15s; flex-shrink: 0;
+}
+.derm-past__view-btn:hover { background: #8f5759; }
+.derm-past__view-btn mat-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+
+/* Empty state */
+.derm-past__empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 64px; gap: 16px;
+}
+.derm-past__empty-icon {
+  width: 64px; height: 64px; border-radius: 50%; background: #f5f0f0;
+  display: flex; align-items: center; justify-content: center; color: #d0b8b8;
+}
+.derm-past__empty-icon mat-icon { font-size: 32px; width: 32px; height: 32px; }
+.derm-past__empty-text { font-family: 'Montserrat', sans-serif; font-size: 14px; color: #bbb; margin: 0; }
+
+/* ── Responsive ── */
 @media (max-width: 1023px) {
   .derm-past { padding: 1rem 1rem 1.5rem; }
   .derm-past__title { font-size: 22px; }
   .derm-past__search { max-width: 100%; padding: 10px 16px; }
   .derm-past__cards { max-width: 100%; }
-  .derm-past__card { padding: 14px; }
-  .derm-past__row { font-size: 13px; }
-  .derm-past__chip { font-size: 12px; padding: 3px 10px; }
+  .derm-past__card { padding: 16px 18px; gap: 12px; }
+  .derm-past__patient-name { font-size: 14px; }
+  .derm-past__notes-preview { font-size: 12px; }
+  .derm-past__view-btn { font-size: 12px; padding: 7px 14px; }
   .derm-past__empty { padding: 40px 16px; }
 }

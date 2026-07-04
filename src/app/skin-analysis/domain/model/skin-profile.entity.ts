@@ -43,12 +43,18 @@ export class SkinProfile implements BaseEntity {
     skinType: SkinType;
     sensitivity: SkinSensitivity;
     status: SkinProfileStatus;
+    waterIntake?: string; // ← agrega
+    sunExposure?: string; // ← agrega
+    sleepHours?: string; // ← agrega
   }) {
     this._id = props.id;
     this._userId = props.userId;
     this._skinType = props.skinType;
     this._sensitivity = props.sensitivity;
     this._status = props.status;
+    this._waterIntake = props.waterIntake ?? '';
+    this._sunExposure = props.sunExposure ?? '';
+    this._sleepHours = props.sleepHours ?? '';
   }
 
   /** Unique identifier for the skin profile. */
@@ -111,5 +117,29 @@ export class SkinProfile implements BaseEntity {
    */
   get requiresGentleCare(): boolean {
     return this._skinType === SkinType.Sensitive || this._sensitivity === SkinSensitivity.High;
+  }
+
+  private _waterIntake: string;
+  get waterIntake(): string {
+    return this._waterIntake;
+  }
+  set waterIntake(value: string) {
+    this._waterIntake = value;
+  }
+
+  private _sunExposure: string;
+  get sunExposure(): string {
+    return this._sunExposure;
+  }
+  set sunExposure(value: string) {
+    this._sunExposure = value;
+  }
+
+  private _sleepHours: string;
+  get sleepHours(): string {
+    return this._sleepHours;
+  }
+  set sleepHours(value: string) {
+    this._sleepHours = value;
   }
 }

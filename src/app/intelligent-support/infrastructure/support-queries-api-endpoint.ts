@@ -21,7 +21,7 @@ export class SupportQueriesApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(
       http,
-      `${environment.serverBasePath}${environment.supportQueriesEndpointPath}`,
+      `${environment.backendBasePath}${environment.backendChatMessagesEndpointPath}`,
       new SupportQueryAssembler(),
     );
   }

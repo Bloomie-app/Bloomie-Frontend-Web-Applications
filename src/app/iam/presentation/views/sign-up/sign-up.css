@@ -10,35 +10,57 @@
 .sign-up__panel {
   background-color: #a26769;
   color: #ffffff;
-  padding: 4rem 2.5rem 3rem;
+  padding: 5rem 3rem 4rem;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .sign-up__back {
   position: absolute;
   top: 1.5rem;
   left: 1.5rem;
-  background: none;
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: #ffffff;
-  font-size: 24px;
   cursor: pointer;
   padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.sign-up__back:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.sign-up__back mat-icon {
+  font-size: 24px;
+  color: #ffffff;
 }
 
 .sign-up__title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 36px;
-  margin: 1rem 0 0.5rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .sign-up__tagline {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
-  line-height: 1.1;
+  line-height: 1.4;
   font-size: 16px;
   opacity: 0.9;
+  margin: 0;
+  max-width: 320px;
 }
 
 .sign-up__form-wrapper {
@@ -56,19 +78,25 @@
   gap: 1.25rem;
 }
 
+.sign-up__form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
 .sign-up__form-title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 24px;
   color: #1e1e1e;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
 
 .sign-up__field {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-
 }
 
 .sign-up__label {
@@ -113,8 +141,19 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
   padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign-up__password-toggle mat-icon {
+  font-size: 20px;
+  color: #999;
+}
+
+.sign-up__password-toggle:hover mat-icon {
+  color: #a26769;
 }
 
 .sign-up__hint {
@@ -134,6 +173,11 @@
 .sign-up__name-row {
   display: flex;
   gap: 1rem;
+}
+
+.sign-up__name-row .sign-up__field {
+  flex: 1;
+  min-width: 0;
 }
 
 .sign-up__checkbox-row {
@@ -184,7 +228,7 @@
   border-radius: 26.5px;
   padding: 0.875rem 2rem;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
   cursor: pointer;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
@@ -207,27 +251,28 @@
 
   .sign-up__panel {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 4rem;
-    text-align: center;
+    padding: 6rem 5rem;
+  }
+
+  .sign-up__back {
+    top: 2rem;
+    left: 2rem;
   }
 
   .sign-up__title {
     font-size: 64px;
+    margin: 0 0 1.5rem 0;
   }
 
   .sign-up__tagline {
     font-size: 22px;
-    max-width: 24rem;
+    max-width: 360px;
   }
 
   .sign-up__form-wrapper {
     flex: 1;
     align-items: center;
-    padding: 4rem;
+    padding: 4rem 5rem;
   }
 
   .sign-up__form-title {

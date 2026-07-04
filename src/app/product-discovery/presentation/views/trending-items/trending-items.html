@@ -1,78 +1,71 @@
-<div class="trending-items">
+<div class="ti">
 
-  <!-- Header -->
-  <div class="trending-items__header">
-    <button class="trending-items__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ── -->
+  <div class="ti-banner">
+    <button class="ti-banner__back" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
+    <div class="ti-banner__icon-wrap">
+      <mat-icon>auto_awesome</mat-icon>
+    </div>
     <div>
-      <h1 class="trending-items__title">{{ 'productDiscovery.trendingItems.title' | translate }}</h1>
-      <p class="trending-items__count">{{ displayedProducts().length }} {{ 'productDiscovery.trendingItems.productsLabel' | translate }}</p>
+      <h1 class="ti-banner__title">{{ 'productDiscovery.trendingItems.title' | translate }}</h1>
+      <p class="ti-banner__subtitle">{{ displayedProducts().length }} {{ 'productDiscovery.trendingItems.productsLabel' | translate }}</p>
     </div>
   </div>
 
-  <div class="trending-items__divider"></div>
+  <!-- ── Content ── -->
+  <div class="ti-content">
 
-  <div class="trending-items__content">
-
-    <!-- Left: grid section -->
-    <div class="trending-items__grid-section">
+    <!-- Main grid area -->
+    <div class="ti-main">
 
       <!-- Search bar -->
-      <div class="trending-items__search-bar">
-        <mat-icon class="trending-items__search-icon">search</mat-icon>
+      <div class="ti-search">
+        <mat-icon class="ti-search__icon">search</mat-icon>
         <input
-          class="trending-items__search-input"
+          class="ti-search__input"
           type="text"
           [placeholder]="'productDiscovery.trendingItems.searchPlaceholder' | translate"
           [ngModel]="store.searchQuery()"
           (ngModelChange)="onSearchChange($event)"
         />
         <button
-          class="trending-items__filter-btn"
-          [class.trending-items__filter-btn--active]="showFilterPanel()"
+          class="ti-search__filter"
+          [class.ti-search__filter--active]="showFilterPanel()"
           (click)="openFilterPanel()"
-          aria-label="Toggle filter"
         >
           <mat-icon>tune</mat-icon>
         </button>
       </div>
 
-      <!-- Tabs: All Products / Favourites -->
-      <div class="trending-items__tabs">
-        <button
-          class="trending-items__tab"
-          [class.trending-items__tab--active]="!showFavoritesOnly()"
-          (click)="setFavoritesTab(false)"
-        >
+      <!-- Tabs -->
+      <div class="ti-tabs">
+        <button class="ti-tab" [class.ti-tab--active]="!showFavoritesOnly()" (click)="setFavoritesTab(false)">
           {{ 'productDiscovery.trendingItems.tabAll' | translate }}
         </button>
-        <button
-          class="trending-items__tab"
-          [class.trending-items__tab--active]="showFavoritesOnly()"
-          (click)="setFavoritesTab(true)"
-        >
-          <mat-icon class="trending-items__tab-heart-icon">favorite</mat-icon>
+        <button class="ti-tab" [class.ti-tab--active]="showFavoritesOnly()" (click)="setFavoritesTab(true)">
+          <mat-icon>favorite</mat-icon>
           {{ 'productDiscovery.trendingItems.tabFavorites' | translate }} ({{ favoriteCount() }})
         </button>
       </div>
 
       <!-- Active filter chips -->
       @if (store.selectedCategory() || store.aiFilterActive()) {
-        <div class="trending-items__chips">
+        <div class="ti-chips">
           @if (store.selectedCategory()) {
-            <div class="trending-items__chip">
+            <div class="ti-chip">
               <span>{{ store.selectedCategory() }}</span>
-              <button class="trending-items__chip-clear" (click)="clearCategoryFilter()" aria-label="Remove category filter">
+              <button class="ti-chip__clear" (click)="clearCategoryFilter()">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
           }
           @if (store.aiFilterActive()) {
-            <div class="trending-items__chip">
-              <mat-icon class="trending-items__chip-ai-icon">auto_awesome</mat-icon>
+            <div class="ti-chip">
+              <mat-icon>auto_awesome</mat-icon>
               <span>{{ 'productDiscovery.trendingItems.aiOnly' | translate }}</span>
-              <button class="trending-items__chip-clear" (click)="clearAiFilter()" aria-label="Remove AI filter">
+              <button class="ti-chip__clear" (click)="clearAiFilter()">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -82,123 +75,108 @@
 
       <!-- Product grid -->
       @if (displayedProducts().length === 0) {
-        <div class="trending-items__empty">
-          <mat-icon class="trending-items__empty-icon">search_off</mat-icon>
-          <p class="trending-items__empty-text">{{ 'productDiscovery.trendingItems.noProducts' | translate }}</p>
+        <div class="ti-empty">
+          <div class="ti-empty__icon-wrap"><mat-icon>search_off</mat-icon></div>
+          <p class="ti-empty__text">{{ 'productDiscovery.trendingItems.noProducts' | translate }}</p>
         </div>
       } @else {
-        <div class="trending-items__grid">
-          @for (product of displayedProducts(); track product.id; let index = $index) {
-            <button
-              class="trending-items__card"
-              [class.trending-items__card--tall]="index % 5 === 0"
-              (click)="navigateToDetail(product.id)"
-            >
-              <!-- AI badge -->
+        <div class="ti-grid">
+          @for (product of displayedProducts(); track product.id; let i = $index) {
+            <button class="ti-card" (click)="navigateToDetail(product.id)">
+
+              <!-- Recommended badge -->
               @if (product.isAiRecommended) {
-                <div class="trending-items__card-ai-badge">
-                  <mat-icon class="trending-items__card-ai-icon">auto_awesome</mat-icon>
+                <div class="ti-card__badge">
+                  <mat-icon>auto_awesome</mat-icon>
                   <span>{{ 'productDiscovery.trendingItems.aiRecommended' | translate }}</span>
                 </div>
               }
 
               <!-- Favorite button -->
               <button
-                class="trending-items__card-favorite-btn"
-                [class.trending-items__card-favorite-btn--active]="isFavorite(product.id)"
+                class="ti-card__heart"
+                [class.ti-card__heart--active]="isFavorite(product.id)"
                 (click)="toggleFavorite(product.id, $event)"
-                aria-label="Toggle favorite"
               >
                 <mat-icon>{{ isFavorite(product.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
               </button>
 
-              <!-- Product image placeholder -->
-              <div class="trending-items__card-image-area">
-                <mat-icon class="trending-items__card-image-icon">inventory_2</mat-icon>
+              <!-- Product icon -->
+              <div class="ti-card__img">
+                @if (product.imageUrl) {
+                  <img [src]="product.imageUrl"
+                       [alt]="product.name"
+                       style="width:100%; height:100%; object-fit:cover; border-radius:8px;"
+                       (error)="onImageError($event)" />
+                } @else {
+                  <mat-icon>inventory_2</mat-icon>
+                }
               </div>
 
-              <!-- Product info footer -->
-              <div class="trending-items__card-footer">
-                <p class="trending-items__card-name">{{ product.name }}</p>
-                <p class="trending-items__card-brand">{{ product.brand }}</p>
+              <!-- Footer -->
+              <div class="ti-card__footer">
+                <p class="ti-card__name">{{ product.name }}</p>
+                <p class="ti-card__brand">{{ product.brand }}</p>
               </div>
+
             </button>
           }
         </div>
       }
+
     </div>
 
-    <!-- Right: filter panel -->
+    <!-- Filter panel -->
     @if (showFilterPanel()) {
-      <div class="trending-items__filter-panel">
+      <div class="ti-filter">
 
-        <!-- Filter panel header -->
-        <div class="trending-items__filter-header">
-          <div class="trending-items__filter-header-left">
+        <div class="ti-filter__header">
+          <div class="ti-filter__header-left">
             <mat-icon>tune</mat-icon>
-            <p class="trending-items__filter-title">{{ 'productDiscovery.trendingItems.filterTitle' | translate }}</p>
+            <p class="ti-filter__title">{{ 'productDiscovery.trendingItems.filterTitle' | translate }}</p>
           </div>
-          <button class="trending-items__filter-close-btn" (click)="showFilterPanel.set(false)" aria-label="Close filter">
+          <button class="ti-filter__close" (click)="showFilterPanel.set(false)">
             <mat-icon>close</mat-icon>
           </button>
         </div>
 
-        <!-- Filter by Category -->
-        <p class="trending-items__filter-section-title">{{ 'productDiscovery.trendingItems.filterByCategory' | translate }}</p>
-        <div class="trending-items__filter-options">
+        <p class="ti-filter__section">{{ 'productDiscovery.trendingItems.filterByCategory' | translate }}</p>
+        <div class="ti-filter__options">
           @for (category of categories; track category) {
-            <label class="trending-items__filter-option">
+            <label class="ti-filter__option">
               <div
-                class="trending-items__filter-radio"
-                [class.trending-items__filter-radio--selected]="draftCategories().includes(category)"
+                class="ti-filter__radio"
+                [class.ti-filter__radio--on]="draftCategories().includes(category)"
                 (click)="toggleDraftCategory(category)"
               >
                 @if (draftCategories().includes(category)) {
-                  <div class="trending-items__filter-radio-dot"></div>
+                  <div class="ti-filter__radio-dot"></div>
                 }
               </div>
-              <span class="trending-items__filter-option-label">{{ category }}</span>
+              <span class="ti-filter__option-label">{{ category }}</span>
             </label>
           }
         </div>
 
-        <!-- Filter by AI Recommendation -->
-        <p class="trending-items__filter-section-title">{{ 'productDiscovery.trendingItems.filterByAi' | translate }}</p>
-        <div class="trending-items__filter-options">
-          <label class="trending-items__filter-option">
-            <div
-              class="trending-items__filter-radio"
-              [class.trending-items__filter-radio--selected]="draftAiFilterActive()"
-              (click)="draftAiFilterActive.set(true)"
-            >
-              @if (draftAiFilterActive()) {
-                <div class="trending-items__filter-radio-dot"></div>
-              }
+        <p class="ti-filter__section">{{ 'productDiscovery.trendingItems.filterByAi' | translate }}</p>
+        <div class="ti-filter__options">
+          <label class="ti-filter__option">
+            <div class="ti-filter__radio" [class.ti-filter__radio--on]="draftAiFilterActive()" (click)="draftAiFilterActive.set(true)">
+              @if (draftAiFilterActive()) { <div class="ti-filter__radio-dot"></div> }
             </div>
-            <span class="trending-items__filter-option-label">{{ 'productDiscovery.trendingItems.aiOnlyOption' | translate }}</span>
+            <span class="ti-filter__option-label">{{ 'productDiscovery.trendingItems.aiOnlyOption' | translate }}</span>
           </label>
-          <label class="trending-items__filter-option">
-            <div
-              class="trending-items__filter-radio"
-              [class.trending-items__filter-radio--selected]="!draftAiFilterActive()"
-              (click)="draftAiFilterActive.set(false)"
-            >
-              @if (!draftAiFilterActive()) {
-                <div class="trending-items__filter-radio-dot"></div>
-              }
+          <label class="ti-filter__option">
+            <div class="ti-filter__radio" [class.ti-filter__radio--on]="!draftAiFilterActive()" (click)="draftAiFilterActive.set(false)">
+              @if (!draftAiFilterActive()) { <div class="ti-filter__radio-dot"></div> }
             </div>
-            <span class="trending-items__filter-option-label">{{ 'productDiscovery.trendingItems.showAllOption' | translate }}</span>
+            <span class="ti-filter__option-label">{{ 'productDiscovery.trendingItems.showAllOption' | translate }}</span>
           </label>
         </div>
 
-        <!-- Filter action buttons -->
-        <div class="trending-items__filter-actions">
-          <button class="trending-items__filter-apply-btn" (click)="applyFilters()">
-            {{ 'productDiscovery.trendingItems.applyFilters' | translate }}
-          </button>
-          <button class="trending-items__filter-clear-btn" (click)="clearDraftFilters()">
-            {{ 'productDiscovery.trendingItems.clearAll' | translate }}
-          </button>
+        <div class="ti-filter__actions">
+          <button class="ti-filter__apply" (click)="applyFilters()">{{ 'productDiscovery.trendingItems.applyFilters' | translate }}</button>
+          <button class="ti-filter__clear" (click)="clearDraftFilters()">{{ 'productDiscovery.trendingItems.clearAll' | translate }}</button>
         </div>
 
       </div>

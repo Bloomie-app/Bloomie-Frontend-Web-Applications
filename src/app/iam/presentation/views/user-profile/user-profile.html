@@ -1,188 +1,230 @@
-<div class="profile">
+<div class="up">
 
-  <!-- MOBILE -->
-  <div class="profile__mobile">
-    <div class="profile__mobile-header">
-      <button class="profile__back-btn" (click)="onBack()" aria-label="Back">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="profile__mobile-title">{{ 'iam.profile.title' | translate }}</h1>
+  <!-- ── Banner ── -->
+  <div class="up-banner">
+    <button class="up-banner__back" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="up-banner__icon-wrap">
+      <mat-icon>person</mat-icon>
     </div>
-    <p class="profile__mobile-subtitle">{{ 'iam.profile.subtitle' | translate }}</p>
+    <div>
+      <h1 class="up-banner__title">{{ 'iam.profile.title' | translate }}</h1>
+      <p class="up-banner__subtitle">{{ 'iam.profile.subtitle' | translate }}</p>
+    </div>
+  </div>
 
-    <div class="profile__mobile-body">
-      <!-- Avatar -->
-      <div class="profile__avatar-section">
+  <!-- ── MOBILE ── -->
+  <div class="up-mobile">
+    <div class="up-mobile__body">
+
+      <!-- Avatar row -->
+      <div class="up-avatar-row">
         <app-photo-upload
           [userId]="iamStore.currentUser()?.id ?? 0"
           [currentPhotoUrl]="currentPhotoUrl()"
         />
+        <div class="up-avatar-row__info">
+          <p class="up-avatar-row__name">{{ name() }}</p>
+          <p class="up-avatar-row__email">{{ email() }}</p>
+        </div>
       </div>
 
-      <!-- Plan banner -->
-      <button class="profile__plan-banner" (click)="onNavigateToMyPlan()">
-        <div class="profile__plan-icon-wrap">
-          <mat-icon class="profile__plan-icon">bolt</mat-icon>
+      <!-- Plan strip -->
+      <button class="up-plan-strip" (click)="onNavigateToMyPlan()">
+        <div class="up-plan-strip__icon-wrap">
+          <mat-icon>bolt</mat-icon>
         </div>
-        <div class="profile__plan-info">
-          <p class="profile__plan-name">{{ 'iam.profile.planName' | translate }}</p>
-          <p class="profile__plan-detail">{{ 'iam.profile.planDetail' | translate }}</p>
+        <div class="up-plan-strip__text">
+          <p class="up-plan-strip__name">{{ 'iam.profile.planName' | translate }}</p>
+          <p class="up-plan-strip__detail">{{ 'iam.profile.planDetail' | translate }}</p>
         </div>
-        <span class="profile__plan-manage">{{ 'iam.profile.manage' | translate }}</span>
+        <span class="up-plan-strip__manage">{{ 'iam.profile.manage' | translate }}</span>
+        <mat-icon class="up-plan-strip__arrow">chevron_right</mat-icon>
       </button>
 
       <!-- Personal Info -->
-      <p class="profile__section-title">{{ 'iam.profile.personalInfo' | translate }}</p>
-      <div class="profile__field">
-        <label class="profile__label">{{ 'iam.profile.nameLabel' | translate }}</label>
-        <input class="profile__input" type="text" [ngModel]="name()" (ngModelChange)="name.set($event)" />
+      <div class="up-card">
+        <p class="up-card__title">{{ 'iam.profile.personalInfo' | translate }}</p>
+        <div class="up-field">
+          <label class="up-field__label">{{ 'iam.profile.nameLabel' | translate }}</label>
+          <input class="up-field__input" type="text" [ngModel]="name()" (ngModelChange)="name.set($event)" />
+        </div>
+        <div class="up-field">
+          <label class="up-field__label">{{ 'iam.profile.emailLabel' | translate }}</label>
+          <input class="up-field__input" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+        </div>
+        <button
+          class="up-save-btn"
+          [class.up-save-btn--success]="saveSuccess()"
+          (click)="onSaveChanges()"
+        >
+          @if (saveSuccess()) { {{ 'iam.profile.saved' | translate }} } @else { {{ 'iam.profile.saveChanges' | translate }} }
+        </button>
       </div>
-      <div class="profile__field">
-        <label class="profile__label">{{ 'iam.profile.emailLabel' | translate }}</label>
-        <input class="profile__input" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+
+      <!-- Security -->
+      <div class="up-card">
+        <p class="up-card__title">{{ 'iam.profile.security' | translate }}</p>
+        <div class="up-field">
+          <label class="up-field__label">{{ 'iam.profile.currentPasswordLabel' | translate }}</label>
+          <input class="up-field__input" type="password" [ngModel]="currentPassword()" (ngModelChange)="currentPassword.set($event)" />
+        </div>
+        <div class="up-field">
+          <label class="up-field__label">{{ 'iam.profile.newPasswordLabel' | translate }}</label>
+          <input class="up-field__input" type="password" [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)" />
+        </div>
+        <div class="up-field">
+          <label class="up-field__label">{{ 'iam.profile.confirmPasswordLabel' | translate }}</label>
+          <input class="up-field__input" type="password" [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" />
+        </div>
+        @if (passwordError()) {
+          <p class="up-field__error">{{ passwordError() | translate }}</p>
+        }
+        <button
+          class="up-save-btn"
+          [class.up-save-btn--success]="passwordSaveSuccess()"
+          (click)="onChangePassword()"
+        >
+          @if (passwordSaveSuccess()) { {{ 'iam.profile.saved' | translate }} } @else { {{ 'iam.profile.changePassword' | translate }} }
+        </button>
       </div>
 
-      <!-- Menu items -->
-      <div class="profile__menu">
-        <button class="profile__menu-item" (click)="onNavigateToSkinProfile()">
-          <div class="profile__menu-icon-wrap">
-            <mat-icon class="profile__menu-icon">face</mat-icon>
-          </div>
-          <div class="profile__menu-text">
-            <p class="profile__menu-label">{{ 'iam.profile.skinProfile' | translate }}</p>
-            <p class="profile__menu-sub">{{ 'iam.profile.skinProfileSub' | translate }}</p>
-          </div>
-          <mat-icon class="profile__menu-arrow">chevron_right</mat-icon>
-        </button>
-
-        <button class="profile__menu-item" (click)="onNavigateToSettings()">
-          <div class="profile__menu-icon-wrap">
-            <mat-icon class="profile__menu-icon">settings</mat-icon>
-          </div>
-          <div class="profile__menu-text">
-            <p class="profile__menu-label">{{ 'iam.profile.settings' | translate }}</p>
-            <p class="profile__menu-sub">{{ 'iam.profile.settingsSub' | translate }}</p>
-          </div>
-          <mat-icon class="profile__menu-arrow">chevron_right</mat-icon>
-        </button>
-
-        <button class="profile__menu-item" (click)="onNavigateToMyPlan()">
-          <div class="profile__menu-icon-wrap profile__menu-icon-wrap--accent">
-            <mat-icon class="profile__menu-icon--white">bolt</mat-icon>
-          </div>
-          <div class="profile__menu-text">
-            <p class="profile__menu-label">{{ 'iam.profile.myPlan' | translate }}</p>
-            <p class="profile__menu-sub">{{ 'iam.profile.myPlanSub' | translate }}</p>
-          </div>
-          <span class="profile__menu-badge">{{ 'iam.profile.active' | translate }}</span>
-          <mat-icon class="profile__menu-arrow">chevron_right</mat-icon>
-        </button>
+      <!-- Account sections -->
+      <div class="up-card">
+        <p class="up-card__title">{{ 'iam.profile.accountSections' | translate }}</p>
+        <div class="up-menu">
+          <button class="up-menu-item" (click)="onNavigateToSkinProfile()">
+            <div class="up-menu-item__icon-wrap">
+              <mat-icon>face</mat-icon>
+            </div>
+            <div class="up-menu-item__text">
+              <p class="up-menu-item__label">{{ 'iam.profile.skinProfile' | translate }}</p>
+              <p class="up-menu-item__sub">{{ 'iam.profile.skinProfileSub' | translate }}</p>
+            </div>
+            <mat-icon class="up-menu-item__arrow">chevron_right</mat-icon>
+          </button>
+          <div class="up-menu-divider"></div>
+          <button class="up-menu-item" (click)="onNavigateToMyPlan()">
+            <div class="up-menu-item__icon-wrap up-menu-item__icon-wrap--accent">
+              <mat-icon>bolt</mat-icon>
+            </div>
+            <div class="up-menu-item__text">
+              <p class="up-menu-item__label">{{ 'iam.profile.myPlan' | translate }}</p>
+              <p class="up-menu-item__sub">{{ 'iam.profile.myPlanSub' | translate }}</p>
+            </div>
+            <span class="up-menu-item__badge">{{ 'iam.profile.active' | translate }}</span>
+            <mat-icon class="up-menu-item__arrow">chevron_right</mat-icon>
+          </button>
+        </div>
       </div>
 
       <!-- Logout -->
-      <button class="profile__logout-btn" (click)="onLogout()">
-        <mat-icon class="profile__logout-icon">logout</mat-icon>
-        <span class="profile__logout-text">{{ 'iam.profile.logout' | translate }}</span>
+      <button class="up-logout-btn" (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>{{ 'iam.profile.logout' | translate }}</span>
       </button>
+
     </div>
   </div>
 
-  <!-- DESKTOP -->
-  <div class="profile__desktop">
-    <div class="profile__desktop-header">
-      <h1 class="profile__desktop-title">{{ 'iam.profile.title' | translate }}</h1>
-      <p class="profile__desktop-subtitle">{{ 'iam.profile.subtitle' | translate }}</p>
-    </div>
-    <div class="profile__desktop-divider"></div>
+  <!-- ── DESKTOP ── -->
+  <div class="up-desktop">
+    <div class="up-desktop__body">
 
-    <div class="profile__desktop-body">
-      <!-- Left: User card -->
-      <div class="profile__desktop-left">
-        <div class="profile__user-card">
+      <!-- Left: user card -->
+      <div class="up-desktop__left">
+        <div class="up-user-card">
           <app-photo-upload
             [userId]="iamStore.currentUser()?.id ?? 0"
             [currentPhotoUrl]="currentPhotoUrl()"
           />
-          <p class="profile__user-name">{{ name() }}</p>
-          <p class="profile__user-email">{{ email() }}</p>
-          <div class="profile__user-card-divider"></div>
-          <button class="profile__logout-btn profile__logout-btn--center" (click)="onLogout()">
-            <mat-icon class="profile__logout-icon">logout</mat-icon>
-            <span class="profile__logout-text">{{ 'iam.profile.logout' | translate }}</span>
+          <p class="up-user-card__name">{{ name() }}</p>
+          <p class="up-user-card__email">{{ email() }}</p>
+          <div class="up-user-card__divider"></div>
+          <button class="up-logout-btn up-logout-btn--center" (click)="onLogout()">
+            <mat-icon>logout</mat-icon>
+            <span>{{ 'iam.profile.logout' | translate }}</span>
           </button>
         </div>
-
-        <!-- Plan card -->
-        <button class="profile__plan-card" (click)="onNavigateToMyPlan()">
-          <div class="profile__plan-card-header">
-            <mat-icon class="profile__plan-card-icon">bolt</mat-icon>
-            <span class="profile__plan-card-label">{{ 'iam.profile.currentPlan' | translate }}</span>
-          </div>
-          <p class="profile__plan-card-name">Advanced</p>
-          <p class="profile__plan-card-price">$9.99 / {{ 'iam.profile.month' | translate }} · {{ 'iam.profile.active' | translate }}</p>
-          <div class="profile__plan-card-footer">
-            <p class="profile__plan-card-renew">{{ 'iam.profile.renewDate' | translate }}</p>
-            <span class="profile__plan-card-manage">{{ 'iam.profile.manage' | translate }} →</span>
-          </div>
-        </button>
       </div>
 
-      <!-- Right: Info + sections -->
-      <div class="profile__desktop-right">
+      <!-- Right: info + sections -->
+      <div class="up-desktop__right">
+
         <!-- Personal info card -->
-        <div class="profile__info-card">
-          <p class="profile__card-title">{{ 'iam.profile.personalInfo' | translate }}</p>
-          <div class="profile__info-grid">
-            <div class="profile__field">
-              <label class="profile__label">{{ 'iam.profile.nameLabel' | translate }}</label>
-              <input class="profile__input" type="text" [ngModel]="name()" (ngModelChange)="name.set($event)" />
+        <div class="up-card">
+          <p class="up-card__title">{{ 'iam.profile.personalInfo' | translate }}</p>
+          <div class="up-grid-2">
+            <div class="up-field">
+              <label class="up-field__label">{{ 'iam.profile.nameLabel' | translate }}</label>
+              <input class="up-field__input" type="text" [ngModel]="name()" (ngModelChange)="name.set($event)" />
             </div>
-            <div class="profile__field">
-              <label class="profile__label">{{ 'iam.profile.emailLabel' | translate }}</label>
-              <input class="profile__input" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+            <div class="up-field">
+              <label class="up-field__label">{{ 'iam.profile.emailLabel' | translate }}</label>
+              <input class="up-field__input" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
             </div>
           </div>
           <button
-            class="profile__save-btn"
-            [class.profile__save-btn--success]="saveSuccess()"
+            class="up-save-btn"
+            [class.up-save-btn--success]="saveSuccess()"
             (click)="onSaveChanges()"
           >
-            @if (saveSuccess()) {
-              {{ 'iam.profile.saved' | translate }}
-            } @else {
-              {{ 'iam.profile.saveChanges' | translate }}
-            }
+            @if (saveSuccess()) { {{ 'iam.profile.saved' | translate }} } @else { {{ 'iam.profile.saveChanges' | translate }} }
+          </button>
+        </div>
+
+        <!-- Security card -->
+        <div class="up-card">
+          <p class="up-card__title">{{ 'iam.profile.security' | translate }}</p>
+          <div class="up-grid-2">
+            <div class="up-field">
+              <label class="up-field__label">{{ 'iam.profile.currentPasswordLabel' | translate }}</label>
+              <input class="up-field__input" type="password" [ngModel]="currentPassword()" (ngModelChange)="currentPassword.set($event)" />
+            </div>
+            <div class="up-field">
+              <label class="up-field__label">{{ 'iam.profile.newPasswordLabel' | translate }}</label>
+              <input class="up-field__input" type="password" [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)" />
+            </div>
+            <div class="up-field">
+              <label class="up-field__label">{{ 'iam.profile.confirmPasswordLabel' | translate }}</label>
+              <input class="up-field__input" type="password" [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" />
+            </div>
+          </div>
+          @if (passwordError()) {
+            <p class="up-field__error">{{ passwordError() | translate }}</p>
+          }
+          <button
+            class="up-save-btn"
+            [class.up-save-btn--success]="passwordSaveSuccess()"
+            (click)="onChangePassword()"
+          >
+            @if (passwordSaveSuccess()) { {{ 'iam.profile.saved' | translate }} } @else { {{ 'iam.profile.changePassword' | translate }} }
           </button>
         </div>
 
         <!-- Account sections -->
-        <div class="profile__info-card">
-          <p class="profile__card-title">{{ 'iam.profile.accountSections' | translate }}</p>
-          <div class="profile__sections-grid">
-            <button class="profile__section-card" (click)="onNavigateToSkinProfile()">
-              <div class="profile__section-icon-wrap">
-                <mat-icon class="profile__section-icon">face</mat-icon>
+        <div class="up-card">
+          <p class="up-card__title">{{ 'iam.profile.accountSections' | translate }}</p>
+          <div class="up-sections-grid">
+            <button class="up-section-card" (click)="onNavigateToSkinProfile()">
+              <div class="up-section-card__icon-wrap">
+                <mat-icon>face</mat-icon>
               </div>
-              <p class="profile__section-label">{{ 'iam.profile.skinProfile' | translate }}</p>
-              <p class="profile__section-sub">{{ 'iam.profile.skinProfileSub' | translate }}</p>
+              <p class="up-section-card__label">{{ 'iam.profile.skinProfile' | translate }}</p>
+              <p class="up-section-card__sub">{{ 'iam.profile.skinProfileSub' | translate }}</p>
             </button>
-            <button class="profile__section-card" (click)="onNavigateToSettings()">
-              <div class="profile__section-icon-wrap">
-                <mat-icon class="profile__section-icon">settings</mat-icon>
+            <button class="up-section-card" (click)="onNavigateToMyPlan()">
+              <div class="up-section-card__icon-wrap up-section-card__icon-wrap--accent">
+                <mat-icon>bolt</mat-icon>
               </div>
-              <p class="profile__section-label">{{ 'iam.profile.settings' | translate }}</p>
-              <p class="profile__section-sub">{{ 'iam.profile.settingsSub' | translate }}</p>
-            </button>
-            <button class="profile__section-card" (click)="onNavigateToMyPlan()">
-              <div class="profile__section-icon-wrap profile__section-icon-wrap--accent">
-                <mat-icon class="profile__section-icon--white">bolt</mat-icon>
-              </div>
-              <p class="profile__section-label">{{ 'iam.profile.myPlan' | translate }}</p>
-              <p class="profile__section-sub">{{ 'iam.profile.myPlanSub' | translate }}</p>
-              <span class="profile__section-badge">{{ 'iam.profile.active' | translate }}</span>
+              <p class="up-section-card__label">{{ 'iam.profile.myPlan' | translate }}</p>
+              <p class="up-section-card__sub">{{ 'iam.profile.myPlanSub' | translate }}</p>
+              <span class="up-section-card__badge">{{ 'iam.profile.active' | translate }}</span>
             </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>

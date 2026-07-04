@@ -21,7 +21,7 @@ export class ChatMessagesApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(
       http,
-      `${environment.serverBasePath}${environment.chatMessagesEndpointPath}`,
+      `${environment.backendBasePath}${environment.backendChatMessagesEndpointPath}`,
       new ChatMessageAssembler(),
     );
   }

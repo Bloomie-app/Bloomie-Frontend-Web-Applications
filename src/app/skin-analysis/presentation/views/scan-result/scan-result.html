@@ -1,79 +1,79 @@
-<div class="scan-result">
+<div class="sr">
 
-  <!-- Header -->
-  <div class="scan-result__header">
-    <button class="scan-result__back-btn" (click)="navigateBack()" aria-label="Go back">
+  <!-- ── Banner ── -->
+  <div class="sr-banner">
+    <button class="sr-banner__back" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="scan-result__title">{{ 'skinAnalysis.scanResult.title' | translate }}</h1>
+    <div class="sr-banner__icon-wrap">
+      <mat-icon>face_retouching_natural</mat-icon>
+    </div>
+    <div>
+      <h1 class="sr-banner__title">{{ 'skinAnalysis.scanResult.title' | translate }}</h1>
+    </div>
   </div>
-
-  <div class="scan-result__divider"></div>
 
   @if (store.loading()) {
 
-    <div class="scan-result__actions">
-      <p class="scan-result__loading">{{ 'skinAnalysis.scanResult.analyzing' | translate }}</p>
+    <!-- Loading state -->
+    <div class="sr-loading">
+      <div class="sr-loading__spinner"></div>
+      <p class="sr-loading__text">{{ 'skinAnalysis.scanResult.analyzing' | translate }}</p>
     </div>
 
   } @else if (store.currentScanAnalysis()) {
 
-    <!-- Overall score -->
-    <div class="scan-reasult__overall">
-      <div class="scan-result__score-circle">
-        <span class="scan-result__score-value">{{ store.currentScanAnalysis()!.overallScore }}</span>
-        <span class="scan-result__score-label">{{ 'skinAnalysis.scanResult.overallScore' | translate }}</span>
-      </div>
-    </div>
+    <div class="sr-content">
 
-    <!-- Metric bars -->
-    <div class="scan-result__metrics">
-      <div class="scan-result__metric">
-        <span class="scan-result__metric-label">{{ 'skinAnalysis.scanResult.hydration' | translate }}</span>
-        <div class="scan-result__metric-bar">
-          <div class="scan-result__metric-fill" [style.width.%]="store.currentScanAnalysis()!.hydrationScore"></div>
-        </div>
-        <span class="scan-result__metric-value">{{ store.currentScanAnalysis()!.hydrationScore }}</span>
-      </div>
-      <div class="scan-result__metric">
-        <span class="scan-result__metric-label">{{ 'skinAnalysis.scanResult.texture' | translate }}</span>
-        <div class="scan-result__metric-bar">
-          <div class="scan-result__metric-fill" [style.width.%]="store.currentScanAnalysis()!.textureScore"></div>
-        </div>
-        <span class="scan-result__metric-value">{{ store.currentScanAnalysis()!.textureScore }}</span>
-      </div>
-      <div class="scan-result__metric">
-        <span class="scan-result__metric-label">{{ 'skinAnalysis.scanResult.sensitivity' | translate }}</span>
-        <div class="scan-result__metric-bar">
-          <div class="scan-result__metric-fill" [style.width.%]="store.currentScanAnalysis()!.sensitivityScore"></div>
-        </div>
-        <span class="scan-result__metric-value">{{ store.currentScanAnalysis()!.sensitivityScore }}</span>
-      </div>
-      <div class="scan-result__metric">
-        <span class="scan-result__metric-label">{{ 'skinAnalysis.scanResult.brightness' | translate }}</span>
-        <div class="scan-result__metric-bar">
-          <div class="scan-result__metric-fill" [style.width.%]="store.currentScanAnalysis()!.brightnessScore"></div>
-        </div>
-        <span class="scan-result__metric-value">{{ store.currentScanAnalysis()!.brightnessScore }}</span>
-      </div>
-    </div>
+      <!-- Score reveal hero -->
+      <div class="sr-hero">
+        <div class="sr-hero__deco sr-hero__deco--1"></div>
+        <div class="sr-hero__deco sr-hero__deco--2"></div>
 
-    <!-- Actions -->
-    <div class="scan-result__actions">
-      <button class="scan-result__save-btn" (click)="onSaveAndDone()">
+        <div class="sr-score">
+          <div class="sr-score__circle">
+            <span class="sr-score__num">{{ displayScore() }}</span>
+            <span class="sr-score__denom">/ 100</span>
+          </div>
+          <p class="sr-score__label">{{ 'skinAnalysis.scanResult.overallScore' | translate }}</p>
+          <p class="sr-score__msg">{{ scoreMessage() }}</p>
+        </div>
+      </div>
+
+      <!-- Metrics grid -->
+      <div class="sr-metrics">
+        @for (m of metrics(); track m.labelKey) {
+          <div class="sr-metric">
+            <div class="sr-metric__header">
+              <div class="sr-metric__icon-wrap">
+                <mat-icon>{{ m.icon }}</mat-icon>
+              </div>
+              <span class="sr-metric__label">{{ m.labelKey | translate }}</span>
+              <span class="sr-metric__val">{{ m.score }}</span>
+            </div>
+            <div class="sr-metric__bar">
+              <div class="sr-metric__fill" [style.width.%]="m.score"></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Save button -->
+      <button class="sr-done-btn" (click)="onSaveAndDone()">
         <mat-icon>check_circle</mat-icon>
         {{ 'skinAnalysis.scanResult.saveAndDoneBtn' | translate }}
       </button>
+
     </div>
 
   } @else {
 
-    <!-- Fallback: analysis not available -->
-    <div class="scan-result__actions">
+    <!-- Fallback -->
+    <div class="sr-loading">
       @if (store.error()) {
-        <p class="scan-result__error">{{ store.error() }}</p>
+        <p class="sr-loading__text sr-loading__text--error">{{ store.error() }}</p>
       }
-      <button class="scan-result__save-btn" (click)="onSaveAndDone()">
+      <button class="sr-done-btn" (click)="onSaveAndDone()">
         <mat-icon>check_circle</mat-icon>
         {{ 'skinAnalysis.scanResult.saveAndDoneBtn' | translate }}
       </button>

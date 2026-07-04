@@ -9,7 +9,10 @@
 
   <div class="sign-up__form-wrapper">
     <form class="sign-up__form" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="sign-up__form-title">{{ 'iam.signUp.formTitle' | translate }}</h2>
+      <div class="sign-up__form-header">
+        <h2 class="sign-up__form-title">{{ 'iam.signUp.formTitle' | translate }}</h2>
+        <app-language-switcher></app-language-switcher>
+      </div>
 
       <div class="sign-up__field">
         <label class="sign-up__label" for="sign-up-email">

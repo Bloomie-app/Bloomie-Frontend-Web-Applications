@@ -5,15 +5,18 @@ import {AppointmentResource, AppointmentsResponse} from './appointment.response'
 /**
  * Maps Appointment entities to and from API resources.
  */
-export class AppointmentAssembler implements BaseAssembler<Appointment, AppointmentResource, AppointmentsResponse> {
-
+export class AppointmentAssembler implements BaseAssembler<
+  Appointment,
+  AppointmentResource,
+  AppointmentsResponse
+> {
   /**
    * Converts an AppointmentsResponse to an array of Appointment entities.
    * @param response - The API response containing appointments.
    * @returns An array of Appointment entities.
    */
   toEntitiesFromResponse(response: AppointmentsResponse): Appointment[] {
-    return response.appointments.map(resource => this.toEntityFromResource(resource));
+    return response.appointments.map((resource) => this.toEntityFromResource(resource));
   }
 
   /**
@@ -23,30 +26,25 @@ export class AppointmentAssembler implements BaseAssembler<Appointment, Appointm
    */
   toEntityFromResource(resource: AppointmentResource): Appointment {
     return new Appointment({
-      id:                 resource.id,
-      patientId:          resource.patient_id,
-      dermatologistId:    resource.dermatologist_id,
-      paymentId:          resource.payment_id,
-      scheduledAt:        resource.scheduled_at,
-      status:             resource.status as AppointmentStatus,
-      cancellationReason: resource.cancellation_reason,
+      id: resource.id,
+      patientId: resource.patientId,
+      dermatologistId: resource.dermatologistId,
+      paymentId: resource.paymentId,
+      scheduledAt: resource.scheduledAt,
+      status: resource.status as AppointmentStatus,
+      cancellationReason: resource.cancellationReason,
     });
   }
 
-  /**
-   * Converts an Appointment entity to an AppointmentResource.
-   * @param entity - The entity to convert.
-   * @returns The converted AppointmentResource.
-   */
   toResourceFromEntity(entity: Appointment): AppointmentResource {
     return {
-      id:                  entity.id,
-      patient_id:          entity.patientId,
-      dermatologist_id:    entity.dermatologistId,
-      payment_id:          entity.paymentId,
-      scheduled_at:        entity.scheduledAt,
-      status:              entity.status,
-      cancellation_reason: entity.cancellationReason,
+      id: entity.id,
+      patientId: entity.patientId,
+      dermatologistId: entity.dermatologistId,
+      paymentId: entity.paymentId,
+      scheduledAt: entity.scheduledAt,
+      status: entity.status,
+      cancellationReason: entity.cancellationReason,
     } as AppointmentResource;
   }
 }

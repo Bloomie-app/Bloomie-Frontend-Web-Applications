@@ -1,97 +1,134 @@
 <div class="derm-call">
 
-  <!-- End call modal -->
+  <!-- ── End call modal ── -->
   @if (showEndModal()) {
     <div class="derm-call__modal-overlay">
       <div class="derm-call__modal">
-        <mat-icon class="derm-call__modal-icon">call_end</mat-icon>
+        <div class="derm-call__modal-icon-wrap">
+          <mat-icon>call_end</mat-icon>
+        </div>
         <h3 class="derm-call__modal-title">{{ 'dermatology.dermCall.endCallTitle' | translate }}</h3>
         <p class="derm-call__modal-desc">{{ 'dermatology.dermCall.endCallDesc' | translate }}</p>
         <div class="derm-call__modal-actions">
-          <button class="derm-call__modal-cancel" (click)="cancelEndCall()">{{ 'dermatology.dermCall.stayBtn' | translate }}</button>
-          <button class="derm-call__modal-confirm" (click)="confirmEndCall()">{{ 'dermatology.dermCall.endBtn' | translate }}</button>
+          <button class="derm-call__modal-stay" (click)="cancelEndCall()">
+            {{ 'dermatology.dermCall.stayBtn' | translate }}
+          </button>
+          <button class="derm-call__modal-end" (click)="confirmEndCall()">
+            {{ 'dermatology.dermCall.endBtn' | translate }}
+          </button>
         </div>
       </div>
     </div>
   }
 
-  <div class="derm-call__layout">
+  <!-- ── Topbar ── -->
+  <div class="derm-call__topbar">
+    <div class="derm-call__topbar-left">
+      <span class="derm-call__live-dot"></span>
+      <span class="derm-call__topbar-name">{{ 'dermatology.dermCall.patientLabel' | translate }}</span>
+    </div>
+    <div class="derm-call__topbar-center">
+      <mat-icon class="derm-call__topbar-timer-icon">timer</mat-icon>
+      <span class="derm-call__topbar-timer">{{ callDuration() }}</span>
+    </div>
+    <div class="derm-call__topbar-right">
+      <button class="derm-call__topbar-btn"
+              [class.derm-call__topbar-btn--active]="activeTab() === 'notes'"
+              (click)="setTab('notes')" title="Notes">
+        <mat-icon>description</mat-icon>
+      </button>
+      <button class="derm-call__topbar-btn"
+              [class.derm-call__topbar-btn--active]="activeTab() === 'chat'"
+              (click)="setTab('chat')" title="Chat">
+        <mat-icon>chat_bubble_outline</mat-icon>
+      </button>
+      <!-- End call en topbar -->
+      <button
+        (click)="requestEndCall()"
+        style="background:#e53935; color:white; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </div>
+  </div>
 
-    <!-- Left: Video -->
-    <div class="derm-call__video-section">
-      <div class="derm-call__patient-video">
-        <div class="derm-call__video-avatar">
-          <mat-icon>person</mat-icon>
-        </div>
-        <span class="derm-call__patient-label">{{ 'dermatology.dermCall.patientLabel' | translate }}</span>
-      </div>
+  <!-- ── Body ── -->
+  <div class="derm-call__body">
 
-      <div class="derm-call__doctor-mini">
-        <mat-icon>person</mat-icon>
-        <span class="derm-call__you-label">{{ 'dermatology.dermCall.youLabel' | translate }}</span>
-      </div>
-
-      <div class="derm-call__controls">
-        <button class="derm-call__ctrl-btn" [class.derm-call__ctrl-btn--off]="!micOn()" (click)="toggleMic()">
-          <mat-icon>{{ micOn() ? 'mic' : 'mic_off' }}</mat-icon>
-        </button>
-        <button class="derm-call__ctrl-btn derm-call__ctrl-btn--end" (click)="requestEndCall()">
-          <mat-icon>call_end</mat-icon>
-        </button>
-        <button class="derm-call__ctrl-btn" [class.derm-call__ctrl-btn--off]="!camOn()" (click)="toggleCam()">
-          <mat-icon>{{ camOn() ? 'videocam' : 'videocam_off' }}</mat-icon>
-        </button>
-      </div>
+    <div class="derm-call__video-area">
+      <iframe
+        [src]="wherebyUrl"
+        allow="camera; microphone; fullscreen; display-capture; autoplay"
+        style="width:100%; height:100%; border:none; border-radius:12px;">
+      </iframe>
     </div>
 
-    <!-- Right: Chat + Notes panel -->
-    <div class="derm-call__panel">
+    <!-- ── Right panel (notes + chat) ── -->
+    <aside class="derm-call__panel">
 
-      <!-- Tabs -->
-      <div class="derm-call__tabs">
-        <button class="derm-call__tab" [class.derm-call__tab--active]="activeTab() === 'chat'" (click)="setTab('chat')">
-          <mat-icon>chat_bubble</mat-icon>
-          {{ 'dermatology.dermCall.chatTab' | translate }}
-        </button>
-        <button class="derm-call__tab" [class.derm-call__tab--active]="activeTab() === 'notes'" (click)="setTab('notes')">
+      <div class="derm-call__panel-tabs">
+        <button class="derm-call__panel-tab"
+                [class.derm-call__panel-tab--active]="activeTab() === 'notes'"
+                (click)="setTab('notes')">
           <mat-icon>description</mat-icon>
           {{ 'dermatology.dermCall.notesTab' | translate }}
         </button>
+        <button class="derm-call__panel-tab"
+                [class.derm-call__panel-tab--active]="activeTab() === 'chat'"
+                (click)="setTab('chat')">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          {{ 'dermatology.dermCall.chatTab' | translate }}
+        </button>
       </div>
+
+      <!-- Notes tab -->
+      @if (activeTab() === 'notes') {
+        <div class="derm-call__notes">
+          <textarea class="derm-call__notes-area" [(ngModel)]="notes"></textarea>
+          <div class="derm-call__notes-footer">
+            @if (saveSuccess()) {
+              <span class="derm-call__notes-saved">
+                <mat-icon>check_circle</mat-icon>
+                {{ 'dermatology.dermCall.notesSaved' | translate }}
+              </span>
+            } @else {
+              <span></span>
+            }
+            <button class="derm-call__notes-save-btn" (click)="saveNotes()">
+              <mat-icon>save</mat-icon>
+              {{ 'dermatology.dermCall.saveNotes' | translate }}
+            </button>
+          </div>
+        </div>
+      }
 
       <!-- Chat tab -->
       @if (activeTab() === 'chat') {
         <div class="derm-call__messages">
-          @for (message of messages(); track message.id) {
-            <div class="derm-call__message" [class.derm-call__message--doctor]="message.from === 'doctor'">
-              @if (message.from === 'patient') {
+          @for (msg of messages(); track msg.id) {
+            <div class="derm-call__msg" [class.derm-call__msg--patient]="msg.from === 'patient'">
+              @if (msg.from === 'patient') {
                 <div class="derm-call__msg-avatar">
                   <mat-icon>person</mat-icon>
                 </div>
               }
-              <div class="derm-call__bubble" [class.derm-call__bubble--doctor]="message.from === 'doctor'">
-                <p class="derm-call__bubble-text">{{ message.text }}</p>
-                <span class="derm-call__bubble-time">{{ message.time }}</span>
+              <div class="derm-call__bubble" [class.derm-call__bubble--doctor]="msg.from === 'doctor'">
+                <p class="derm-call__bubble-text">{{ msg.text }}</p>
+                <span class="derm-call__bubble-time">{{ msg.time }}</span>
               </div>
             </div>
           }
         </div>
         <div class="derm-call__chat-input">
-          <input class="derm-call__input" type="text" [placeholder]="'dermatology.dermCall.inputPlaceholder' | translate" [(ngModel)]="inputText" (keyup.enter)="sendMessage()" />
+          <input class="derm-call__input" type="text"
+                 [placeholder]="'dermatology.dermCall.inputPlaceholder' | translate"
+                 [(ngModel)]="inputText"
+                 (keyup.enter)="sendMessage()" />
           <button class="derm-call__send-btn" (click)="sendMessage()">
             <mat-icon>send</mat-icon>
           </button>
         </div>
       }
 
-      <!-- Notes tab -->
-      @if (activeTab() === 'notes') {
-        <div class="derm-call__notes-section">
-          <p class="derm-call__notes-label">{{ 'dermatology.dermCall.clinicalNotes' | translate }}</p>
-          <textarea class="derm-call__notes-area" [(ngModel)]="notes" rows="16"></textarea>
-        </div>
-      }
-
-    </div>
+    </aside>
   </div>
 </div>

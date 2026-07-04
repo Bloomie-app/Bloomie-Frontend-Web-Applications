@@ -10,10 +10,10 @@
 
   <div class="lf__subheader">
     <div class="lf__progress-bar">
-      <div class="lf__progress-fill"></div>
+      <div class="lf__progress-fill" [style.width.%]="progress()"></div>
     </div>
     <span class="lf__step-label">
-      {{ 'iam.lifestyleForm.step' | translate }} {{ step }} {{ 'iam.lifestyleForm.of' | translate }} {{ totalSteps }}
+      {{ 'iam.lifestyleForm.step' | translate }} {{ step() }} {{ 'iam.lifestyleForm.of' | translate }} {{ totalSteps }}
     </span>
   </div>
 
@@ -117,8 +117,10 @@
 
       <!-- Next button -->
       <div class="lf__card-actions">
-        <button class="lf__next-btn" type="button" (click)="onNext()">
-          {{ 'iam.lifestyleForm.nextButton' | translate }}
+        <button class="lf__next-btn" type="button"
+                [disabled]="submitting()"
+                (click)="onNext()">
+          {{ submitting() ? 'Loading...' : ('iam.lifestyleForm.nextButton' | translate) }}
         </button>
       </div>
     </div>

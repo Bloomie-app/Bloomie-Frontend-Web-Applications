@@ -1,14 +1,25 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { RoutineManagementStore } from '../../../application/routine-management.store';
-import { RoutineItem } from '../../../domain/model/routine-item.entity';
+import { RoutineItem, RoutineStep } from '../../../domain/model/routine-item.entity';
 
-/**
- * Displays the active skincare routine with a weekly calendar,
- * daily completion tracking, and expandable product steps.
- */
+/** Steps that are essential to a skincare routine and cannot be removed. Mirrors Routine.MANDATORY_STEPS on the backend. */
+const MANDATORY_STEPS: RoutineStep[] = [RoutineStep.Cleanser, RoutineStep.Moisturizer, RoutineStep.Sunscreen];
+
+/** Minimum number of items a routine must retain after a removal. Mirrors the backend rule in Routine.removeItem(). */
+const MINIMUM_ROUTINE_ITEMS = 2;
+
+interface WeekDay {
+  date:        Date;
+  dayNum:      number;
+  dayName:     string;
+  isToday:     boolean;
+  isSelected:  boolean;
+  isCompleted: boolean;
+}
+
 @Component({
   selector: 'app-routine-product-list',
   imports: [MatIconModule, TranslatePipe],
@@ -16,164 +27,93 @@ import { RoutineItem } from '../../../domain/model/routine-item.entity';
   styleUrl: './routine-product-list.css',
 })
 export class RoutineProductList {
-  readonly store = inject(RoutineManagementStore);
-  protected router = inject(Router);
+  readonly store    = inject(RoutineManagementStore);
+  protected router  = inject(Router);
+  private readonly translate = inject(TranslateService);
 
-  /** Index of the currently expanded routine item, or null if none. */
   expandedProductId = signal<number | null>(null);
-
-  /** The currently selected date for tracking display. */
-  selectedDate = signal<Date>(new Date());
+  selectedDate      = signal<Date>(new Date());
 
   readonly activeRoutineItems = this.store.activeRoutineItems;
 
-  /** Calendar month offset from current month (0 = current). */
-  calendarMonthOffset = signal<number>(0);
-
-  /**
-   * Computed signal for the 7-day strip centered on today.
-   * Shows 3 days before today and 3 days after.
-   */
-  readonly calendarDayKeys = [
-    'routine.productList.dayAbbrev.su',
-    'routine.productList.dayAbbrev.mo',
-    'routine.productList.dayAbbrev.tu',
-    'routine.productList.dayAbbrev.we',
-    'routine.productList.dayAbbrev.th',
-    'routine.productList.dayAbbrev.fr',
-    'routine.productList.dayAbbrev.sa',
-  ];
-  /**
-   * Computed signal for the display label of the selected date.
-   * Returns a formatted string like 'Wednesday, 11'.
-   */
   readonly selectedDayLabel = computed(() =>
     this.selectedDate().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric' }),
   );
 
-  /**
-   * Computed signal for the calendar weeks of the currently displayed month.
-   * Returns a 2D array of day numbers (null for empty cells).
-   */
-  readonly calendarWeeks = computed((): (number | null)[][] => {
-    const today = new Date();
-    const displayDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + this.calendarMonthOffset(),
-      1,
-    );
-    const year = displayDate.getFullYear();
-    const month = displayDate.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstWeekDay = new Date(year, month, 1).getDay();
-    const weeks: (number | null)[][] = [];
-    let currentWeek: (number | null)[] = Array.from({ length: firstWeekDay }, () => null);
-    for (let day = 1; day <= daysInMonth; day++) {
-      currentWeek.push(day);
-      if (currentWeek.length === 7) {
-        weeks.push([...currentWeek]);
-        currentWeek = [];
-      }
-    }
-    if (currentWeek.length > 0) {
-      while (currentWeek.length < 7) currentWeek.push(null);
-      weeks.push([...currentWeek]);
-    }
-    return weeks;
+  readonly weekDays = computed((): WeekDay[] => {
+    const today     = new Date();
+    const dow       = today.getDay();
+    const monday    = new Date(today);
+    monday.setDate(today.getDate() - ((dow + 6) % 7));
+    monday.setHours(0, 0, 0, 0);
+
+    const selected  = this.selectedDate();
+    const completed = this.store.completedDays();
+    const pad       = (n: number) => String(n).padStart(2, '0');
+    const toStr     = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      return {
+        date:        d,
+        dayNum:      d.getDate(),
+        dayName:     d.toLocaleDateString('en-US', { weekday: 'short' }),
+        isToday:     d.toDateString() === today.toDateString(),
+        isSelected:  d.toDateString() === selected.toDateString(),
+        isCompleted: completed.includes(toStr(d)),
+      };
+    });
   });
 
-  /**
-   * Computed signal for the currently displayed month and year label.
-   * Returns a string like 'May 2026'.
-   */
-  readonly calendarMonthLabel = computed(() => {
-    const today = new Date();
-    const displayDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + this.calendarMonthOffset(),
-      1,
-    );
-    return displayDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  });
-
-  /**
-   * Returns true if the given day number in the current calendar month
-   * has been marked as completed.
-   * @param day - The day number to check.
-   * @returns True if the day is completed.
-   */
-  readonly isDayCompletedInCalendar = (day: number | null): boolean => {
-    if (!day) return false;
-    const today = new Date();
-    const displayDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + this.calendarMonthOffset(),
-      day,
-    );
-    const dateString = displayDate.toISOString().split('T')[0];
-    return this.store.completedDays().includes(dateString);
-  };
-
-  /**
-   * Returns true if the selected date has been marked as completed.
-   */
   readonly isSelectedDayCompleted = computed(() => {
-    const dateString = this.selectedDate().toISOString().split('T')[0];
-    return this.store.completedDays().includes(dateString);
+    const d   = this.selectedDate();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const str = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    return this.store.completedDays().includes(str);
   });
 
-  /** Selects a day number from the month calendar. */
-  selectCalendarDay(day: number | null): void {
-    if (!day) return;
-    const today = new Date();
-    const displayDate = new Date(
-      today.getFullYear(),
-      today.getMonth() + this.calendarMonthOffset(),
-      day,
-    );
-    this.selectedDate.set(displayDate);
+  selectDay(date: Date): void {
+    this.selectedDate.set(date);
   }
 
-  /** Advances the calendar to the next month. */
-  nextMonth(): void {
-    this.calendarMonthOffset.update((offset) => offset + 1);
-  }
-
-  /** Moves the calendar back to the previous month. */
-  previousMonth(): void {
-    this.calendarMonthOffset.update((offset) => offset - 1);
-  }
-
-  /**
-   * Toggles the completion state of the selected day.
-   * Marks as completed if not yet done, otherwise marks as not completed.
-   */
   toggleDayCompletion(): void {
-    const dateString = this.selectedDate().toISOString().split('T')[0];
+    const d   = this.selectedDate();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const str = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     if (this.isSelectedDayCompleted()) {
-      this.store.markDayNotCompleted(dateString);
+      this.store.markDayNotCompleted(str);
     } else {
-      this.store.markDayCompleted(dateString);
+      this.store.markDayCompleted(str);
     }
   }
 
-  /**
-   * Toggles the expanded state of a routine item card.
-   * Collapses if already expanded, expands if not.
-   * @param itemId - The ID of the routine item to toggle.
-   */
   toggleProductExpand(itemId: number): void {
-    this.expandedProductId.update((current) => (current === itemId ? null : itemId));
+    this.expandedProductId.update(current => current === itemId ? null : itemId);
   }
 
-  /**
-   * Navigates to the product replacement view for the given routine item.
-   * @param routineItem - The routine item whose product will be replaced.
-   */
   navigateToReplaceProduct(routineItem: RoutineItem): void {
     this.store.selectRoutine(this.store.activeRoutine()!);
     this.router.navigate(['/routine/product-replacement'], {
       queryParams: { routineItemId: routineItem.id },
     });
+  }
+
+  /**
+   * Whether this routine item can be removed: it must not be a mandatory step
+   * (CLEANSER, MOISTURIZER, SUNSCREEN) and the routine must retain at least
+   * MINIMUM_ROUTINE_ITEMS items afterwards. Mirrors Routine.removeItem() on the backend.
+   */
+  canRemove(routineItem: RoutineItem): boolean {
+    return !MANDATORY_STEPS.includes(routineItem.step)
+      && this.activeRoutineItems().length > MINIMUM_ROUTINE_ITEMS;
+  }
+
+  removeItem(routineItem: RoutineItem): void {
+    const confirmed = window.confirm(this.translate.instant('routine.productList.removeConfirm'));
+    if (!confirmed) return;
+
+    this.expandedProductId.set(null);
+    this.store.removeRoutineItem(routineItem.id);
   }
 }

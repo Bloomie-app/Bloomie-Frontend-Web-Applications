@@ -1,332 +1,584 @@
-.book-appointment {
-  padding: 32px 40px;
+/* =============================================================================
+   book-appointment.css
+   ============================================================================= */
+
+.ba-page {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 32px 40px 48px;
   background: #fffdf8;
   min-height: 100%;
+  box-sizing: border-box;
 }
 
-.book-appointment__header {
+/* ── Shared section label ───────────────────────────────────────────────────── */
+
+.ba-section-label {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
 }
 
-.book-appointment__back-btn {
+.ba-section-label mat-icon {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: #cebebe;
+}
+
+/* ── Left column (profile) ──────────────────────────────────────────────────── */
+
+.ba-profile {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Back button */
+.ba-back {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: #ffffff;
-  border: 1px solid #e0d6d6;
+  border: 1.5px solid #e0d6d6;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s;
+  align-self: flex-start;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.book-appointment__back-btn:hover { background: #f5f0f0; }
+.ba-back:hover { background: #f5f0f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10); }
+.ba-back mat-icon { font-size: 20px; width: 20px; height: 20px; color: #666; }
 
-.book-appointment__title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300;
-  font-size: 32px;
-  color: #333;
-  margin: 0;
-}
+/* ── Hero card ──────────────────────────────────────────────────────────────── */
 
-.book-appointment__divider {
-  height: 1px;
-  background: #e8dede;
-  margin-bottom: 24px;
-}
-
-.book-appointment__content {
-  display: flex;
-  gap: 32px;
-  align-items: flex-start;
-}
-
-/* ── Profile section ── */
-.book-appointment__profile-section {
-  width: 380px;
-  flex-shrink: 0;
+.ba-hero {
+  position: relative;
+  background: linear-gradient(135deg, #a26769 0%, #7d4648 100%);
+  border-radius: 24px;
+  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(162, 103, 105, 0.35), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.book-appointment__profile-card {
-  background: #b3cee3;
-  border-radius: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
-  padding: 28px;
-  display: flex;
-  gap: 20px;
-  align-items: center;
+.ba-hero__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  pointer-events: none;
 }
 
-.book-appointment__profile-avatar {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ba-hero__ring--1 { width: 200px; height: 200px; right: -60px; bottom: -60px; }
+.ba-hero__ring--2 { width: 300px; height: 300px; right: -110px; bottom: -110px; }
+
+/* Avatar */
+.ba-hero__avatar {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
   flex-shrink: 0;
+  border: 3px solid rgba(255, 255, 255, 0.30);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.20);
 }
 
-.book-appointment__profile-avatar mat-icon { font-size: 40px; color: #a26769; }
-
-.book-appointment__profile-img {
+.ba-hero__avatar-img {
   width: 100%;
   height: 100%;
-  border-radius: 14px;
   object-fit: cover;
+  border-radius: 50%;
 }
 
-.book-appointment__profile-specialty {
+.ba-hero__initials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  color: #000;
-  margin: 0 0 4px;
+  font-weight: 800;
+  font-size: 28px;
+  color: #ffffff;
+  letter-spacing: 0.02em;
 }
 
-.book-appointment__profile-fee {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #a26769;
-  font-weight: 600;
-  margin: 0;
-}
-
-.book-appointment__stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.book-appointment__stat {
-  background: #d6dee3;
-  border-radius: 10px;
-  padding: 12px;
+/* Identity */
+.ba-hero__identity {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  gap: 8px;
 }
 
-.book-appointment__stat-value {
+.ba-hero__name {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: #49454f;
-  line-height: 1.3;
-  word-break: break-all;
-  text-align: center;
+  font-weight: 800;
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.book-appointment__stat-label {
+.ba-hero__specialty {
   font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  font-size: 10px;
-  color: #49454f;
-  text-align: center;
-  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 3px 12px;
+  letter-spacing: 0.02em;
 }
 
-.book-appointment__about-card {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 24px;
-}
-
-.book-appointment__section-label {
+/* Fee pill */
+.ba-hero__fee-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 6px 16px;
+}
+
+.ba-hero__fee-icon {
   font-size: 15px;
-  color: #49454f;
-  margin: 0 0 8px;
+  width: 15px;
+  height: 15px;
+  color: rgba(255, 255, 255, 0.80);
 }
 
-.book-appointment__section-label--mt { margin-top: 20px; }
+/* ── Quick stats ────────────────────────────────────────────────────────────── */
 
-.book-appointment__about-text,
-.book-appointment__working-time {
+.ba-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.ba-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #ede8e8;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.ba-stat__icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #cebebe;
+  flex-shrink: 0;
+}
+
+.ba-stat div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ba-stat__value {
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  color: #000;
-  line-height: 1.6;
+  font-weight: 700;
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ba-stat__label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── About ──────────────────────────────────────────────────────────────────── */
+
+.ba-about,
+.ba-hours {
+  background: #ffffff;
+  border: 1px solid #ede8e8;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.ba-about__text,
+.ba-hours__text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.65;
   margin: 0;
 }
 
-/* ── Schedule card ── */
-.book-appointment__schedule-card {
+/* ── Right column ───────────────────────────────────────────────────────────── */
+
+.ba-right {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Schedule card ──────────────────────────────────────────────────────────── */
+
+.ba-schedule {
   background: #ffffff;
+  border: 1.5px solid #ede8e8;
   border-radius: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.book-appointment__schedule-title {
+.ba-schedule__header { display: flex; flex-direction: column; gap: 4px; }
+
+.ba-schedule__title {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 20px;
-  color: #49454f;
-  margin: 0 0 20px;
+  color: #2e2e2e;
+  margin: 0;
 }
 
-.book-appointment__day-header {
+.ba-schedule__subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: #bbb;
+  margin: 0;
+}
+
+/* Month nav */
+.ba-month-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
-.book-appointment__nav-btn {
-  width: 32px;
-  height: 32px;
+.ba-month-nav__btn {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: transparent;
-  border: none;
+  background: #fdf5f5;
+  border: 1px solid #ede8e8;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #49454f;
-  transition: background 0.15s, color 0.15s;
+  color: #a26769;
+  transition: background 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
 }
 
-.book-appointment__nav-btn:hover:not(:disabled) { background: #f0ece8; }
-.book-appointment__nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-
-.book-appointment__month-label {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #999;
-  margin: 0;
-  flex: 1;
-  text-align: center;
-  text-transform: capitalize;
+.ba-month-nav__btn:hover:not(:disabled) {
+  background: #f5eaea;
+  box-shadow: 0 2px 8px rgba(162, 103, 105, 0.15);
 }
 
-.book-appointment__days {
+.ba-month-nav__btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.ba-month-nav__label {
+  flex: 1;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #444;
+  text-align: center;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+/* Day pills */
+.ba-days {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  overflow: hidden;
+  gap: 10px;
   touch-action: pan-y;
 }
 
-.book-appointment__day-btn {
+.ba-day {
   flex: 1;
-  min-width: 48px;
-  padding: 12px 4px;
-  border-radius: 12px;
-  border: none;
-  background: #d9d9d9;
+  min-width: 0;
+  padding: 12px 6px;
+  border-radius: 16px;
+  border: 1.5px solid #ede8e8;
+  background: #fdfcfb;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.18s ease;
 }
 
-.book-appointment__day-btn--selected { background: #b3cee3; }
+.ba-day:hover:not(.ba-day--selected) {
+  border-color: #cebebe;
+  background: #fdf5f5;
+}
 
-.book-appointment__day-number {
+.ba-day--selected {
+  background: linear-gradient(145deg, #a26769, #8e5759);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(162, 103, 105, 0.35);
+}
+
+.ba-day__num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #999;
+  line-height: 1;
+}
+
+.ba-day__name {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  font-size: 16px;
-  color: #999;
+  font-size: 11px;
+  color: #bbb;
+  letter-spacing: 0.03em;
 }
 
-.book-appointment__day-btn--selected .book-appointment__day-number { color: #303030; }
+.ba-day--selected .ba-day__num,
+.ba-day--selected .ba-day__name {
+  color: #ffffff;
+}
 
-.book-appointment__day-name {
+/* Times header */
+.ba-times-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ba-times-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  color: #a26769;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: #fdf5f5;
+  border-radius: 10px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* Time slots */
+.ba-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 52px;
+}
+
+.ba-time {
+  padding: 11px 20px;
+  border-radius: 12px;
+  border: 1.5px solid #ede8e8;
+  background: #fdfcfb;
+  color: #555;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 13px;
-  color: #999;
-}
-
-.book-appointment__day-btn--selected .book-appointment__day-name { color: #1e1e1e; }
-
-/* Time slots */
-.book-appointment__time-slots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 8px 0 32px;
-}
-
-.book-appointment__time-btn {
-  padding: 12px 20px;
-  border-radius: 12px;
-  border: none;
-  background: #b3cee3;
-  color: #1e1e1e;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.18s ease;
 }
 
-.book-appointment__time-btn--selected { background: #1daeef; color: #303030; }
-.book-appointment__no-slots { font-family: 'Montserrat', sans-serif; font-size: 14px; color: #999; }
+.ba-time:hover:not(.ba-time--selected) {
+  border-color: #cebebe;
+  background: #fdf5f5;
+  color: #a26769;
+}
 
-.book-appointment__continue-btn {
+.ba-time--selected {
+  background: linear-gradient(135deg, #a26769, #8e5759);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 3px 12px rgba(162, 103, 105, 0.35);
+}
+
+.ba-times-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ccc;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+.ba-times-empty mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+/* Confirm button */
+.ba-confirm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  background: #7baab3;
+  background: linear-gradient(135deg, #a26769 0%, #8e5759 100%);
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 15px;
   border: none;
-  border-radius: 22px;
+  border-radius: 16px;
   padding: 16px;
   cursor: pointer;
-  transition: background 0.15s;
+  box-shadow: 0 4px 16px rgba(162, 103, 105, 0.35);
+  transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
 }
 
-.book-appointment__continue-btn:hover:not(:disabled) { background: #6697a0; }
-.book-appointment__continue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ba-confirm-btn:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(162, 103, 105, 0.45);
+  transform: translateY(-1px);
+}
 
-/* ── RESPONSIVE: Mobile ── */
-@media (max-width: 1023px) {
-  .book-appointment { padding: 1rem 1rem 1.5rem; }
-  .book-appointment__title { font-size: 22px; }
+.ba-confirm-btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; }
 
-  /* Stack profile + schedule vertically */
-  .book-appointment__content { flex-direction: column; gap: 16px; }
+.ba-confirm-btn mat-icon { font-size: 20px; width: 20px; height: 20px; }
 
-  .book-appointment__profile-section { width: 100%; }
+/* ── Before your visit card ─────────────────────────────────────────────────── */
 
-  .book-appointment__profile-card { padding: 18px; gap: 14px; }
-  .book-appointment__profile-avatar { width: 60px; height: 60px; }
-  .book-appointment__profile-avatar mat-icon { font-size: 30px; }
-  .book-appointment__profile-img { border-radius: 10px; }
-  .book-appointment__profile-specialty { font-size: 15px; }
-  .book-appointment__profile-fee { font-size: 13px; }
+.ba-expect {
+  background: #ffffff;
+  border: 1.5px solid #ede8e8;
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
 
-  .book-appointment__stat-value { font-size: 16px; }
+.ba-expect__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #2e2e2e;
+  margin: 0 0 20px;
+}
 
-  .book-appointment__schedule-card { padding: 18px; }
-  .book-appointment__schedule-title { font-size: 17px; margin-bottom: 14px; }
+.ba-expect__title-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #a26769;
+}
 
-  .book-appointment__days { gap: 8px; }
-  .book-appointment__day-btn { padding: 8px 2px; border-radius: 10px; }
-  .book-appointment__day-number { font-size: 14px; }
-  .book-appointment__day-name { font-size: 11px; }
+.ba-expect__items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  .book-appointment__time-btn { padding: 10px 14px; font-size: 13px; }
+.ba-expect__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
 
-  .book-appointment__continue-btn { font-size: 14px; padding: 14px; }
+.ba-expect__item-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #fdf5f5;
+  border: 1px solid #ede8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ba-expect__item-icon-wrap mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #a26769;
+}
+
+.ba-expect__item-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #333;
+  margin: 0 0 3px;
+}
+
+.ba-expect__item-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Responsive — tablet ────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .ba-page { padding: 24px; gap: 20px; }
+  .ba-profile { width: 300px; }
+  .ba-hero__name { font-size: 17px; }
+}
+
+/* ── Responsive — mobile ────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .ba-page {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .ba-profile { width: 100%; }
+
+  .ba-hero { flex-direction: row; text-align: left; padding: 22px 20px; gap: 18px; }
+  .ba-hero__identity { align-items: flex-start; }
+  .ba-hero__avatar { width: 72px; height: 72px; flex-shrink: 0; }
+  .ba-hero__initials { font-size: 22px; }
+  .ba-hero__name { font-size: 17px; }
+
+  .ba-schedule { padding: 20px; gap: 16px; }
+  .ba-days { gap: 8px; }
+  .ba-day { border-radius: 12px; padding: 10px 4px; }
+  .ba-day__num { font-size: 16px; }
+
+  .ba-expect { padding: 20px; }
 }

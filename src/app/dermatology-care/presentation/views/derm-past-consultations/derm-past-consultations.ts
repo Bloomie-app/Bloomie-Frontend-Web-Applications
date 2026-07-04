@@ -9,10 +9,6 @@ import {DermatologyCareStore} from '../../../application/dermatology-care.store'
 import {Consultation} from '../../../domain/model/consultation.entity';
 import {IamStore} from '../../../../iam/application/iam.store';
 
-/**
- * Lists all past consultations attended by the dermatologist
- * with search filtering.
- */
 @Component({
   selector:    'app-derm-past-consultations',
   imports:     [MatIconModule, FormsModule, TranslatePipe, SlicePipe],
@@ -24,14 +20,14 @@ export class DermPastConsultations {
   private readonly iamStore = inject(IamStore);
   protected router      = inject(Router);
 
-  searchQuery = signal<string>('');
+  searchQuery  = signal<string>('');
+  patientNames = signal<Record<number, string>>({});
 
-  /** Maps patient userId → photo URL. */
   protected readonly userPhotoMap = signal<Record<number, string | null>>({});
 
   constructor() {
     effect(() => {
-      const consultations = this.store.consultations();
+      const consultations = this.store.myConsultations();
       const loaded        = untracked(() => this.userPhotoMap());
 
       consultations.forEach(c => {
@@ -41,7 +37,10 @@ export class DermPastConsultations {
           this.iamStore.getUserById(userId)
             .pipe(take(1))
             .subscribe({
-              next: user => this.userPhotoMap.update(m => ({...m, [userId]: user.photoUrl ?? null})),
+              next: user => {
+                this.userPhotoMap.update(m => ({...m, [userId]: user.photoUrl ?? null}));
+                this.patientNames.update(n => ({...n, [userId]: `${user.name} ${user.lastName}`}));
+              },
               error: () => {},
             });
         }
@@ -53,23 +52,29 @@ export class DermPastConsultations {
     return this.userPhotoMap()[consultation.patientId] ?? null;
   }
 
-  /** Consultations filtered by the search query. */
+  getPatientName(patientId: number): string {
+    return this.patientNames()[patientId] ?? `Patient #${patientId}`;
+  }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
   readonly filteredConsultations = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    return this.store.consultations().filter(consultation =>
+    return this.store.myConsultations().filter(consultation =>
       !query
       || consultation.notes.toLowerCase().includes(query)
       || consultation.recommendations.toLowerCase().includes(query)
     );
   });
 
-  /** Navigates to the derm consultation summary. */
   selectConsultation(consultation: Consultation): void {
     this.store.selectConsultation(consultation);
     this.router.navigate(['/derm/consultation-summary']);
   }
 
-  /** Navigates back to the derm agenda. */
   navigateBack(): void {
     this.router.navigate(['/derm/agenda']);
   }

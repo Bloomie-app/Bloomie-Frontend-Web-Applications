@@ -22,8 +22,7 @@
 .derm-sign-in__back {
   position: absolute;
   top: 1.5rem;
-  right: 1.5rem;
-  left: auto;
+  left: 1.5rem;
   background: rgba(255, 255, 255, 0.15);
   border: none;
   color: #ffffff;
@@ -209,6 +208,11 @@
   .derm-sign-in__panel {
     flex: 1;
     padding: 6rem 8rem;
+  }
+
+  .derm-sign-in__back {
+    top: 2rem;
+    left: 2rem;
   }
 
   .derm-sign-in__title {

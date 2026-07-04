@@ -1,324 +1,313 @@
-<div class="my-plan">
+<div class="mp">
 
-  <!-- MOBILE -->
-  <div class="my-plan__mobile">
-    <div class="my-plan__mobile-header">
-      <button class="my-plan__back-btn" (click)="onBack()" aria-label="Back">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="my-plan__mobile-title">{{ 'iam.myPlan.title' | translate }}</h1>
+  <!-- ── Banner ── -->
+  <div class="mp-banner">
+    <button class="mp-banner__back" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="mp-banner__icon-wrap">
+      <mat-icon>workspace_premium</mat-icon>
     </div>
-    <p class="my-plan__mobile-subtitle">{{ 'iam.myPlan.subtitle' | translate }}</p>
+    <div class="mp-banner__text">
+      <h1 class="mp-banner__title">{{ 'iam.myPlan.title' | translate }}</h1>
+      <p class="mp-banner__subtitle">{{ 'iam.myPlan.subtitle' | translate }}</p>
+    </div>
+    <div class="mp-banner__pill">
+      <mat-icon>shield</mat-icon>
+      <span>{{ 'iam.myPlan.activeSubscription' | translate }}</span>
+    </div>
+  </div>
 
-    <div class="my-plan__mobile-body">
+  <!-- ── MOBILE ── -->
+  <div class="mp-mobile">
+    <div class="mp-mobile__body">
+
       <!-- Current plan card -->
-      <div class="my-plan__current-card" [style.background-color]="currentPlan.color">
-        <div class="my-plan__current-top">
-          <div class="my-plan__current-icon-wrap">
-            <mat-icon class="my-plan__current-icon" [style.color]="currentPlan.textColor">{{ currentPlan.icon }}</mat-icon>
+      <div class="mp-current-card" [style.background-color]="currentPlan.color">
+        <div class="mp-current-card__top">
+          <div class="mp-current-card__icon-wrap">
+            <mat-icon [style.color]="currentPlan.textColor">{{ currentPlan.icon }}</mat-icon>
           </div>
-          <div class="my-plan__current-info">
-            <p class="my-plan__current-name" [style.color]="currentPlan.textColor">Plan {{ currentPlan.name }}</p>
-            <p class="my-plan__current-tagline" [style.color]="currentPlan.textColor">{{ currentPlan.taglineKey | translate }}</p>
+          <div class="mp-current-card__info">
+            <p class="mp-current-card__name" [style.color]="currentPlan.textColor">Plan {{ currentPlan.name }}</p>
+            <p class="mp-current-card__tagline" [style.color]="currentPlan.textColor">{{ currentPlan.taglineKey | translate }}</p>
           </div>
-          <span class="my-plan__active-badge">{{ 'iam.myPlan.active' | translate }}</span>
+          <span class="mp-active-badge">{{ 'iam.myPlan.active' | translate }}</span>
         </div>
-        <p class="my-plan__current-price" [style.color]="currentPlan.textColor">${{ currentPlan.price }}<span class="my-plan__current-period">/{{ 'iam.myPlan.month' | translate }}</span></p>
-        <div class="my-plan__current-billing">
-          <mat-icon class="my-plan__billing-icon" [style.color]="currentPlan.textColor">calendar_today</mat-icon>
-          <p [style.color]="currentPlan.textColor">{{ 'iam.myPlan.nextBilling' | translate }}: <strong>{{ billingDate }}</strong></p>
+        <p class="mp-current-card__price" [style.color]="currentPlan.textColor">
+          ${{ currentPlan.price }}<span class="mp-current-card__period">/{{ 'iam.myPlan.month' | translate }}</span>
+        </p>
+        <div class="mp-current-card__billing">
+          <mat-icon [style.color]="currentPlan.textColor">calendar_today</mat-icon>
+          <p [style.color]="currentPlan.textColor">{{ 'iam.myPlan.nextBilling' | translate }}: <strong>{{ billingDate() }}</strong></p>
         </div>
       </div>
 
       <!-- Payment method -->
-      <div class="my-plan__section-card">
-        <p class="my-plan__section-title">{{ 'iam.myPlan.paymentMethod' | translate }}</p>
-        <div class="my-plan__payment-row">
-          <div class="my-plan__payment-icon-wrap">
-            <mat-icon class="my-plan__payment-icon">credit_card</mat-icon>
+      <div class="mp-section">
+        <p class="mp-section__title">{{ 'iam.myPlan.paymentMethod' | translate }}</p>
+        <div class="mp-payment-row">
+          <div class="mp-visa-badge">VISA</div>
+          <div class="mp-payment-info">
+            <p class="mp-payment-card">{{ 'iam.myPlan.visaCard' | translate: {last4: cardLast4} }}</p>
+            <p class="mp-payment-exp">{{ 'iam.myPlan.cardExpires' | translate: {date: cardExpiry} }}</p>
           </div>
-          <div class="my-plan__payment-info">
-            <p class="my-plan__payment-card">{{ 'iam.myPlan.visaCard' | translate: {last4: cardLast4} }}</p>
-            <p class="my-plan__payment-exp">{{ 'iam.myPlan.cardExpires' | translate: {date: cardExpiry} }}</p>
-          </div>
-          <button class="my-plan__update-link">{{ 'iam.myPlan.update' | translate }}</button>
         </div>
       </div>
 
-      <!-- Change plan -->
-      <div class="my-plan__section-card">
-        <div class="my-plan__section-header">
-          <p class="my-plan__section-title">{{ 'iam.myPlan.changePlan' | translate }}</p>
-          <button class="my-plan__toggle-link" (click)="showChangePlan.set(!showChangePlan())">
-            @if (showChangePlan()) {
-              {{ 'iam.myPlan.collapse' | translate }}
-            } @else {
-              {{ 'iam.myPlan.viewOptions' | translate }}
-            }
-          </button>
-        </div>
-
-        @if (showChangePlan()) {
-          <div class="my-plan__plans-list">
-            @for (plan of otherPlans; track plan.id) {
-              <button
-                class="my-plan__plan-option"
-                [style.background-color]="plan.color"
-                [class.my-plan__plan-option--selected]="selectedNewPlan() === plan.id"
-                (click)="onSelectPlan(plan.id)"
-              >
-                <div class="my-plan__plan-option-left">
-                  <div class="my-plan__plan-option-icon-wrap">
-                    <mat-icon [style.color]="plan.textColor">{{ plan.icon }}</mat-icon>
-                  </div>
-                  <div>
-                    <p class="my-plan__plan-option-name" [style.color]="plan.textColor">Plan {{ plan.name }}</p>
-                    <p class="my-plan__plan-option-tagline" [style.color]="plan.textColor">{{ plan.taglineKey | translate }}</p>
-                  </div>
+      <!-- Switch plan -->
+      <div class="mp-section">
+        <p class="mp-section__title">{{ 'iam.myPlan.switchPlan' | translate }}</p>
+        <p class="mp-section__sub">{{ 'iam.myPlan.proratedBilling' | translate }}</p>
+        <div class="mp-plan-cards">
+          @for (plan of otherPlans; track plan.id) {
+            <div class="mp-plan-card" [class.mp-plan-card--expanded]="expandedPlanId() === plan.id">
+              <button class="mp-plan-card__header" (click)="togglePlanExpand(plan.id)">
+                <div class="mp-plan-card__icon" [style.background-color]="plan.color">
+                  <mat-icon [style.color]="plan.textColor">{{ plan.icon }}</mat-icon>
                 </div>
-                <div class="my-plan__plan-option-right">
-                  <p class="my-plan__plan-option-price" [style.color]="plan.textColor">${{ plan.price }}<span>{{ 'iam.myPlan.perMonth' | translate }}</span></p>
-                  <span class="my-plan__plan-option-badge" [class.my-plan__plan-option-badge--upgrade]="isUpgrade(plan)">
-                    @if (isUpgrade(plan)) { {{ 'iam.myPlan.upgrade' | translate }} } @else { {{ 'iam.myPlan.downgrade' | translate }} }
-                  </span>
+                <div class="mp-plan-card__info">
+                  <p class="mp-plan-card__name">{{ plan.name }}</p>
+                  <p class="mp-plan-card__price">${{ plan.price }}<span>/{{ 'iam.myPlan.month' | translate }}</span></p>
                 </div>
+                <span class="mp-plan-card__badge" [class.mp-plan-card__badge--upgrade]="isUpgrade(plan)">
+                  @if (isUpgrade(plan)) { {{ 'iam.myPlan.upgrade' | translate }} } @else { {{ 'iam.myPlan.downgrade' | translate }} }
+                </span>
+                <mat-icon class="mp-plan-card__arrow" [class.mp-plan-card__arrow--open]="expandedPlanId() === plan.id">expand_more</mat-icon>
               </button>
-            }
-
-            @if (selectedNewPlan()) {
-              <button class="my-plan__confirm-switch-btn" (click)="onConfirmChangePlan()">
-                {{ 'iam.myPlan.switchTo' | translate }} {{ selectedNewPlan() }}
-              </button>
-            }
-          </div>
-        } @else {
-          <button class="my-plan__expand-btn" (click)="showChangePlan.set(true)">
-            <mat-icon class="my-plan__expand-icon">sync</mat-icon>
-            <span>{{ 'iam.myPlan.upgradeOrDowngrade' | translate }}</span>
-            <mat-icon class="my-plan__expand-arrow">chevron_right</mat-icon>
-          </button>
-        }
-      </div>
-
-      <!-- Cancel -->
-      <button class="my-plan__cancel-btn" (click)="onOpenCancelModal()">
-        {{ 'iam.myPlan.cancelSubscription' | translate }}
-      </button>
-    </div>
-  </div>
-
-  <!-- DESKTOP -->
-  <div class="my-plan__desktop">
-    <div class="my-plan__desktop-top-bar">
-      <button class="my-plan__desktop-back" (click)="onBack()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <div class="my-plan__desktop-top-info">
-        <h1 class="my-plan__desktop-title">{{ 'iam.myPlan.desktopTitle' | translate }}</h1>
-        <p class="my-plan__desktop-subtitle">{{ 'iam.myPlan.subtitle' | translate }}</p>
-      </div>
-      <div class="my-plan__desktop-active-pill">
-        <mat-icon class="my-plan__desktop-active-icon">shield</mat-icon>
-        <span>{{ 'iam.myPlan.activeSubscription' | translate }}</span>
-      </div>
-    </div>
-
-    <div class="my-plan__desktop-body">
-      <!-- Left -->
-      <div class="my-plan__desktop-left">
-        <!-- Current plan card -->
-        <div class="my-plan__current-card" [style.background-color]="currentPlan.color">
-          <div class="my-plan__current-top">
-            <div class="my-plan__current-icon-wrap">
-              <mat-icon class="my-plan__current-icon" [style.color]="currentPlan.textColor">{{ currentPlan.icon }}</mat-icon>
-            </div>
-            <div class="my-plan__current-info">
-              <p class="my-plan__current-name" [style.color]="currentPlan.textColor">Plan {{ currentPlan.name }}</p>
-              <p class="my-plan__current-tagline" [style.color]="currentPlan.textColor">{{ currentPlan.taglineKey | translate }}</p>
-            </div>
-            <span class="my-plan__active-badge">{{ 'iam.myPlan.active' | translate }}</span>
-          </div>
-          <p class="my-plan__current-price my-plan__current-price--large" [style.color]="currentPlan.textColor">${{ currentPlan.price }}<span class="my-plan__current-period">/{{ 'iam.myPlan.month' | translate }}</span></p>
-
-          <ul class="my-plan__features-list">
-            @for (feat of currentPlan.featureKeys; track feat) {
-              <li class="my-plan__feature-item">
-                <mat-icon class="my-plan__feature-check" [style.color]="currentPlan.textColor">check</mat-icon>
-                <span [style.color]="currentPlan.textColor">{{ feat | translate }}</span>
-              </li>
-            }
-          </ul>
-
-          <div class="my-plan__current-billing">
-            <mat-icon class="my-plan__billing-icon" [style.color]="currentPlan.textColor">calendar_today</mat-icon>
-            <p [style.color]="currentPlan.textColor">{{ 'iam.myPlan.nextBilling' | translate }}: <strong>{{ billingDate }}</strong></p>
-          </div>
-        </div>
-
-        <!-- Quick actions -->
-        <div class="my-plan__section-card">
-          <p class="my-plan__section-title">{{ 'iam.myPlan.quickActions' | translate }}</p>
-          <button class="my-plan__action-row" (click)="showChangePlan.set(!showChangePlan())">
-            <div class="my-plan__action-icon-wrap"><mat-icon>sync</mat-icon></div>
-            <div class="my-plan__action-text">
-              <p class="my-plan__action-label">{{ 'iam.myPlan.changePlan' | translate }}</p>
-              <p class="my-plan__action-sub">{{ 'iam.myPlan.upgradeOrDowngrade' | translate }}</p>
-            </div>
-            <mat-icon class="my-plan__action-arrow">chevron_right</mat-icon>
-          </button>
-          <button class="my-plan__action-row">
-            <div class="my-plan__action-icon-wrap"><mat-icon>credit_card</mat-icon></div>
-            <div class="my-plan__action-text">
-              <p class="my-plan__action-label">{{ 'iam.myPlan.updatePayment' | translate }}</p>
-              <p class="my-plan__action-sub">{{ 'iam.myPlan.changeCardOrWallet' | translate }}</p>
-            </div>
-            <mat-icon class="my-plan__action-arrow">chevron_right</mat-icon>
-          </button>
-          <div class="my-plan__action-divider"></div>
-          <button class="my-plan__action-row my-plan__action-row--danger" (click)="onOpenCancelModal()">
-            <div class="my-plan__action-icon-wrap my-plan__action-icon-wrap--danger"><mat-icon>close</mat-icon></div>
-            <div class="my-plan__action-text">
-              <p class="my-plan__action-label my-plan__action-label--danger">{{ 'iam.myPlan.cancelSubscription' | translate }}</p>
-              <p class="my-plan__action-sub">{{ 'iam.myPlan.dataKept30Days' | translate }}</p>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Right -->
-      <div class="my-plan__desktop-right">
-        <!-- KPI cards -->
-        <div class="my-plan__kpi-grid">
-          <div class="my-plan__kpi-card">
-            <div class="my-plan__kpi-header">
-              <span class="my-plan__kpi-label">{{ 'iam.myPlan.currentPlanLabel' | translate }}</span>
-              <div class="my-plan__kpi-icon-wrap" style="background-color: rgba(162,103,105,0.15);">
-                <mat-icon style="color: #a26769;">bolt</mat-icon>
-              </div>
-            </div>
-            <p class="my-plan__kpi-value">Advanced</p>
-            <p class="my-plan__kpi-sub">${{ currentPlan.price }} / {{ 'iam.myPlan.month' | translate }}</p>
-          </div>
-          <div class="my-plan__kpi-card">
-            <div class="my-plan__kpi-header">
-              <span class="my-plan__kpi-label">{{ 'iam.myPlan.nextBillingLabel' | translate }}</span>
-              <div class="my-plan__kpi-icon-wrap" style="background-color: rgba(179,206,227,0.25);">
-                <mat-icon style="color: #b3cee3;">calendar_today</mat-icon>
-              </div>
-            </div>
-            <p class="my-plan__kpi-value">{{ billingDate }}</p>
-            <p class="my-plan__kpi-sub">{{ 'iam.myPlan.autoRenew' | translate }}</p>
-          </div>
-        </div>
-
-        <!-- Payment method -->
-        <div class="my-plan__section-card">
-          <div class="my-plan__section-header">
-            <p class="my-plan__section-title">{{ 'iam.myPlan.paymentOnFile' | translate }}</p>
-            <button class="my-plan__update-link">{{ 'iam.myPlan.update' | translate }} <mat-icon class="my-plan__update-arrow">chevron_right</mat-icon></button>
-          </div>
-          <div class="my-plan__payment-card-row">
-            <div class="my-plan__visa-badge">VISA</div>
-            <div class="my-plan__payment-info">
-              <p class="my-plan__payment-card">{{ 'iam.myPlan.visaEndingIn' | translate: {last4: cardLast4} }}</p>
-              <p class="my-plan__payment-exp">{{ 'iam.myPlan.cardholderExpires' | translate: {name: currentUserFullName(), date: cardExpiry} }}</p>
-            </div>
-            <span class="my-plan__default-badge">{{ 'iam.myPlan.default' | translate }}</span>
-          </div>
-        </div>
-
-        <!-- Switch plan -->
-        <div class="my-plan__section-card">
-          <div class="my-plan__section-header">
-            <div>
-              <p class="my-plan__section-title">{{ 'iam.myPlan.switchPlan' | translate }}</p>
-              <p class="my-plan__section-sub">{{ 'iam.myPlan.proratedBilling' | translate }}</p>
-            </div>
-            <button class="my-plan__toggle-link" (click)="showChangePlan.set(!showChangePlan())">
-              @if (showChangePlan()) { {{ 'iam.myPlan.collapse' | translate }} } @else { {{ 'iam.myPlan.comparePlans' | translate }} }
-            </button>
-          </div>
-
-          @if (showChangePlan()) {
-            <div class="my-plan__plans-list">
-              @for (plan of otherPlans; track plan.id) {
-                <button
-                  class="my-plan__plan-option"
-                  [style.background-color]="plan.color"
-                  [class.my-plan__plan-option--selected]="selectedNewPlan() === plan.id"
-                  (click)="onSelectPlan(plan.id)"
-                >
-                  <div class="my-plan__plan-option-left">
-                    <div class="my-plan__plan-option-icon-wrap">
-                      <mat-icon [style.color]="plan.textColor">{{ plan.icon }}</mat-icon>
-                    </div>
-                    <div>
-                      <p class="my-plan__plan-option-name" [style.color]="plan.textColor">Plan {{ plan.name }}</p>
-                      <p class="my-plan__plan-option-tagline" [style.color]="plan.textColor">{{ plan.taglineKey | translate }}</p>
-                    </div>
-                  </div>
-                  <div class="my-plan__plan-option-right">
-                    <p class="my-plan__plan-option-price" [style.color]="plan.textColor">${{ plan.price }}<span>/mo</span></p>
-                    <span class="my-plan__plan-option-badge" [class.my-plan__plan-option-badge--upgrade]="isUpgrade(plan)">
-                      @if (isUpgrade(plan)) { Upgrade } @else { Downgrade }
-                    </span>
-                  </div>
-                </button>
-              }
-              @if (selectedNewPlan()) {
-                <button class="my-plan__confirm-switch-btn" (click)="onConfirmChangePlan()">
-                  {{ 'iam.myPlan.switchTo' | translate }} {{ selectedNewPlan() }}
-                </button>
-              }
-            </div>
-          } @else {
-            <div class="my-plan__plan-preview-grid">
-              @for (plan of otherPlans; track plan.id) {
-                <button class="my-plan__plan-preview" (click)="showChangePlan.set(true); onSelectPlan(plan.id)">
-                  <div class="my-plan__plan-preview-icon" [style.background-color]="plan.color">
-                    <mat-icon [style.color]="plan.textColor">{{ plan.icon }}</mat-icon>
-                  </div>
-                  <div class="my-plan__plan-preview-info">
-                    <p class="my-plan__plan-preview-name">Plan {{ plan.name }}</p>
-                    <p class="my-plan__plan-preview-price">${{ plan.price }}{{ 'iam.myPlan.perMonth' | translate }}</p>
-                  </div>
-                  <span class="my-plan__plan-preview-badge" [class.my-plan__plan-preview-badge--upgrade]="isUpgrade(plan)">
-                    @if (isUpgrade(plan)) { {{ 'iam.myPlan.upgrade' | translate }} } @else { {{ 'iam.myPlan.downgrade' | translate }} }
-                  </span>
-                </button>
+              @if (expandedPlanId() === plan.id) {
+                <div class="mp-plan-card__body">
+                  <p class="mp-plan-card__tagline">{{ plan.taglineKey | translate }}</p>
+                  <ul class="mp-plan-card__features">
+                    @for (feat of plan.featureKeys; track feat) {
+                      <li class="mp-plan-card__feature">
+                        <mat-icon>check</mat-icon>
+                        <span>{{ feat | translate }}</span>
+                      </li>
+                    }
+                  </ul>
+                  <button class="mp-plan-card__select" (click)="onSelectPlan(plan.id)">
+                    {{ 'iam.myPlan.switchTo' | translate }} {{ plan.name }}
+                  </button>
+                </div>
               }
             </div>
           }
         </div>
       </div>
+
+      <!-- Cancel -->
+      <button class="mp-cancel-btn" (click)="onOpenCancelModal()">
+        {{ 'iam.myPlan.cancelSubscription' | translate }}
+      </button>
+
     </div>
   </div>
 
-  <!-- Cancel Modal -->
+  <!-- ── DESKTOP ── -->
+  <div class="mp-desktop">
+    <div class="mp-desktop__body">
+
+      <!-- Left: current plan -->
+      <div class="mp-desktop__left">
+        <div class="mp-current-card" [style.background-color]="currentPlan.color">
+          <div class="mp-current-card__top">
+            <div class="mp-current-card__icon-wrap">
+              <mat-icon [style.color]="currentPlan.textColor">{{ currentPlan.icon }}</mat-icon>
+            </div>
+            <div class="mp-current-card__info">
+              <p class="mp-current-card__name" [style.color]="currentPlan.textColor">Plan {{ currentPlan.name }}</p>
+              <p class="mp-current-card__tagline" [style.color]="currentPlan.textColor">{{ currentPlan.taglineKey | translate }}</p>
+            </div>
+            <span class="mp-active-badge">{{ 'iam.myPlan.active' | translate }}</span>
+          </div>
+          <p class="mp-current-card__price mp-current-card__price--large" [style.color]="currentPlan.textColor">
+            ${{ currentPlan.price }}<span class="mp-current-card__period">/{{ 'iam.myPlan.month' | translate }}</span>
+          </p>
+          <ul class="mp-current-card__features">
+            @for (feat of currentPlan.featureKeys; track feat) {
+              <li class="mp-current-card__feature" [style.color]="currentPlan.textColor">
+                <mat-icon [style.color]="currentPlan.textColor">check</mat-icon>
+                <span>{{ feat | translate }}</span>
+              </li>
+            }
+          </ul>
+          <div class="mp-current-card__billing">
+            <mat-icon [style.color]="currentPlan.textColor">calendar_today</mat-icon>
+            <p [style.color]="currentPlan.textColor">{{ 'iam.myPlan.nextBilling' | translate }}: <strong>{{ billingDate() }}</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="mp-desktop__right">
+
+        <!-- KPI cards -->
+        <div class="mp-kpi-grid">
+          <div class="mp-kpi-card">
+            <div class="mp-kpi-card__header">
+              <span class="mp-kpi-card__label">{{ 'iam.myPlan.currentPlanLabel' | translate }}</span>
+              <div class="mp-kpi-card__icon-wrap" style="background: rgba(162,103,105,0.12);">
+                <mat-icon style="color: #a26769;">bolt</mat-icon>
+              </div>
+            </div>
+            <p class="mp-kpi-card__value">{{ currentPlan.name }}</p>
+            <p class="mp-kpi-card__sub">${{ currentPlan.price }} / {{ 'iam.myPlan.month' | translate }}</p>
+          </div>
+          <div class="mp-kpi-card">
+            <div class="mp-kpi-card__header">
+              <span class="mp-kpi-card__label">{{ 'iam.myPlan.nextBillingLabel' | translate }}</span>
+              <div class="mp-kpi-card__icon-wrap" style="background: rgba(179,206,227,0.22);">
+                <mat-icon style="color: #6fa8c8;">calendar_today</mat-icon>
+              </div>
+            </div>
+            <p class="mp-kpi-card__value">{{ billingDate() }}</p>
+            <p class="mp-kpi-card__sub">{{ 'iam.myPlan.autoRenew' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div class="mp-section">
+          <div class="mp-section__header">
+            <p class="mp-section__title">{{ 'iam.myPlan.paymentOnFile' | translate }}</p>
+          </div>
+          <div class="mp-payment-row">
+            <div class="mp-visa-badge">VISA</div>
+            <div class="mp-payment-info">
+              <p class="mp-payment-card">{{ 'iam.myPlan.visaEndingIn' | translate: {last4: cardLast4} }}</p>
+              <p class="mp-payment-exp">{{ 'iam.myPlan.cardholderExpires' | translate: {name: currentUserFullName(), date: cardExpiry} }}</p>
+            </div>
+            <span class="mp-default-badge">{{ 'iam.myPlan.default' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- Switch plan -->
+        <div class="mp-section">
+          <p class="mp-section__title">{{ 'iam.myPlan.switchPlan' | translate }}</p>
+          <p class="mp-section__sub">{{ 'iam.myPlan.proratedBilling' | translate }}</p>
+          <div class="mp-plan-cards">
+            @for (plan of otherPlans; track plan.id) {
+              <div class="mp-plan-card" [class.mp-plan-card--expanded]="expandedPlanId() === plan.id">
+                <button class="mp-plan-card__header" (click)="togglePlanExpand(plan.id)">
+                  <div class="mp-plan-card__icon" [style.background-color]="plan.color">
+                    <mat-icon [style.color]="plan.textColor">{{ plan.icon }}</mat-icon>
+                  </div>
+                  <div class="mp-plan-card__info">
+                    <p class="mp-plan-card__name">{{ plan.name }}</p>
+                    <p class="mp-plan-card__price">${{ plan.price }}<span>/{{ 'iam.myPlan.month' | translate }}</span></p>
+                  </div>
+                  <span class="mp-plan-card__badge" [class.mp-plan-card__badge--upgrade]="isUpgrade(plan)">
+                    @if (isUpgrade(plan)) { {{ 'iam.myPlan.upgrade' | translate }} } @else { {{ 'iam.myPlan.downgrade' | translate }} }
+                  </span>
+                  <mat-icon class="mp-plan-card__arrow" [class.mp-plan-card__arrow--open]="expandedPlanId() === plan.id">expand_more</mat-icon>
+                </button>
+                @if (expandedPlanId() === plan.id) {
+                  <div class="mp-plan-card__body">
+                    <p class="mp-plan-card__tagline">{{ plan.taglineKey | translate }}</p>
+                    <ul class="mp-plan-card__features">
+                      @for (feat of plan.featureKeys; track feat) {
+                        <li class="mp-plan-card__feature">
+                          <mat-icon>check</mat-icon>
+                          <span>{{ feat | translate }}</span>
+                        </li>
+                      }
+                    </ul>
+                    <button class="mp-plan-card__select" (click)="onSelectPlan(plan.id)">
+                      {{ 'iam.myPlan.switchTo' | translate }} {{ plan.name }}
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Cancel card -->
+        <div class="mp-cancel-card">
+          <div class="mp-cancel-card__info">
+            <p class="mp-cancel-card__title">{{ 'iam.myPlan.cancelSubscription' | translate }}</p>
+            <p class="mp-cancel-card__sub">{{ 'iam.myPlan.dataKept30Days' | translate }}</p>
+          </div>
+          <button class="mp-cancel-card__btn" (click)="onOpenCancelModal()">
+            {{ 'iam.myPlan.cancelSubscription' | translate }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Cancel Modal ── -->
   @if (showCancelModal()) {
-    <div class="my-plan__modal-overlay">
-      <div class="my-plan__modal">
+    <div class="mp-modal-overlay">
+      <div class="mp-modal">
         @if (!cancelConfirmed()) {
-          <div class="my-plan__modal-icon-wrap">
-            <mat-icon class="my-plan__modal-icon--warning">warning</mat-icon>
+          <div class="mp-modal__icon-wrap">
+            <mat-icon>warning</mat-icon>
           </div>
-          <h3 class="my-plan__modal-title">{{ 'iam.myPlan.cancelTitle' | translate }}</h3>
-          <p class="my-plan__modal-desc">{{ 'iam.myPlan.cancelDesc' | translate }}</p>
-          <div class="my-plan__modal-features">
-            <div class="my-plan__modal-feature"><mat-icon class="my-plan__modal-x">close</mat-icon><span>{{ 'iam.myPlan.planFeatures.unlimitedSkinAnalyses' | translate }}</span></div>
-            <div class="my-plan__modal-feature"><mat-icon class="my-plan__modal-x">close</mat-icon><span>{{ 'iam.myPlan.planFeatures.aiPoweredRoutines' | translate }}</span></div>
-            <div class="my-plan__modal-feature"><mat-icon class="my-plan__modal-x">close</mat-icon><span>{{ 'iam.myPlan.planFeatures.dermatologistDirectory' | translate }}</span></div>
-            <div class="my-plan__modal-feature"><mat-icon class="my-plan__modal-x">close</mat-icon><span>{{ 'iam.myPlan.planFeatures.smartChatbot' | translate }}</span></div>
+          <h3 class="mp-modal__title">{{ 'iam.myPlan.cancelTitle' | translate }}</h3>
+          <p class="mp-modal__desc">{{ 'iam.myPlan.cancelDesc' | translate: { date: billingDate() } }}</p>
+          <div class="mp-modal__features">
+            <div class="mp-modal__feature"><mat-icon>close</mat-icon><span>{{ 'iam.myPlan.planFeatures.unlimitedSkinAnalyses' | translate }}</span></div>
+            <div class="mp-modal__feature"><mat-icon>close</mat-icon><span>{{ 'iam.myPlan.planFeatures.aiPoweredRoutines' | translate }}</span></div>
+            <div class="mp-modal__feature"><mat-icon>close</mat-icon><span>{{ 'iam.myPlan.planFeatures.dermatologistDirectory' | translate }}</span></div>
+            <div class="mp-modal__feature"><mat-icon>close</mat-icon><span>{{ 'iam.myPlan.planFeatures.smartChatbot' | translate }}</span></div>
           </div>
-          <button class="my-plan__modal-keep-btn" (click)="onCloseCancelModal()">{{ 'iam.myPlan.keepSubscription' | translate }}</button>
-          <button class="my-plan__modal-cancel-btn" (click)="onConfirmCancel()">{{ 'iam.myPlan.yesCancelAnyway' | translate }}</button>
+          @if (cancelError()) {
+            <p class="mp-modal__error">{{ cancelError()! | translate }}</p>
+          }
+          <button class="mp-modal__keep-btn" (click)="onCloseCancelModal()" [disabled]="cancelling()">{{ 'iam.myPlan.keepSubscription' | translate }}</button>
+          <button class="mp-modal__cancel-btn" (click)="onConfirmCancel()" [disabled]="cancelling()">
+            @if (cancelling()) {
+              {{ 'iam.myPlan.cancelling' | translate }}
+            } @else {
+              {{ 'iam.myPlan.yesCancelAnyway' | translate }}
+            }
+          </button>
         } @else {
-          <div class="my-plan__modal-icon-wrap my-plan__modal-icon-wrap--success">
-            <mat-icon class="my-plan__modal-icon--success">check</mat-icon>
+          <div class="mp-modal__icon-wrap mp-modal__icon-wrap--success">
+            <mat-icon>check</mat-icon>
           </div>
-          <h3 class="my-plan__modal-title">{{ 'iam.myPlan.cancelledTitle' | translate }}</h3>
-          <p class="my-plan__modal-desc">{{ 'iam.myPlan.cancelledDesc' | translate }}</p>
-          <button class="my-plan__modal-keep-btn" (click)="onCloseCancelModal()">{{ 'iam.myPlan.done' | translate }}</button>
+          <h3 class="mp-modal__title">{{ 'iam.myPlan.cancelledTitle' | translate }}</h3>
+          <p class="mp-modal__desc">{{ 'iam.myPlan.cancelledDesc' | translate: { date: billingDate() } }}</p>
+          <button class="mp-modal__keep-btn" (click)="onCloseCancelModal()">{{ 'iam.myPlan.done' | translate }}</button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Change Plan Modal ── -->
+  @if (showChangePlan() && selectedPlanForModal; as plan) {
+    <div class="mp-modal-overlay">
+      <div class="mp-modal">
+        @if (!planChanged()) {
+          <div class="mp-modal__icon-wrap">
+            <mat-icon [style.color]="plan.textColor === '#ffffff' ? plan.color : plan.textColor">{{ plan.icon }}</mat-icon>
+          </div>
+          <h3 class="mp-modal__title">{{ 'iam.myPlan.confirmSwitchTitle' | translate }} {{ plan.name }}?</h3>
+          <p class="mp-modal__desc">
+            {{ 'iam.myPlan.confirmSwitchDesc' | translate: { plan: plan.name, price: plan.price } }}
+          </p>
+          @if (planChangeError()) {
+            <p class="mp-modal__error">{{ planChangeError()! | translate }}</p>
+          }
+          <button class="mp-modal__keep-btn" (click)="onConfirmChangePlan()" [disabled]="changingPlan()">
+            @if (changingPlan()) {
+              {{ 'iam.myPlan.switchingPlan' | translate }}
+            } @else {
+              {{ 'iam.myPlan.confirmSwitchBtn' | translate }} {{ plan.name }}
+            }
+          </button>
+          <button class="mp-modal__cancel-btn" (click)="onCloseChangePlanModal()" [disabled]="changingPlan()">
+            {{ 'iam.myPlan.keepCurrentPlan' | translate }}
+          </button>
+        } @else {
+          <div class="mp-modal__icon-wrap mp-modal__icon-wrap--success">
+            <mat-icon>check</mat-icon>
+          </div>
+          <h3 class="mp-modal__title">{{ 'iam.myPlan.switchSuccessTitle' | translate }}</h3>
+          <p class="mp-modal__desc">{{ 'iam.myPlan.switchSuccessDesc' | translate: { plan: plan.name } }}</p>
+          <button class="mp-modal__keep-btn" (click)="onCloseChangePlanModal()">{{ 'iam.myPlan.done' | translate }}</button>
         }
       </div>
     </div>

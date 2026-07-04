@@ -3,7 +3,8 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
-import {MatIcon} from '@angular/material/icon';
+import { MatIcon } from '@angular/material/icon';
+import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
 
 /**
  * Sign-in view for young adult patients.
@@ -19,7 +20,7 @@ import {MatIcon} from '@angular/material/icon';
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, MatIcon],
+  imports: [ReactiveFormsModule, TranslatePipe, MatIcon, LanguageSwitcher],
   templateUrl: './sign-in.html',
   styleUrl: './sign-in.css',
 })

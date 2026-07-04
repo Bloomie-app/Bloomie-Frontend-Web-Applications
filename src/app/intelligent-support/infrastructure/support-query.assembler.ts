@@ -23,37 +23,26 @@ export class SupportQueryAssembler implements BaseAssembler<
     return response.support_queries.map((resource) => this.toEntityFromResource(resource));
   }
 
-  /**
-   * Converts a SupportQueryResource to a SupportQuery entity.
-   * @param resource - The resource to convert.
-   * @returns The converted SupportQuery entity.
-   */
   toEntityFromResource(resource: SupportQueryResource): SupportQuery {
     return new SupportQuery({
       id: resource.id,
-      userId: resource.user_id,
-      skinProfileId: resource.skin_profile_id,
-      lastFacialScanId: resource.last_facial_scan_id,
-      suggestedAction: resource.suggested_action as SuggestedAction,
+      userId: resource.patientId,
+      skinProfileId: resource.skinProfileId,
+      lastFacialScanId: 0,
+      suggestedAction: resource.suggestedAction as SuggestedAction,
       status: resource.status as SupportQueryStatus,
-      createdAt: resource.created_at,
+      createdAt: resource.createdAt,
     });
   }
 
-  /**
-   * Converts a SupportQuery entity to a SupportQueryResource.
-   * @param entity - The entity to convert.
-   * @returns The converted SupportQueryResource.
-   */
   toResourceFromEntity(entity: SupportQuery): SupportQueryResource {
     return {
       id: entity.id,
-      user_id: entity.userId,
-      skin_profile_id: entity.skinProfileId,
-      last_facial_scan_id: entity.lastFacialScanId,
-      suggested_action: entity.suggestedAction,
+      patientId: entity.userId,
+      skinProfileId: entity.skinProfileId,
       status: entity.status,
-      created_at: entity.createdAt,
+      suggestedAction: entity.suggestedAction,
+      createdAt: entity.createdAt,
     } as SupportQueryResource;
   }
 }

@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { IamStore } from '../../../application/iam.store';
+import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
 
 const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password')?.value;
@@ -14,7 +15,7 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
 @Component({
   selector: 'app-dermatologist-sign-up',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, RouterLink],
+  imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, RouterLink, LanguageSwitcher],
   templateUrl: './dermatologist-sign-up.html',
   styleUrl: './dermatologist-sign-up.css',
 })
@@ -26,15 +27,6 @@ export class DermatologistSignUp {
   protected readonly showPassword = signal<boolean>(false);
   protected readonly showConfirmPassword = signal<boolean>(false);
   protected readonly submitted = signal<boolean>(false);
-
-  protected readonly specialties = [
-    'Dermatology',
-    'Pediatric Dermatology',
-    'Cosmetic Dermatology',
-    'Dermatopathology',
-    'Mohs Surgery',
-    'Teledermatology',
-  ];
 
   protected readonly form = this.formBuilder.group(
     {
@@ -49,10 +41,6 @@ export class DermatologistSignUp {
       email: new FormControl<string>('', {
         nonNullable: true,
         validators: [Validators.required, Validators.email],
-      }),
-      specialty: new FormControl<string>('', {
-        nonNullable: true,
-        validators: [Validators.required],
       }),
       password: new FormControl<string>('', {
         nonNullable: true,
@@ -77,8 +65,8 @@ export class DermatologistSignUp {
   onSubmit = (): void => {
     this.submitted.set(true);
     if (this.form.invalid) return;
-    const { firstName, lastName, email, specialty, password } = this.form.getRawValue();
-    this.iamStore.registerDermatologist(email, password, firstName, lastName, specialty);
+    const { firstName, lastName, email, password } = this.form.getRawValue();
+    this.iamStore.registerDermatologist(email, password, firstName, lastName);
   };
 
   onBack = (): void => {

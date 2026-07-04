@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
 import { MatIcon } from '@angular/material/icon';
+import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, MatIcon],
+  imports: [ReactiveFormsModule, TranslatePipe, MatIcon, LanguageSwitcher],
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.css',
 })
