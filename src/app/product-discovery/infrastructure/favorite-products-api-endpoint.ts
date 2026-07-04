@@ -21,7 +21,7 @@ export class FavoriteProductsApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(
       http,
-      `${environment.serverBasePath}${environment.favoriteProductsEndpointPath}`,
+      `${environment.backendBasePath}${environment.backendFavoriteProductsEndpointPath}`,
       new FavoriteProductAssembler(),
     );
   }
