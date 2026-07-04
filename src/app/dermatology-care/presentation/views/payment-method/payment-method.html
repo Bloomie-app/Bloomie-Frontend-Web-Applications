@@ -74,6 +74,18 @@
           </div>
         }
 
+        @if (bookingError()) {
+          <div class="payment-method__error-banner">
+            <mat-icon class="payment-method__error-icon">event_busy</mat-icon>
+            <div>
+              <p class="payment-method__error-text">{{ bookingError() }}</p>
+              <button type="button" class="payment-method__error-action" (click)="chooseAnotherTime()">
+                {{ 'dermatology.payment.chooseAnotherTime' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+
         <div class="payment-method__card-preview">
           <div class="payment-method__preview-top">
             <div class="payment-method__chip">

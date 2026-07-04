@@ -1,9 +1,8 @@
 import {Component, inject, signal} from '@angular/core';
 import {Router} from '@angular/router';
-import {switchMap} from 'rxjs';
 import {MatIconModule} from '@angular/material/icon';
 import {FormsModule} from '@angular/forms';
-import {TranslatePipe} from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import {DermatologyCareStore} from '../../../application/dermatology-care.store';
 import {IamStore} from '../../../../iam/application/iam.store';
 import {Appointment, AppointmentStatus} from '../../../domain/model/appointment.entity';
@@ -27,13 +26,15 @@ interface PaymentMethodOption {
   styleUrl:    './payment-method.css',
 })
 export class PaymentMethod {
-  readonly store            = inject(DermatologyCareStore);
-  private readonly iamStore = inject(IamStore);
-  protected router          = inject(Router);
+  readonly store               = inject(DermatologyCareStore);
+  private readonly iamStore    = inject(IamStore);
+  private readonly translateSvc = inject(TranslateService);
+  protected router             = inject(Router);
 
   step            = signal<PaymentStep>('select');
   selectedPayment = signal<PaymentOption>(null);
   showError       = signal<boolean>(false);
+  bookingError    = signal<string | null>(null);
   cardHolderName  = '';
   cardNumber      = '';
   expirationDate  = '';
@@ -72,6 +73,8 @@ export class PaymentMethod {
 
   /**
    * Validates card fields, creates the appointment in the backend, then shows confirmation.
+   * Stays on this step and surfaces a specific message if the slot was taken by someone
+   * else in the meantime, instead of claiming success regardless of the outcome.
    */
   payNow(): void {
     const rawCard = this.cardNumber.replace(/\s/g, '');
@@ -80,37 +83,55 @@ export class PaymentMethod {
       return;
     }
     this.showError.set(false);
+    this.bookingError.set(null);
 
     const currentUser = this.iamStore.currentUser();
     const derm        = this.store.selectedDermatologist();
     const date        = this.store.pendingAppointmentDate();
     const time        = this.store.pendingAppointmentTime();
 
-    if (currentUser && derm && date && time) {
-      const [startHour, startMinute] = time.split(' - ')[0].split(':').map(Number);
-      const scheduledAt = new Date(
-        date.getFullYear(), date.getMonth(), date.getDate(), startHour, startMinute, 0,
-      ).toISOString();
+    if (!currentUser || !derm || !date || !time) return;
 
-      const appointment = new Appointment({
-        id:                 0,
-        patientId:          currentUser.id,
-        dermatologistId:    derm.userId,
-        paymentId:          0,
-        scheduledAt,
-        status:             AppointmentStatus.Scheduled,
-        cancellationReason: '',
-      });
+    const [startHour, startMinute] = time.split(' - ')[0].split(':').map(Number);
+    // Sent as a plain local datetime (no timezone suffix) — the backend rejects
+    // any scheduledAt with a "Z" or offset as appointment.scheduled.at.invalid.
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const scheduledAt = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+      + `T${pad(startHour)}:${pad(startMinute)}:00`;
 
-      // Confirm right after scheduling so the appointment is ready for its
-      // consultation to start — the backend requires CONFIRMED status for that.
-      this.store
-        .addAppointment(appointment)
-        .pipe(switchMap((created) => this.store.confirmAppointment(created)))
-        .subscribe({ error: () => {} });
-    }
+    const appointment = new Appointment({
+      id:                 0,
+      patientId:          currentUser.id,
+      dermatologistId:    derm.userId,
+      paymentId:          0,
+      scheduledAt,
+      status:             AppointmentStatus.Scheduled,
+      cancellationReason: '',
+    });
 
-    this.step.set('confirmed');
+    this.store.addAppointment(appointment).subscribe({
+      next: (created) => {
+        this.step.set('confirmed');
+        // Confirm right after scheduling so the appointment is ready for its
+        // consultation to start — the backend requires CONFIRMED status for that.
+        // Best-effort: the appointment is already booked even if this step fails.
+        this.store.confirmAppointment(created).subscribe({ error: () => {} });
+      },
+      error: (err) => this.bookingError.set(this.bookingErrorMessage(err)),
+    });
+  }
+
+  private bookingErrorMessage(err: unknown): string {
+    const details = (err as { details?: string } | null)?.details;
+    const key = details === 'appointment.slot.already.taken'
+      ? 'dermatology.payment.slotTakenError'
+      : 'dermatology.payment.bookingFailedError';
+    return this.translateSvc.instant(key);
+  }
+
+  /** Sends the patient back to the schedule so they can pick a different time. */
+  chooseAnotherTime(): void {
+    this.router.navigate(['/dermatology/book-appointment']);
   }
 
   /** Navigates to scheduled appointments after viewing confirmation. */

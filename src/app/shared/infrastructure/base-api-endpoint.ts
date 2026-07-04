@@ -107,7 +107,13 @@ export abstract class BaseApiEndpoint<
       } else {
         errorMessage = `${operation}: ${error.statusText || 'Unexpected error'}`;
       }
-      return throwError(() => new Error(errorMessage));
+      // Preserves the backend's structured body (e.g. { code, details }) so callers
+      // can react to a specific business rule instead of just a generic message.
+      return throwError(() => Object.assign(new Error(errorMessage), {
+        status:  error.status,
+        code:    error.error?.code,
+        details: error.error?.details,
+      }));
     };
   }
 }

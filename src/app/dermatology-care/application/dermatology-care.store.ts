@@ -271,8 +271,9 @@ export class DermatologyCareStore {
   addAppointment(appointment: Appointment): Observable<Appointment> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
+    // No retry() here: creating an appointment isn't idempotent, and retrying a
+    // slow-but-successful request would submit a duplicate booking attempt.
     return this.dermatologyCareApi.createAppointment(appointment).pipe(
-      retry(2),
       tap((createdAppointment) => {
         this.appointmentsSignal.update((appointments) => [...appointments, createdAppointment]);
         this.loadingSignal.set(false);
