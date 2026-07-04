@@ -153,10 +153,22 @@ export class DermatologyCareStore {
 
   /**
    * Returns the bookable time slots for a given date based on loaded availabilities.
+   * When the date is today, slots whose start time has already passed are excluded —
+   * otherwise picking one produces a scheduledAt in the past, which the backend rejects.
    * @param date - The calendar date to get slots for.
    */
   timeSlotsForDate(date: Date): string[] {
-    return this.availabilitiesSignal().filter((a) => a.active).find((a) => a.matchesDate(date))?.timeSlots ?? [];
+    const slots = this.availabilitiesSignal().filter((a) => a.active).find((a) => a.matchesDate(date))?.timeSlots ?? [];
+    const now = new Date();
+    const isToday = date.getFullYear() === now.getFullYear()
+      && date.getMonth() === now.getMonth()
+      && date.getDate() === now.getDate();
+    if (!isToday) return slots;
+    return slots.filter((slot) => {
+      const [startHour, startMinute] = slot.split(' - ')[0].split(':').map(Number);
+      const slotStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startHour, startMinute, 0);
+      return slotStart.getTime() > now.getTime();
+    });
   }
 
   /**
