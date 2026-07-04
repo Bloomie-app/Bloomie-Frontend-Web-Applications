@@ -199,6 +199,7 @@
       "payNow": "Pagar ahora",
       "errorMessage": "Pago fallido. Verifica los datos de tu tarjeta e intenta nuevamente.",
       "slotTakenError": "Este horario acaba de ser reservado por otra persona. Por favor elige otro horario.",
+      "pastTimeError": "Ese horario ya pasó. Por favor elige un horario más adelante.",
       "bookingFailedError": "No pudimos agendar tu cita. Por favor intenta nuevamente.",
       "chooseAnotherTime": "Elegir otro horario",
       "confirmationTitle": "¡Pago confirmado!",
