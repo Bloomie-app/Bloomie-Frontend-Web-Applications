@@ -103,7 +103,6 @@ export class PaymentMethod {
       id:                 0,
       patientId:          currentUser.id,
       dermatologistId:    derm.userId,
-      paymentId:          0,
       scheduledAt,
       status:             AppointmentStatus.Scheduled,
       cancellationReason: '',
