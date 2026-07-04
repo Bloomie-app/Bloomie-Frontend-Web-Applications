@@ -13,7 +13,7 @@ export class FavoriteProductAssembler implements BaseAssembler<FavoriteProduct, 
    * @returns An array of FavoriteProduct entities.
    */
   toEntitiesFromResponse(response: FavoriteProductsResponse): FavoriteProduct[] {
-    return response.favorite_products.map(resource => this.toEntityFromResource(resource));
+    return response.favoriteProducts.map(resource => this.toEntityFromResource(resource));
   }
 
   /**
@@ -24,9 +24,9 @@ export class FavoriteProductAssembler implements BaseAssembler<FavoriteProduct, 
   toEntityFromResource(resource: FavoriteProductResource): FavoriteProduct {
     return new FavoriteProduct({
       id:        resource.id,
-      userId:    resource.user_id,
-      productId: resource.product_id,
-      savedAt:   resource.saved_at,
+      userId:    resource.userId,
+      productId: resource.productId,
+      savedAt:   resource.savedAt,
     });
   }
 
@@ -37,10 +37,10 @@ export class FavoriteProductAssembler implements BaseAssembler<FavoriteProduct, 
    */
   toResourceFromEntity(entity: FavoriteProduct): FavoriteProductResource {
     return {
-      id:         entity.id,
-      user_id:    entity.userId,
-      product_id: entity.productId,
-      saved_at:   entity.savedAt,
+      id:        entity.id,
+      userId:    entity.userId,
+      productId: entity.productId,
+      savedAt:   entity.savedAt,
     } as FavoriteProductResource;
   }
 }
