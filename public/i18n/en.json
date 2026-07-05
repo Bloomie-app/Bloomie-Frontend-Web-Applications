@@ -199,6 +199,7 @@
       "payNow": "Pay now",
       "errorMessage": "Payment failed. Please verify your card details and try again.",
       "slotTakenError": "This time slot was just booked by someone else. Please choose another time.",
+      "pastTimeError": "That time has already passed. Please choose a later time.",
       "bookingFailedError": "We couldn't book your appointment. Please try again.",
       "chooseAnotherTime": "Choose another time",
       "confirmationTitle": "Payment Confirmed!",
@@ -902,27 +903,29 @@
       "plans": {
         "starter": {
           "tagline": "Introduction to personalized care",
-          "f1": "Up to 5 monthly skin analyses",
-          "f2": "General product recommendations",
+          "f1": "Up to 5 AI skin analyses per month (max. 1 per day)",
+          "f2": "Basic AI-generated skincare routines",
           "f3": "Access to product catalog",
-          "f4": "Basic chatbot (FAQ)",
+          "f4": "AI chatbot for general skin questions",
           "f5": "Limited history (last 3 analyses)"
         },
         "advanced": {
           "tagline": "Personalization & continuous tracking",
-          "f1": "Unlimited facial skin analyses",
+          "f1": "Unlimited AI skin analyses (max. 2 per day)",
           "f2": "AI-generated personalized routines",
-          "f3": "Full history & progress tracking",
-          "f4": "Dermatologist directory access",
-          "f5": "Smart chatbot with memory"
+          "f3": "Save products as favorites",
+          "f4": "Full history & progress tracking",
+          "f5": "Dermatologist directory & appointment booking"
         },
         "elite": {
-          "tagline": "Advanced & preventive dermatological care",
-          "f1": "Priority dermatology consultations",
-          "f2": "Exportable clinical reports",
-          "f3": "Dynamic routines (weather adapted)",
-          "f4": "Smart notifications & reminders",
-          "f5": "All Advanced features included"
+          "tagline": "Complete dermatological care, no limits",
+          "f1": "Everything in the Advanced plan",
+          "f2": "AI chatbot with context from your skin profile",
+          "f3": "Video consultations with certified dermatologists",
+          "f4": "Clinical notes & personalized diagnosis from your dermatologist",
+          "f5": "Priority access to book appointments",
+          "f6": "Personalized follow-up reminders on your dashboard",
+          "f7": "Priority support dedicated to your account"
         }
       }
     }

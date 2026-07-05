@@ -1,4 +1,4 @@
-import { computed, DestroyRef, inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { retry } from 'rxjs';
 import { Product, ProductCategory } from '../domain/model/product.entity';
@@ -123,7 +123,14 @@ export class ProductDiscoveryStore {
    */
   constructor(private productDiscoveryApi: ProductDiscoveryApi) {
     this.loadProducts();
-    this.loadFavoriteProducts();
+    effect(() => {
+      const userId = this.iamStore.currentUser()?.id;
+      if (userId) {
+        this.loadFavoriteProducts(userId);
+      } else {
+        this.favoritesSignal.set([]);
+      }
+    });
   }
 
   /**
@@ -304,13 +311,14 @@ export class ProductDiscoveryStore {
   }
 
   /**
-   * Loads all favorite product records from the API.
+   * Loads all favorite product records for the given user from the API.
+   * @param userId - The identifier of the user whose favorites should be loaded.
    */
-  private loadFavoriteProducts(): void {
+  private loadFavoriteProducts(userId: number): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.productDiscoveryApi
-      .getFavoriteProducts()
+      .getFavoriteProductsByUserId(userId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (favorites) => {

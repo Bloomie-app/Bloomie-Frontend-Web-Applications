@@ -67,6 +67,8 @@ const PLAN_UI_META: Record<string, Pick<Plan, 'taglineKey' | 'icon' | 'color' | 
       'iam.myPlan.plans.elite.f3',
       'iam.myPlan.plans.elite.f4',
       'iam.myPlan.plans.elite.f5',
+      'iam.myPlan.plans.elite.f6',
+      'iam.myPlan.plans.elite.f7',
     ],
   },
 };

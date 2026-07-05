@@ -103,7 +103,6 @@ export class PaymentMethod {
       id:                 0,
       patientId:          currentUser.id,
       dermatologistId:    derm.userId,
-      paymentId:          0,
       scheduledAt,
       status:             AppointmentStatus.Scheduled,
       cancellationReason: '',
@@ -123,9 +122,12 @@ export class PaymentMethod {
 
   private bookingErrorMessage(err: unknown): string {
     const details = (err as { details?: string } | null)?.details;
-    const key = details === 'appointment.slot.already.taken'
-      ? 'dermatology.payment.slotTakenError'
-      : 'dermatology.payment.bookingFailedError';
+    let key = 'dermatology.payment.bookingFailedError';
+    if (details === 'appointment.slot.already.taken') {
+      key = 'dermatology.payment.slotTakenError';
+    } else if (details === 'appointment.scheduled.at.must.be.future') {
+      key = 'dermatology.payment.pastTimeError';
+    }
     return this.translateSvc.instant(key);
   }
 

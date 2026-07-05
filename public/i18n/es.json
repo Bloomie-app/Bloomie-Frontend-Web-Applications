@@ -199,6 +199,7 @@
       "payNow": "Pagar ahora",
       "errorMessage": "Pago fallido. Verifica los datos de tu tarjeta e intenta nuevamente.",
       "slotTakenError": "Este horario acaba de ser reservado por otra persona. Por favor elige otro horario.",
+      "pastTimeError": "Ese horario ya pasó. Por favor elige un horario más adelante.",
       "bookingFailedError": "No pudimos agendar tu cita. Por favor intenta nuevamente.",
       "chooseAnotherTime": "Elegir otro horario",
       "confirmationTitle": "¡Pago confirmado!",
@@ -905,27 +906,29 @@
       "plans": {
         "starter": {
           "tagline": "Introducción al cuidado personalizado",
-          "f1": "Hasta 5 análisis de piel mensuales",
-          "f2": "Recomendaciones generales de productos",
+          "f1": "Hasta 5 análisis de piel con IA al mes (máx. 1 al día)",
+          "f2": "Rutinas de cuidado básicas generadas por IA",
           "f3": "Acceso al catálogo de productos",
-          "f4": "Chatbot básico (FAQ)",
+          "f4": "Chatbot de IA para dudas generales sobre tu piel",
           "f5": "Historial limitado (últimos 3 análisis)"
         },
         "advanced": {
           "tagline": "Personalización y seguimiento continuo",
-          "f1": "Análisis faciales ilimitados",
+          "f1": "Análisis de piel con IA ilimitados (máx. 2 al día)",
           "f2": "Rutinas personalizadas generadas por IA",
-          "f3": "Historial completo y seguimiento de progreso",
-          "f4": "Acceso al directorio de dermatólogos",
-          "f5": "Chatbot inteligente con memoria"
+          "f3": "Guarda productos como favoritos",
+          "f4": "Historial completo y seguimiento de tu progreso",
+          "f5": "Directorio de dermatólogos y reserva de citas"
         },
         "elite": {
-          "tagline": "Cuidado dermatológico avanzado y preventivo",
-          "f1": "Consultas dermatológicas prioritarias",
-          "f2": "Reportes clínicos exportables",
-          "f3": "Rutinas dinámicas (adaptadas al clima)",
-          "f4": "Notificaciones y recordatorios inteligentes",
-          "f5": "Todas las funciones Advanced incluidas"
+          "tagline": "Cuidado dermatológico completo, sin límites",
+          "f1": "Todas las funciones del plan Advanced",
+          "f2": "Chatbot de IA con contexto de tu perfil de piel",
+          "f3": "Consultas por videollamada con dermatólogos certificados",
+          "f4": "Notas clínicas y diagnóstico personalizado por tu dermatólogo",
+          "f5": "Acceso prioritario para agendar tus citas",
+          "f6": "Recordatorios de seguimiento personalizados en tu dashboard",
+          "f7": "Soporte prioritario dedicado para tu cuenta"
         }
       }
     }
